@@ -23,6 +23,14 @@ import dynamic from "next/dynamic"
 import TrustedByLogos from "@/components/trusted-by-logos"
 import AnimatedCTAButton from "@/components/animated-cta-button"
 import ScrollToTopButton from "@/components/scroll-to-top-button"
+import {
+  GlobalMapClient,
+  AiConversationClient,
+  SurveyFeedClient,
+  DataVisualizationClient,
+  RegionalEngagementClient,
+  AnimatedStatClient
+} from "@/components/client-wrappers"
 
 // Dynamically import heavy components with proper loading states
 const TopicEngagement = dynamic(() => import("@/components/topic-engagement"), {
@@ -30,35 +38,8 @@ const TopicEngagement = dynamic(() => import("@/components/topic-engagement"), {
   ssr: true,
 })
 
-const GlobalMap = dynamic(() => import("@/components/mock/global-map"), {
-  loading: () => (
-    <div className="w-full h-[400px] bg-muted/30 rounded-xl animate-pulse flex items-center justify-center">
-      <Globe className="h-10 w-10 text-muted" />
-    </div>
-  ),
-  ssr: false, // Client-side only for interactive map
-})
-
-// Below-the-fold components loaded with lower priority
-const AiConversation = dynamic(() => import("@/components/mock/ai-conversation"), {
-  ssr: false,
-})
-
-const SurveyFeed = dynamic(() => import("@/components/mock/survey-feed"), {
-  ssr: false,
-})
-
-const DataVisualization = dynamic(() => import("@/components/mock/data-visualization"), {
-  ssr: false,
-})
-
-const RegionalEngagement = dynamic(() => import("@/components/mock/regional-engagement"), {
-  ssr: false,
-})
-
-const AnimatedStat = dynamic(() => import("@/components/animated-stats"), {
-  ssr: false,
-})
+// Client components with ssr: false are imported from client-wrappers.tsx
+// which is marked with 'use client'
 
 // Optimized feature card component
 const FeatureCard = dynamic(() => import("@/components/feature-card"), {
@@ -162,7 +143,7 @@ export default function HomePage() {
                   Live Global Sentiment
                 </div>
                 <div className="rounded-xl overflow-hidden">
-                  <GlobalMap />
+                  <GlobalMapClient />
                 </div>
                 <div className="absolute -bottom-5 -right-5 bg-blue-500 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-lg">
                   Updated in real-time
@@ -292,7 +273,7 @@ export default function HomePage() {
             <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
               <div className="flex items-center justify-center order-last lg:order-first">
                 <div className="relative w-full max-w-[550px] rounded-2xl border-2 border-primary/20 bg-background p-4 shadow-2xl transition-all hover:shadow-primary/5 hover:border-primary/40 group">
-                  <AiConversation />
+                  <AiConversationClient />
                   <div className="absolute -top-4 -left-4 bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
                     Feature 1
                   </div>
@@ -345,7 +326,7 @@ export default function HomePage() {
             <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
               <div className="flex items-center justify-center">
                 <div className="relative w-full max-w-[550px] rounded-2xl border-2 border-blue-500/20 bg-background p-4 shadow-2xl transition-all hover:shadow-blue-500/5 hover:border-blue-500/40 group">
-                  <SurveyFeed />
+                  <SurveyFeedClient />
                   <div className="absolute -top-4 -right-4 bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
                     Feature 2
                   </div>
@@ -398,7 +379,7 @@ export default function HomePage() {
             <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
               <div className="flex items-center justify-center order-last lg:order-first">
                 <div className="relative w-full max-w-[550px] rounded-2xl border-2 border-teal-500/20 bg-background p-4 shadow-2xl transition-all hover:shadow-teal-500/5 hover:border-teal-500/40 group">
-                  <DataVisualization />
+                  <DataVisualizationClient />
                   <div className="absolute -top-4 -left-4 bg-teal-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
                     Feature 3
                   </div>
@@ -487,11 +468,11 @@ export default function HomePage() {
                 </CardContent>
               </Card>
 
-              <RegionalEngagement />
+              <RegionalEngagementClient />
             </div>
 
             <div>
-              <DataVisualization />
+              <DataVisualizationClient />
             </div>
           </div>
 
@@ -605,18 +586,18 @@ export default function HomePage() {
 
           {/* Additional social proof metrics */}
           <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8">
-            <AnimatedStat
+            <AnimatedStatClient
               value="10M+"
               label="Opinions Shared"
               icon={<MessageSquareText className="h-10 w-10 text-primary" />}
             />
-            <AnimatedStat
+            <AnimatedStatClient
               value="150+"
               label="Countries Represented"
               icon={<Globe className="h-10 w-10 text-primary" />}
             />
-            <AnimatedStat value="4.9/5" label="User Satisfaction" icon={<Star className="h-10 w-10 text-primary" />} />
-            <AnimatedStat value="92%" label="User Retention" icon={<Users className="h-10 w-10 text-primary" />} />
+            <AnimatedStatClient value="4.9/5" label="User Satisfaction" icon={<Star className="h-10 w-10 text-primary" />} />
+            <AnimatedStatClient value="92%" label="User Retention" icon={<Users className="h-10 w-10 text-primary" />} />
           </div>
         </div>
       </section>
@@ -678,7 +659,7 @@ export default function HomePage() {
 
               <div className="relative lg:ml-auto order-first lg:order-last">
                 <div className="relative rounded-2xl border-2 border-primary/20 bg-background p-4 shadow-2xl">
-                  <GlobalMap showPulse={true} className="h-[400px]" />
+                  <GlobalMapClient showPulse={true} className="h-[400px]" />
 
                   {/* Floating elements for visual interest */}
                   <div className="absolute -top-8 -right-8 bg-primary text-white p-4 rounded-full shadow-lg transform rotate-6 hover:rotate-0 transition-transform">

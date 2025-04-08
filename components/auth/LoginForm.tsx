@@ -40,11 +40,20 @@ export default function LoginForm() {
 
     if (error) {
       console.error("Login Error:", error)
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: error.message || "Invalid credentials. Please try again.",
-      })
+      
+      if (error.message === "Email not confirmed") {
+        toast({
+          variant: "destructive",
+          title: "Email Not Verified",
+          description: "Please check your email and click the confirmation link before logging in.",
+        })
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Login Failed",
+          description: error.message || "Invalid credentials. Please try again.",
+        })
+      }
     } else {
       toast({
         title: "Login Successful!",

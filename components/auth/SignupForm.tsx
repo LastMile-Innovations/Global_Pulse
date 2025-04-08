@@ -49,16 +49,14 @@ export default function SignupForm() {
         description: error.message || "Could not create your account. Please try again.",
       })
     } else {
-      // IMPORTANT: In production WITH email confirmation enabled,
-      // show a message asking the user to check their email.
-      // Since we assumed confirmation is disabled for MVP:
+      // Email confirmation is enabled in Supabase
       toast({
         title: "Account Created!",
-        description: "Redirecting you to login...",
+        description: "Please check your email and click the verification link before logging in.",
       })
-      router.push("/login") // Redirect to login page after successful signup
-      // Or show "Check email" message if confirmation is enabled
-      // form.reset(); // Optional: clear form
+      
+      // Don't automatically redirect since they need to verify first
+      form.reset(); // Clear form
     }
   }
 
