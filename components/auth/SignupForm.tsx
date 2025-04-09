@@ -1,28 +1,41 @@
 "use client"
 
-import { useState } from "react"
+import { useActionState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/components/ui/use-toast"
-import { createClient } from "@/lib/supabase/client"
-import { signupSchema, type SignupSchemaType } from "./signup-schema"
-import { Loader2 } from "lucide-react"
+import { signup } from "@/actions/auth"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
+import * as z from "zod"
+
+const SignupSchema = z.object({
+  email: z.string().email({ message: "Invalid email address." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  confirmPassword: z.string(),
+})
+.refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+})
+
+type SignupSchemaType = z.infer<typeof SignupSchema>
+
+const initialState = {
+  error: null as string | null,
+  message: null as string | null,
+}
 
 export default function SignupForm() {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
-  const supabase = createClient()
+  const [state, formAction, isPending] = useActionState(signup, initialState)
 
   const form = useForm<SignupSchemaType>({
-    resolver: zodResolver(signupSchema),
+    resolver: zodResolver(SignupSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -30,45 +43,22 @@ export default function SignupForm() {
     },
   })
 
-  async function onSubmit(values: SignupSchemaType) {
-    setIsLoading(true)
-    const { error } = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password,
-      // Add options if needed, e.g., redirect URL for email confirmation if enabled
-      // options: { emailRedirectTo: `${location.origin}/auth/callback` }
-    })
-
-    setIsLoading(false)
-
-    if (error) {
-      console.error("Signup Error:", error)
-      toast({
-        variant: "destructive",
-        title: "Signup Failed",
-        description: error.message || "Could not create your account. Please try again.",
-      })
-    } else {
-      // Email confirmation is enabled in Supabase
-      toast({
-        title: "Account Created!",
-        description: "Please check your email and click the verification link before logging in.",
-      })
-      
-      // Don't automatically redirect since they need to verify first
-      form.reset(); // Clear form
-    }
-  }
-
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl">Create an Account</CardTitle>
-        <CardDescription>Enter your email and password to join Global Pulse.</CardDescription>
+        <CardDescription>Enter your email and password to sign up.</CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form action={formAction} className="space-y-4">
           <CardContent className="space-y-4">
+            {state?.error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Signup Failed</AlertTitle>
+                <AlertDescription>{state.error}</AlertDescription>
+              </Alert>
+            )}
             <FormField
               control={form.control}
               name="email"
@@ -76,7 +66,7 @@ export default function SignupForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="you@example.com" {...field} type="email" disabled={isLoading} />
+                    <Input placeholder="m@example.com" {...field} type="email" name="email" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -89,7 +79,7 @@ export default function SignupForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="••••••••" {...field} type="password" disabled={isLoading} />
+                    <Input placeholder="••••••••" {...field} type="password" name="password" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -102,21 +92,20 @@ export default function SignupForm() {
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="••••••••" {...field} type="password" disabled={isLoading} />
+                    <Input placeholder="••••••••" {...field} type="password" name="confirmPassword" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLoading ? "Creating Account..." : "Sign Up"}
+          <CardFooter className="flex flex-col space-y-4">
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? "Creating Account..." : "Sign Up"}
             </Button>
-            <p className="text-xs text-center text-muted-foreground">
+            <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/login" className="underline underline-offset-2 hover:text-primary">
+              <Link href="/login" className="underline underline-offset-4 hover:text-primary">
                 Log In
               </Link>
             </p>

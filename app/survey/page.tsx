@@ -5,6 +5,7 @@ import SurveyFeedSkeleton from "./components/survey-feed-skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { safeQueryExecution } from "@/lib/supabase/error-handling"
 
 export default async function SurveyPage() {
   const supabase = createClient()
@@ -34,8 +35,11 @@ export default async function SurveyPage() {
     )
   }
 
-  // Fetch available topics for filters
-  const { data: topics } = await supabase.from("topics").select("id, name").order("name").limit(20)
+  // Fetch available topics for filters with safe error handling
+  const { data: topics, tableNotFound } = await safeQueryExecution(
+    () => supabase.from("topics").select("id, name").order("name").limit(20),
+    [] // Fallback to empty array if table doesn't exist
+  )
 
   return (
     <div className="container max-w-4xl py-8">

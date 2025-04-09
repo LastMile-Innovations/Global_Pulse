@@ -7,14 +7,17 @@ import { Plus, Search } from "lucide-react"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import TrendingTopics from "./components/trending-topics"
 import ChatList from "./components/chat-list"
+import { safeQueryExecution } from "@/lib/supabase/error-handling"
+import { DatabaseErrorFallback } from "@/components/database-error-fallback"
 
 export default async function ChatIndexPage() {
   const supabase = createClient()
 
-  // Get the current user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  try {
+    // Get the current user with error handling
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
   if (!user) {
     // Redirect to login if not authenticated
@@ -84,4 +87,16 @@ export default async function ChatIndexPage() {
       </div>
     </div>
   )
+  } catch (error) {
+    console.error("Error in chat page:", error);
+    return (
+      <div className="container max-w-4xl py-8">
+        <h1 className="text-3xl font-bold mb-6">Your Conversations</h1>
+        <DatabaseErrorFallback 
+          message="There was an error connecting to the database. The database tables may not be set up yet." 
+          showHomeButton={true}
+        />
+      </div>
+    )
+  }
 }

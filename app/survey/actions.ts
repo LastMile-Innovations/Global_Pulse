@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { nanoid } from "nanoid"
+import { safeQueryExecution, isTableNotFoundError } from "@/lib/supabase/error-handling"
 
 // Fetch the next unanswered question for the user
 export async function fetchNextQuestion({
@@ -27,7 +28,7 @@ export async function fetchNextQuestion({
         topics(name)
       `)
       // Exclude questions the user has already answered
-      .not("id", "in", (subquery) => subquery.from("survey_responses").select("question_id").eq("user_id", userId))
+      .not("id", "in", (subquery: any) => subquery.from("survey_responses").select("question_id").eq("user_id", userId))
       .order("created_at", { ascending: false })
       .limit(1)
 
@@ -36,9 +37,18 @@ export async function fetchNextQuestion({
       query = query.eq("topic_id", topicId)
     }
 
-    // Execute the query
-    const { data: question, error } = await query.single()
+    // Execute the query with safe error handling
+    const { data: question, error, tableNotFound } = await safeQueryExecution(
+      () => query.single(),
+      null
+    )
 
+    // Handle table not found scenario gracefully
+    if (tableNotFound) {
+      console.warn("Database tables not yet created or initialized")
+      return { success: true, question: null, needsSetup: true }
+    }
+    
     if (error) {
       // If no question found, return success but with no question
       if (error.code === "PGRST116") {
@@ -89,16 +99,27 @@ export async function submitSurveyResponse({
 
     // Create a response record
     const responseId = nanoid()
-    const { error } = await supabase.from("survey_responses").insert({
-      id: responseId,
-      user_id: userId,
-      question_id: questionId,
-      option_id: optionId,
-      numeric_value: numericValue,
-      text_value: textValue,
-      source: "survey_feed",
-    })
+    
+    // Use safe query execution for database operations
+    const { error, tableNotFound } = await safeQueryExecution(
+      () => supabase.from("survey_responses").insert({
+        id: responseId,
+        user_id: userId,
+        question_id: questionId,
+        option_id: optionId,
+        numeric_value: numericValue,
+        text_value: textValue,
+        source: "survey_feed",
+      }),
+      null
+    )
 
+    // Handle table not found scenario gracefully
+    if (tableNotFound) {
+      console.warn("Survey responses table not yet created or initialized")
+      return { success: false, error: "The survey system is not properly set up yet", needsSetup: true }
+    }
+    
     if (error) {
       console.error("Error submitting survey response:", error)
       return { success: false, error: "Failed to submit your response" }

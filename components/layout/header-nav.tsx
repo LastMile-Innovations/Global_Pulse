@@ -1,31 +1,66 @@
 "use client"
 
-import { Link } from "@/components/ui/link"
-import { usePathname } from "next/navigation"
+import { useState, useEffect } from "react"
+import Link from "next/link" 
+import { usePathname, useRouter } from "next/navigation"
+import type { User } from "@supabase/supabase-js" 
+
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/components/providers/AuthProvider"
-import LogoutButton from "@/components/auth/LogoutButton"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { LogOut, User as UserIcon } from "lucide-react" 
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client" 
+import { logout } from "@/actions/auth" 
 
 export default function HeaderNav() {
   const pathname = usePathname()
-  const { user, isLoading } = useAuth()
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const supabase = createClient()
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          console.error("Error fetching session:", error.message)
+        } else {
+          setUser(session?.user ?? null)
+        }
+      } catch (error) {
+        console.error("Unexpected error fetching session:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchSession()
+  }, []) 
 
   const isMarketingPage = pathname === "/" || pathname.startsWith("/(marketing)")
 
-  // Marketing navigation links
   const marketingLinks = [
     { href: "/mission", label: "Our Mission" },
     { href: "#how-it-works", label: "How It Works" },
     { href: "#features", label: "Features" },
     { href: "#pricing", label: "Pricing" },
+    { href: "/contact", label: "Contact" },
   ]
 
-  // App navigation links
   const appLinks = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/explore", label: "Explore" },
     { href: "/survey", label: "Surveys" },
+    { href: "/chat", label: "Chat" }, 
   ]
 
   const links = isMarketingPage ? marketingLinks : appLinks
@@ -50,7 +85,9 @@ export default function HeaderNav() {
       </nav>
 
       <div className="flex items-center gap-2 ml-2">
-        {!isLoading && !user ? (
+        {isLoading ? (
+          <div className="h-8 w-20 animate-pulse rounded-md bg-muted" /> 
+        ) : !user ? (
           <>
             <Button variant="ghost" size="sm" asChild>
               <Link href="/login">Log In</Link>
@@ -60,12 +97,43 @@ export default function HeaderNav() {
             </Button>
           </>
         ) : (
-          <>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/account">My Account</Link>
-            </Button>
-            <LogoutButton />
-          </>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback>
+                    {user.email ? user.email[0].toUpperCase() : "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">My Account</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/account" className="flex items-center w-full cursor-pointer">
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  <span>Account Settings</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild className="p-0 cursor-pointer">
+                <form action={logout} className="w-full">
+                  <button type="submit" className="flex items-center w-full px-2 py-1.5 text-sm">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </button>
+                </form>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </>

@@ -1,15 +1,17 @@
-import { StreamingTextResponse } from "ai"
+import { type CoreMessage, streamText, type ToolSet } from "ai"
+import { createOpenAI } from "@ai-sdk/openai"
 import { createClient } from "@/lib/supabase/server"
-import { streamText } from "ai"
-import { openai } from "@ai-sdk/openai"
 import type { NextRequest } from "next/server"
 import { rateLimit } from "@/lib/redis/client"
+import { safeQueryExecution, isTableNotFoundError } from "@/lib/supabase/error-handling"
+import { NextResponse } from "next/server"
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const { id: chatId } = params
 
   // Apply rate limiting
-  const identifier = request.ip || "anonymous"
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'anonymous';
+  const identifier = ip;
   const rateLimitResult = await rateLimit(identifier, 20, 60) // 20 requests per minute
 
   if (!rateLimitResult.success) {
@@ -28,8 +30,19 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return new Response("Unauthorized", { status: 401 })
     }
 
-    // Verify the chat belongs to the user
-    const { data: chat } = await supabase.from("chats").select("id, user_id").eq("id", chatId).single()
+    // Verify the chat belongs to the user with safe error handling
+    const { data: chat, tableNotFound } = await safeQueryExecution<{id: string, user_id: string}>(
+      () => supabase.from("chats").select("id, user_id").eq("id", chatId).single(),
+      null
+    )
+    
+    // Handle case where database tables don't exist yet
+    if (tableNotFound) {
+      return NextResponse.json(
+        { error: "Database tables not set up" },
+        { status: 500, statusText: "Database Error: Tables not found" }
+      );
+    }
 
     if (!chat || chat.user_id !== user.id) {
       return new Response("Not found", { status: 404 })
@@ -38,18 +51,36 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // Parse the request body
     const { messages } = await request.json()
 
-    // Save the user message to the database
+    // Save the user message to the database with safe error handling
     const userMessage = messages[messages.length - 1]
-    await supabase.from("chat_messages").insert({
-      chat_id: chatId,
-      role: userMessage.role,
-      content: userMessage.content,
-    })
+    const { error: insertError, tableNotFound: messagesTableNotFound } = await safeQueryExecution(
+      () => supabase.from("chat_messages").insert({
+        chat_id: chatId,
+        role: userMessage.role,
+        content: userMessage.content,
+      }),
+      null
+    )
+    
+    // Handle case where database tables don't exist yet
+    if (messagesTableNotFound) {
+      return NextResponse.json(
+        { error: "Chat messages table not set up" },
+        { status: 500, statusText: "Database Error: Tables not found" }
+      );
+    }
+    
+    if (insertError) {
+      console.error("Error inserting user message:", insertError)
+      return NextResponse.json(
+        { error: "Error saving message" }, 
+        { status: 500 }
+      );
+    }
 
     // Define the tools for Generative UI
-    const tools = [
-      {
-        name: "multiple_choice_question",
+    const tools: ToolSet = {
+      multiple_choice_question: {
         description: "Ask a multiple choice question to gather structured opinion data",
         parameters: {
           type: "object",
@@ -84,8 +115,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           required: ["question_id", "question_text", "options"],
         },
       },
-      {
-        name: "slider_scale_question",
+      slider_scale_question: {
         description: "Ask a question with a slider scale to gather numeric opinion data",
         parameters: {
           type: "object",
@@ -126,9 +156,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           required: ["question_id", "question_text", "min", "max"],
         },
       },
-      {
-        name: "buttons_question",
-        description: "Ask a question with button options to gather categorical opinion data",
+      buttons_question: {
+        description: "Ask a question with button options",
         parameters: {
           type: "object",
           properties: {
@@ -162,15 +191,21 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           required: ["question_id", "question_text", "options"],
         },
       },
-    ]
+    }
 
-    // Fetch previous messages for context
-    const { data: previousMessages } = await supabase
-      .from("chat_messages")
-      .select("role, content, created_at")
-      .eq("chat_id", chatId)
-      .order("created_at", { ascending: true })
-      .limit(10) // Limit to recent messages for context
+    // Fetch previous messages for context with safe error handling
+    const { data: previousMessages, tableNotFound: prevMessagesTableNotFound } = await safeQueryExecution<any[]>(
+      () => supabase
+        .from("chat_messages")
+        .select("role, content, created_at")
+        .eq("chat_id", chatId)
+        .order("created_at", { ascending: true })
+        .limit(10), // Limit to recent messages for context
+      []
+    )
+    
+    // If table not found, we'll just use an empty array for previousMessages
+    // This was already handled above, so we can continue with an empty context
 
     // Format previous messages for the AI
     const contextMessages =
@@ -194,63 +229,25 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // Combine context with the latest user message
     const allMessages = [...contextMessages, userMessage]
 
-    // Start the AI stream
-    const result = await streamText({
-      model: openai("gpt-4o"),
-      messages: allMessages,
-      tools,
-      temperature: 0.7,
-      max_tokens: 1000,
+    // Create an OpenAI provider instance
+    const openai = createOpenAI({
+      // Add your OpenAI API key here
     })
 
-    // Create a server-side function to handle the stream completion
-    const handleStreamCompletion = async () => {
-      try {
-        // Consume the stream to get the full response
-        const fullResponse = await result.text
+    // Ask OpenAI for a streaming chat response
+    const result = await streamText({
+      model: openai("gpt-4o"),
+      system: process.env.SYSTEM_PROMPT,
+      messages: allMessages as CoreMessage[],
+      tools: tools,
+      maxTokens: 1000, 
+      temperature: 0.7,
+    })
 
-        // Save the assistant's response to the database
-        await supabase.from("chat_messages").insert({
-          chat_id: chatId,
-          role: "assistant",
-          content: fullResponse,
-        })
-
-        // Update the chat title if it's a new chat (only has 2-3 messages)
-        if (previousMessages && previousMessages.length <= 2) {
-          // Generate a title based on the conversation
-          const titleResponse = await streamText({
-            model: openai("gpt-4o"),
-            messages: [
-              {
-                role: "system",
-                content:
-                  "Generate a short, concise title (3-5 words) for this conversation based on the topic being discussed. Return only the title text.",
-              },
-              ...allMessages,
-              { role: "assistant", content: fullResponse },
-            ],
-            temperature: 0.7,
-            max_tokens: 20,
-          })
-
-          const title = await titleResponse.text
-
-          // Update the chat title
-          await supabase.from("chats").update({ title }).eq("id", chatId)
-        }
-      } catch (error) {
-        console.error("Error in stream completion handler:", error)
-      }
-    }
-
-    // Start processing the stream in the background (don't await)
-    result.consumeStream().then(handleStreamCompletion)
-
-    // Return the streaming response to the client
-    return new StreamingTextResponse(result.toReadableStream())
+    // Convert the response into a friendly text-stream
+    return result.toDataStreamResponse(); 
   } catch (error) {
-    console.error("Chat API error:", error)
+    console.error("Error processing chat request:", error)
     return new Response("An error occurred", { status: 500 })
   }
 }

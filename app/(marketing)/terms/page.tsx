@@ -3,10 +3,25 @@ export default function TermsPage() {
     <div className="container py-12 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Terms of Service</h1>
 
-      <div className="prose prose-sm max-w-none">
+      {/* Table of Contents */}
+      <div className="mb-10 p-4 border rounded-lg bg-muted/30">
+        <h2 className="text-lg font-semibold mb-3">Table of Contents</h2>
+        <ul className="space-y-1 list-disc list-inside text-sm">
+          <li><a href="#introduction" className="text-primary hover:underline">1. Introduction</a></li>
+          <li><a href="#using-services" className="text-primary hover:underline">2. Using Our Services</a></li>
+          <li><a href="#user-content" className="text-primary hover:underline">3. User Content</a></li>
+          <li><a href="#prohibited-conduct" className="text-primary hover:underline">4. Prohibited Conduct</a></li>
+          <li><a href="#termination" className="text-primary hover:underline">5. Termination</a></li>
+          <li><a href="#changes-to-terms" className="text-primary hover:underline">6. Changes to Terms</a></li>
+          <li><a href="#contact-us" className="text-primary hover:underline">7. Contact Us</a></li>
+        </ul>
+      </div>
+
+      {/* Use base 'prose' for better readability, add section IDs and bottom borders */}
+      <div className="prose max-w-none">
         <p className="text-muted-foreground mb-6">Last updated: April 7, 2025</p>
 
-        <section className="mb-8">
+        <section id="introduction" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">1. Introduction</h2>
           <p>
             Welcome to Global Pulse ("we," "our," or "us"). By accessing or using our website, mobile application, or
@@ -19,7 +34,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section className="mb-8">
+        <section id="using-services" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">2. Using Our Services</h2>
           <h3 className="text-lg font-medium mb-2">2.1 Account Registration</h3>
           <p>
@@ -36,13 +51,13 @@ export default function TermsPage() {
 
           <h3 className="text-lg font-medium mb-2 mt-4">2.3 Age Restrictions</h3>
           <p>
-            You must be at least 13 years old to use our Services. If you are under 18, you represent that you have your
+            You must be at least 18 years old to use our Services. If you are under 18, you represent that you have your
             parent or guardian's permission to use the Services and that they have read and agree to these Terms on your
             behalf.
           </p>
         </section>
 
-        <section className="mb-8">
+        <section id="user-content" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">3. User Content</h2>
           <p>
             Our Services allow you to share opinions, responses, and other content ("User Content"). You retain
@@ -57,7 +72,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section className="mb-8">
+        <section id="prohibited-conduct" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">4. Prohibited Conduct</h2>
           <p>You agree not to:</p>
           <ul className="list-disc pl-6 space-y-2 mt-2">
@@ -79,7 +94,7 @@ export default function TermsPage() {
           </ul>
         </section>
 
-        <section className="mb-8">
+        <section id="termination" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">5. Termination</h2>
           <p>
             We may terminate or suspend your account and access to our Services at any time, without prior notice or
@@ -92,7 +107,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section className="mb-8">
+        <section id="changes-to-terms" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">6. Changes to Terms</h2>
           <p>
             We may modify these Terms at any time. If we make material changes, we will notify you by email or by
@@ -101,7 +116,8 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section className="mb-8">
+        {/* Remove border from last section */}
+        <section id="contact-us" className="mb-8">
           <h2 className="text-xl font-semibold mb-4">7. Contact Us</h2>
           <p>If you have any questions about these Terms, please contact us at:</p>
           <p className="mt-2">

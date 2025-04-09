@@ -3,6 +3,7 @@ import { formatDistanceToNow } from "date-fns"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 import EmptyState from "./empty-state"
+import { safeQueryExecution } from "@/lib/supabase/error-handling"
 
 interface ChatListProps {
   userId: string
@@ -11,21 +12,33 @@ interface ChatListProps {
 export default async function ChatList({ userId }: ChatListProps) {
   const supabase = createClient()
 
-  // Fetch user's chats from Supabase
-  const { data: chats } = await supabase
-    .from("chats")
-    .select(`
-      id,
-      title,
-      created_at,
-      updated_at,
-      messages:chat_messages(content, role, created_at)
-    `)
-    .eq("user_id", userId)
-    .order("updated_at", { ascending: false })
-    .limit(10)
-    .throwOnError()
+  // Fetch user's chats from Supabase with safe error handling
+  const { data: chats, tableNotFound } = await safeQueryExecution<any[]>(
+    () => supabase
+      .from("chats")
+      .select(`
+        id,
+        title,
+        created_at,
+        updated_at,
+        messages:chat_messages(content, role, created_at)
+      `)
+      .eq("user_id", userId)
+      .order("updated_at", { ascending: false })
+      .limit(10),
+    [] // Fallback to empty array if table doesn't exist
+  )
 
+  // Handle case where database tables don't exist yet
+  if (tableNotFound) {
+    return (
+      <EmptyState 
+        title="Database Not Set Up"
+        description="The chat system is not properly set up yet. Database tables are missing."
+      />
+    )
+  }
+  
   if (!chats?.length) {
     return <EmptyState />
   }

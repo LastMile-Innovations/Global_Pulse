@@ -1,3 +1,6 @@
+import { createRequire } from 'module'; 
+const require = createRequire(import.meta.url); 
+
 let userConfig = undefined
 try {
   // try to import ESM first
@@ -7,12 +10,13 @@ try {
     // fallback to CJS import
     userConfig = await import("./v0-user-next.config");
   } catch (innerError) {
-    // ignore error
+    // ignore error if user config doesn't exist
   }
 }
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+// Define the base configuration
+const baseNextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -27,25 +31,36 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
-}
+};
 
+// Merge user config into the base config if it exists
 if (userConfig) {
-  // ESM imports will have a "default" property
-  const config = userConfig.default || userConfig
-
+  const config = userConfig.default || userConfig; // Handle ESM/CJS export
   for (const key in config) {
     if (
-      typeof nextConfig[key] === 'object' &&
-      !Array.isArray(nextConfig[key])
+      typeof baseNextConfig[key] === 'object' &&
+      !Array.isArray(baseNextConfig[key]) &&
+      baseNextConfig[key] !== null // Ensure it's not null
     ) {
-      nextConfig[key] = {
-        ...nextConfig[key],
+      // Deep merge objects
+      baseNextConfig[key] = {
+        ...baseNextConfig[key],
         ...config[key],
-      }
+      };
     } else {
-      nextConfig[key] = config[key]
+      // Overwrite arrays or primitives
+      baseNextConfig[key] = config[key];
     }
   }
 }
 
-export default nextConfig
+// --- Bundle Analyzer Integration --- 
+// Configure the analyzer wrapper
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+// Wrap the fully prepared and merged config object
+const finalConfig = withBundleAnalyzer(baseNextConfig);
+
+export default finalConfig;

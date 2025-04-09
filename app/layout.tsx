@@ -1,10 +1,11 @@
 import type React from "react"
 import "./globals.css"
 import { cn } from "@/lib/utils"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from 'next-themes'
 import { Toaster } from "@/components/ui/toaster"
-import { AuthProvider } from "@/components/providers/AuthProvider"
 import { ScrollToTop } from "@/components/scroll-to-top"
+import { Header } from "@/components/layout/header"
+import { Footer } from "@/components/layout/footer"
 import { inter, poppins } from "./fonts"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -17,20 +18,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={cn("min-h-screen bg-background font-sans antialiased")}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <AuthProvider>
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
             <ScrollToTop />
-            {children}
             <Toaster />
-          </AuthProvider>
+          </div>
         </ThemeProvider>
       </body>
     </html>
   )
 }
 
-
 import './globals.css'
 
 export const metadata = {
-      generator: 'v0.dev'
-    };
+  generator: 'v0.dev'
+};

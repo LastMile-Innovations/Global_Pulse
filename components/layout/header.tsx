@@ -1,7 +1,10 @@
+"use client"
+
 import Link from "next/link"
 import { MessageSquareIcon } from "lucide-react"
 import HeaderNav from "./header-nav"
 import MobileNav from "./mobile-nav"
+import { ThemeToggle } from "./theme-toggle"
 
 export function Header() {
   return (
@@ -15,8 +18,9 @@ export function Header() {
         </div>
 
         {/* Desktop Navigation - Server Component */}
-        <div className="hidden md:flex md:gap-2">
+        <div className="hidden md:flex md:items-center md:gap-2">
           <HeaderNav />
+          <ThemeToggle />
         </div>
 
         {/* Mobile Navigation - Client Component */}

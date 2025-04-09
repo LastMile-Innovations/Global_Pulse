@@ -1,15 +1,36 @@
 "use client"
 
 import type React from "react"
-
-import { useAuth } from "@/components/providers/AuthProvider"
+import { useState, useEffect } from "react"
+import type { User } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
 import { Loader2 } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth()
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const supabase = createClient()
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          console.error("Error fetching session:", error.message)
+        } else {
+          setUser(session?.user ?? null)
+        }
+      } catch (error) {
+        console.error("Unexpected error fetching session:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchSession()
+  }, [])
 
   useEffect(() => {
     if (!isLoading && !user) {

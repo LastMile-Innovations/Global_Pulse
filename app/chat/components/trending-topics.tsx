@@ -1,17 +1,20 @@
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { Zap } from "lucide-react"
+import { safeQueryExecution } from "@/lib/supabase/error-handling"
 
 export default async function TrendingTopics() {
   const supabase = createClient()
 
-  // Fetch trending topics from Supabase
-  const { data: topics } = await supabase
-    .from("topics")
-    .select("id, name")
-    .order("engagement_count", { ascending: false })
-    .limit(3)
-    .throwOnError()
+  // Fetch trending topics from Supabase with safe error handling
+  const { data: topics } = await safeQueryExecution<{id: string, name: string}[]>(
+    () => supabase
+      .from("topics")
+      .select("id, name")
+      .order("engagement_count", { ascending: false })
+      .limit(3),
+    [] // Fallback to empty array if table doesn't exist
+  )
 
   // If no topics are found, use fallback topics
   const topicsToShow = topics?.length
