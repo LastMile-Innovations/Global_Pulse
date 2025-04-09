@@ -103,8 +103,8 @@ export async function signup(
   "use server"
 
   // Get origin for email redirect link
-  // @ts-ignore - Suppressing persistent lint error, headers() is synchronous in Server Actions
-  const origin = headers().get("origin") 
+  const headersList = await headers();
+  const origin = headersList.get("origin") || ""
 
   // 1. Validate form data
   const validatedFields = signupSchema.safeParse(Object.fromEntries(formData.entries()))
