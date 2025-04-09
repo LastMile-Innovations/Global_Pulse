@@ -85,7 +85,7 @@ export default function HomePage() {
               {/* Clear, compelling headline */}
               <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl/none lg:text-8xl/none">
                 <span className="bg-gradient-to-r from-primary via-blue-500 to-teal-400 text-transparent bg-clip-text">
-                  The World's Pulse.
+                  The World&apos;s Pulse.
                 </span>
                 <br />
                 <span>In Real Time.</span>
@@ -296,7 +296,7 @@ export default function HomePage() {
                     <div className="flex-shrink-0 mt-1 bg-primary/10 p-1 rounded-full">
                       <CheckCircle2 className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-lg">Natural conversation flow that captures the 'why' behind opinions</span>
+                    <span className="text-lg">Natural conversation flow that captures the &apos;why&apos; behind opinions</span>
                   </li>
                   <li className="flex items-start gap-4">
                     <div className="flex-shrink-0 mt-1 bg-primary/10 p-1 rounded-full">
@@ -566,7 +566,7 @@ export default function HomePage() {
                         <Star key={star} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <p className="text-lg text-muted-foreground italic relative z-10">"{testimonial.quote}"</p>
+                    <p className="text-lg text-muted-foreground italic relative z-10">{testimonial.quote}</p>
                     <div className="flex items-center gap-4 pt-4 border-t">
                       <div className="h-14 w-14 rounded-full bg-primary/10 overflow-hidden flex items-center justify-center text-primary font-bold text-xl shadow-inner">
                         {testimonial.name.charAt(0)}

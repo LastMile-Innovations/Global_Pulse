@@ -24,9 +24,8 @@ export default function TermsPage() {
         <section id="introduction" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">1. Introduction</h2>
           <p>
-            Welcome to Global Pulse ("we," "our," or "us"). By accessing or using our website, mobile application, or
-            any other services we offer (collectively, the "Services"), you agree to be bound by these Terms of Service
-            ("Terms").
+            Welcome to Global Pulse (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). By accessing or using our website, mobile application, or
+            any other services we offer (collectively, the &quot;Services&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;).
           </p>
           <p>
             Please read these Terms carefully. They govern your use of our Services and contain important information
@@ -60,7 +59,7 @@ export default function TermsPage() {
         <section id="user-content" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">3. User Content</h2>
           <p>
-            Our Services allow you to share opinions, responses, and other content ("User Content"). You retain
+            Our Services allow you to share opinions, responses, and other content (&quot;User Content&quot;). You retain
             ownership of your User Content, but you grant us a worldwide, non-exclusive, royalty-free license to use,
             reproduce, modify, adapt, publish, translate, and distribute your User Content in connection with our
             Services.

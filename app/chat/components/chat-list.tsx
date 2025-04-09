@@ -10,7 +10,7 @@ interface ChatSummary {
   title: string | null;
   created_at: Date | string; // Allow string initially, formatDistanceToNow handles it
   updated_at: Date | string; // Allow string initially, formatDistanceToNow handles it
-  messages: any[];
+  messages: Array<{ role: string; content: string; created_at: string | Date }>;
 }
 
 interface ChatListProps {

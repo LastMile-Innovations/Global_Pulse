@@ -73,18 +73,18 @@ export default function MissionPage() {
                 Are We Listening?
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed">
-              In an age of noise, echo chambers, and manufactured narratives, the genuine pulse of humanity gets lost.
-              We're here to find it. Instantly. Unfiltered.
+            <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl">
+              We&apos;re democratizing the world&apos;s opinions, one pulse at a time.
+              Discover the driving force behind Global Pulse.
             </p>
 
             <div className="bg-muted/30 border border-primary/10 rounded-xl p-6 md:p-8 text-left shadow-lg">
               <p className="text-lg md:text-xl leading-relaxed">
                 Traditional polls are slow snapshots of curated questions. Social media is an algorithmic battleground.
-                Headlines capture moments, not movements. We're drowning in data but starved for understanding. We
+                Headlines capture moments, not movements. We&apos;re drowning in data but starved for understanding. We
                 operate with outdated maps of public sentiment while the ground shifts beneath our feet every second.
-                Decisions impacting billions are made in the dark. This isn't just inefficient;{" "}
-                <span className="font-bold text-primary">it's dangerous</span>.
+                Decisions impacting billions are made in the dark. This isn&apos;t just inefficient;{" "}
+                <span className="font-bold text-primary">it&apos;s dangerous</span>.
               </p>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function MissionPage() {
                   Core Mission
                 </div>
                 <p className="text-xl md:text-2xl font-medium leading-relaxed">
-                  Global Pulse exists to build the world's definitive real-time barometer of human perspective. We
+                  Global Pulse exists to build the world&apos;s definitive real-time barometer of human perspective. We
                   connect individual voices directly to collective understanding, bypassing filters and delays to reveal
                   the authentic, dynamic pulse of global sentiment on any topic, as it happens.
                 </p>
@@ -131,7 +131,7 @@ export default function MissionPage() {
                   icon: <Users className="h-8 w-8 text-primary" />,
                 },
                 {
-                  belief: "real-time data isn't a luxury; it's essential for navigating complexity.",
+                  belief: "real-time data isn&apos;t a luxury; it&apos;s essential for navigating complexity.",
                   icon: <Clock className="h-8 w-8 text-primary" />,
                 },
                 {
@@ -253,7 +253,7 @@ export default function MissionPage() {
               <div className="inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-semibold mb-6 border-transparent bg-blue-500/20 text-blue-500 shadow-sm">
                 <Sparkles className="mr-2 h-4 w-4" /> Our Method
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">How We're Doing It (Differently).</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">How We&apos;re Doing It (Differently).</h2>
             </div>
 
             <div className="space-y-12">
@@ -261,7 +261,7 @@ export default function MissionPage() {
                 {
                   title: "Conversational Depth",
                   description:
-                    "We're not just collecting clicks. Our AI \"Pulse\" engages users in real conversations, respectfully probing the 'why' behind the 'what'. This captures nuance lost in traditional methods.",
+                    "We&apos;re not just collecting clicks. Our AI &quot;Pulse&quot; engages users in real conversations, respectfully probing the &apos;why&apos; behind the &apos;what&apos;. This captures nuance lost in traditional methods.",
                   icon: <MessageSquare className="h-10 w-10 text-blue-500" />,
                   color: "blue",
                 },
@@ -275,7 +275,7 @@ export default function MissionPage() {
                 {
                   title: "Voice & Value",
                   description:
-                    "We're challenging the status quo where user data is passively extracted. With your explicit control, your anonymized perspective fuels a unique insights marketplace, creating a model where participation isn't just contribution—it's value creation.",
+                    "We&apos;re challenging the status quo where user data is passively extracted. With your explicit control, your anonymized perspective fuels a unique insights marketplace, creating a model where participation isn&apos;t just contribution—it&apos;s value creation.",
                   icon: <Users className="h-10 w-10 text-purple-500" />,
                   color: "purple",
                 },
@@ -343,14 +343,14 @@ export default function MissionPage() {
                 accessing immediate, global sentiment on emerging issues. Imagine journalists grounding stories in
                 authentic, current perspectives. Imagine individuals connecting with the diverse tapestry of human
                 thought beyond their immediate bubble.{" "}
-                <span className="font-bold text-primary">That's the world Global Pulse is building.</span>
+                <span className="font-bold text-primary">That&apos;s the world Global Pulse is building.</span>
               </p>
             </div>
 
             <div className="bg-muted/30 rounded-xl p-8 border border-primary/10 shadow-lg">
               <p className="text-xl leading-relaxed text-center">
-                This isn't just an app; it's a movement towards clarity, understanding, and empowered participation.
-                We're building the instrumentation for a more connected and informed global society.{" "}
+                This isn&apos;t just an app; it&apos;s a movement towards clarity, understanding, and empowered participation.
+                We&apos;re building the instrumentation for a more connected and informed global society.{" "}
                 <span className="font-bold">Your voice is the signal. Be part of the pulse.</span>
               </p>
             </div>
@@ -364,7 +364,7 @@ export default function MissionPage() {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-8">Shape the Future of Understanding.</h2>
             <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
-              Join us in building the world's first real-time global opinion platform. Your voice matters. Your
+              Join us in building the world&apos;s first real-time global opinion platform. Your voice matters. Your
               perspective counts. Be part of something bigger.
             </p>
 

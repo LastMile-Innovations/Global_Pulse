@@ -11,7 +11,7 @@ export default function PrivacyPage() {
 
           <section className="border-b border-border pb-8 mb-8">
             <h2 className="text-2xl font-semibold tracking-tight mb-4 text-foreground">1. Introduction</h2>
-            <p>At Global Pulse, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website, mobile application, or any other services we offer (collectively, the "Services").</p>
+            <p>This Privacy Policy describes how Global Pulse (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) collects, uses, and shares information about you when you use our website, mobile applications, and services (collectively, the &quot;Services&quot;). Please read this policy carefully.</p>
             <p>Please read this Privacy Policy carefully. By using our Services, you consent to the collection, use, and disclosure of your information as described in this Privacy Policy.</p>
           </section>
 
@@ -36,6 +36,7 @@ export default function PrivacyPage() {
               <li>Location information (general location based on IP address)</li>
               <li>Cookies and similar technologies</li>
             </ul>
+            <p>information automatically when you use the Services. This may include your IP address, device type, operating system, browser type, pages you visit, time spent on pages, links clicked, and referring URL. We may use cookies and similar tracking technologies to collect this information. You can control the use of cookies at the individual browser level, but if you choose to disable cookies, it may limit your use of certain features or functions of our Services. We don&apos;t track your precise location, but we may infer your general location (e.g., country or city) from your IP address.</p>
           </section>
 
           <section className="border-b border-border pb-8 mb-8">

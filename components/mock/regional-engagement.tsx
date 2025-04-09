@@ -39,7 +39,7 @@ export default function RegionalEngagement() {
       refreshData()
     }, 10000)
     return () => clearInterval(interval)
-  }, [])
+  }, [refreshData])
 
   return (
     <div className="bg-muted/30 rounded-xl p-6 border">

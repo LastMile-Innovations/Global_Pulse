@@ -45,15 +45,15 @@ export default function AboutPage() {
               <Flame className="mr-2 h-4 w-4" /> Vercel Hackathon Contender
             </div>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 leading-tight">
-              We're not just building an app.
+              We&apos;re not just building an app.
               <br />
               <span className="bg-gradient-to-r from-primary via-blue-500 to-teal-400 text-transparent bg-clip-text">
-                We're starting a movement.
+                We&apos;re starting a movement.
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl">
-              Global Pulse is more than a platform—it's a revolution in how the world shares opinions. Built by three
-              passionate developers in just 10 days, we're here to make waves.
+              Global Pulse is more than a platform—it&apos;s a revolution in how the world shares opinions. Built by three
+              passionate developers in just 10 days, we&apos;re here to make waves.
             </p>
             <div className="flex flex-wrap gap-4 items-center">
               <Button size="lg" className="gap-2 h-12 text-base group relative overflow-hidden" asChild>
@@ -68,7 +68,7 @@ export default function AboutPage() {
               <div className="relative pl-4 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-10 before:w-px before:bg-border">
                 <p className="text-muted-foreground font-medium">
                   <span className="inline-block bg-primary/10 text-primary font-bold px-2 py-1 rounded">10 days.</span>{" "}
-                  That's all it took to build the future.
+                  That&apos;s all it took to build the future.
                 </p>
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function AboutPage() {
             &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span className="text-blue-400">Revolution</span>
             <br />
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-yellow-400">team</span>={"{"}
-            <span className="text-orange-400">["Greyson", "Niklas", "Omar"]</span>
+            <span className="text-orange-400">&quot;Greyson&quot;, &quot;Niklas&quot;, &quot;Omar&quot;</span>
             {"}"}
             <br />
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-yellow-400">timeframe</span>={"{"}
@@ -100,7 +100,7 @@ export default function AboutPage() {
             {"}"}
             <br />
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-yellow-400">goal</span>={"{"}
-            <span className="text-green-400">"Change the world"</span>
+            <span className="text-green-400">&quot;Change the world&quot;</span>
             {"}"}
             <br />
             &nbsp;&nbsp;&nbsp;&nbsp;/&gt;
@@ -120,7 +120,7 @@ export default function AboutPage() {
               { value: "10", label: "Days to Build", icon: <Clock className="h-5 w-5 text-primary" /> },
               { value: "3", label: "Developers", icon: <Code className="h-5 w-5 text-primary" /> },
               { value: "3", label: "Continents", icon: <Globe className="h-5 w-5 text-primary" /> },
-              { value: "∞", label: "Potential", icon: <Sparkles className="h-5 w-5 text-primary" /> },
+              { value: "&quot;∞&quot;", label: "Potential", icon: <Sparkles className="h-5 w-5 text-primary" /> },
             ].map((stat, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="bg-primary/20 rounded-full p-2">{stat.icon}</div>
@@ -147,7 +147,7 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-6 text-lg">
                 <p>
-                  When Greyson Paynter, founder of LastMile, had the vision for Global Pulse, he didn't wait around. He
+                  When Greyson Paynter, founder of LastMile, had the vision for Global Pulse, he didn&apos;t wait around. He
                   assembled an elite team through his network on X in{" "}
                   <span className="font-bold">just a few hours</span>.
                 </p>
@@ -164,8 +164,8 @@ export default function AboutPage() {
                   <div className="relative">
                     <div className="absolute -left-3 top-0 bottom-0 w-1 bg-primary/30 rounded-full"></div>
                     <blockquote className="pl-6 italic text-muted-foreground">
-                      "We're not just participating in a hackathon. We're showing the world what's possible when you
-                      combine vision, talent, and modern tech."
+                      &quot;We&apos;re not just participating in a hackathon. We&apos;re showing the world what&apos;s possible when you
+                      combine vision, talent, and modern tech.&quot;
                       <footer className="mt-2 text-primary font-bold not-italic">— Greyson Paynter, Team Lead</footer>
                     </blockquote>
                   </div>
@@ -186,7 +186,7 @@ export default function AboutPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
                   <div className="p-6 text-white">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-2 text-xs text-white/70">
                       <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
                       <span className="text-sm font-medium">Live development</span>
                     </div>
@@ -307,11 +307,12 @@ export default function AboutPage() {
                     alt="Greyson Paynter"
                     width={400}
                     height={400}
-                    className="object-cover w-full h-full transition-transform group-hover:scale-105"
+                    className="object-cover w-full"
+                    priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
                     <div className="p-4 text-white">
-                      <p className="text-sm font-medium">"Vision without execution is just hallucination."</p>
+                      <p className="text-sm font-medium">&quot;Vision without execution is just hallucination.&quot;</p>
                     </div>
                   </div>
                 </div>
@@ -389,11 +390,12 @@ export default function AboutPage() {
                     alt="Niklas Bognar"
                     width={400}
                     height={400}
-                    className="object-cover w-full h-full transition-transform group-hover:scale-105"
+                    className="object-cover w-full"
+                    priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
                     <div className="p-4 text-white">
-                      <p className="text-sm font-medium">"Code is poetry written for machines and humans alike."</p>
+                      <p className="text-sm font-medium">&quot;Code is poetry written for machines and humans alike.&quot;</p>
                     </div>
                   </div>
                 </div>
@@ -501,13 +503,12 @@ export default function AboutPage() {
                     alt="Omar El hassani Alaoui"
                     width={400}
                     height={400}
-                    className="object-cover w-full h-full transition-transform group-hover:scale-105"
+                    className="object-cover w-full"
+                    priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
                     <div className="p-4 text-white">
-                      <p className="text-sm font-medium">
-                        "Design is not just what it looks like. Design is how it works."
-                      </p>
+                      <p className="text-sm font-medium">&quot;Design is not just what it looks like. Design is how it works.&quot;</p>
                     </div>
                   </div>
                 </div>
@@ -671,8 +672,8 @@ export default function AboutPage() {
                       richness to every decision, from technical architecture to user experience design.
                     </p>
                     <p>
-                      Greyson's architectural vision from the US, Niklas's AI and backend expertise from the UK, and
-                      Omar's full-stack versatility from Morocco combined to create something none of us could have
+                      Greyson&apos;s architectural vision from the US, Niklas&apos;s AI and backend expertise from the UK, and
+                      Omar&apos;s full-stack versatility from Morocco combined to create something none of us could have
                       built alone. Everyone contributed to all aspects of the project, creating a truly integrated team.
                     </p>
                   </div>
@@ -737,7 +738,7 @@ export default function AboutPage() {
                 {
                   title: "Lightning-Fast Performance",
                   description:
-                    "Built with Next.js 15 and React 19, we've optimized every aspect of the stack for instant loading and seamless interactions.",
+                    "Built with Next.js 15 and React 19, we&apos;ve optimized every aspect of the stack for instant loading and seamless interactions.",
                   icon: <Bolt className="h-10 w-10 text-primary" />,
                   color: "from-primary/20 to-primary/5",
                 },
@@ -751,7 +752,7 @@ export default function AboutPage() {
                 {
                   title: "Revolutionary UX",
                   description:
-                    "We've reimagined how users interact with surveys and opinion data, creating an experience that feels magical yet intuitive.",
+                    "We&apos;ve reimagined how users interact with surveys and opinion data, creating an experience that feels magical yet intuitive.",
                   icon: <Sparkles className="h-10 w-10 text-teal-500" />,
                   color: "from-teal-500/20 to-teal-500/5",
                 },
@@ -790,10 +791,10 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <div className="md:w-3/4">
-                  <h3 className="text-2xl font-bold mb-3">Ready to judge? We're ready to impress.</h3>
+                  <h3 className="text-2xl font-bold mb-3">Ready to judge? We&apos;re ready to impress.</h3>
                   <p className="text-lg text-muted-foreground mb-4">
-                    Global Pulse isn't just a hackathon project—it's a glimpse into the future of global opinion
-                    sharing. We've pushed the boundaries of what's possible in 10 days, and we're just getting started.
+                    Global Pulse isn&apos;t just a hackathon project—it&apos;s a glimpse into the future of global opinion
+                    sharing. We&apos;ve pushed the boundaries of what&apos;s possible in 10 days, and we&apos;re just getting started.
                   </p>
                   <Button size="lg" className="gap-2 group" asChild>
                     <Link href="/explore">
@@ -967,7 +968,7 @@ export default function AboutPage() {
               What our <span className="text-primary">early testers</span> are saying
             </h2>
             <p className="text-xl text-muted-foreground">
-              We've shared Global Pulse with a select group of users during development. Here's what they think.
+              We&apos;ve shared Global Pulse with a select group of users during development. Here&apos;s what they think.
             </p>
           </div>
 
@@ -975,7 +976,7 @@ export default function AboutPage() {
             {[
               {
                 quote:
-                  "I've never seen opinion data visualized this beautifully. The real-time updates are mesmerizing to watch.",
+                  "I&apos;ve never seen opinion data visualized this beautifully. The real-time updates are mesmerizing to watch.",
                 name: "Sarah K.",
                 role: "Data Scientist",
                 image: "/placeholder.svg?height=100&width=100&text=SK",
@@ -995,7 +996,7 @@ export default function AboutPage() {
               },
               {
                 quote:
-                  "Hard to believe this was built in just 10 days. It feels more polished than products I've used that took years to develop.",
+                  "Hard to believe this was built in just 10 days. It feels more polished than products I&apos;ve used that took years to develop.",
                 name: "David L.",
                 role: "Software Engineer",
                 image: "/placeholder.svg?height=100&width=100&text=DL",
@@ -1032,7 +1033,7 @@ export default function AboutPage() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">Join us on this journey</h2>
             <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Global Pulse is more than a hackathon project—it's the beginning of a movement to transform how the world
+              Global Pulse is more than a hackathon project—it&apos;s the beginning of a movement to transform how the world
               shares opinions. Be part of it from day one.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

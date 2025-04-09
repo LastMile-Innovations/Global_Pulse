@@ -21,7 +21,7 @@ export async function updatePassword(
 ): Promise<{ error?: string | null }> {
   "use server"
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: userData } = await supabase.auth.getUser()
 
   if (!userData.user) {
@@ -68,7 +68,7 @@ export async function login(
   const { email, password } = validatedFields.data
 
   // 2. Attempt login with Supabase
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
@@ -118,7 +118,7 @@ export async function signup(
   const { email, password } = validatedFields.data
 
   // 2. Attempt signup with Supabase
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -146,7 +146,7 @@ export async function signup(
 export async function logout() {
   "use server"
 
-  const supabase = createClient() // Use server client
+  const supabase = await createClient() // Use server client
   const { error } = await supabase.auth.signOut()
 
   if (error) {
