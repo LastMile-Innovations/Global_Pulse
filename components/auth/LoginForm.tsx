@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input"
 import { login } from "@/actions/auth"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
-import { Terminal } from "lucide-react"
 
 const LoginSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),

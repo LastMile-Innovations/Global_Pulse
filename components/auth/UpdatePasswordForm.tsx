@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
@@ -29,7 +29,13 @@ export default function UpdatePasswordForm() {
 
   async function onSubmit(values: UpdatePasswordSchemaType) {
     startTransition(async () => {
-      const result = await updatePassword(values)
+      // Convert values to FormData
+      const formData = new FormData();
+      Object.entries(values).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      const result = await updatePassword(null, formData)
 
       if (result?.error) {
         console.error("Update Password Action Error:", result.error)

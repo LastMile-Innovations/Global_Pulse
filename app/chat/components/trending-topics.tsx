@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { Zap } from "lucide-react"
-import { safeQueryExecution } from "@/lib/supabase/error-handling"
+import { safeQueryExecution } from "@/utils/supabase/error-handling"
 
 export default async function TrendingTopics() {
   const supabase = createClient()

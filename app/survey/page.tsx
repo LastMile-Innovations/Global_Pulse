@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 import { db, schema } from "@/lib/db"
 import { asc } from "drizzle-orm"
+import { createClient } from "@/utils/supabase/server"
 import SurveyFeed from "@/components/survey/survey-feed"
 import SurveyFeedSkeleton from "@/components/survey/survey-feed-skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,10 +9,11 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 export default async function SurveyPage() {
+  const supabase = await createClient()
   // Get the current user
   const {
     data: { user },
-  } = await db.$client.auth.getUser()
+  } = await supabase.auth.getUser()
 
   // If user is not authenticated, show login prompt
   if (!user) {

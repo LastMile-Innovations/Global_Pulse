@@ -1,6 +1,6 @@
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
-import { TrendingUp, ArrowRight, AlertTriangle } from "lucide-react"
+import { createClient } from "@/utils/supabase/server"
+import { TrendingUp, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cacheQuery, createCacheKey } from "@/lib/redis/enhanced-client"
@@ -16,7 +16,7 @@ const CACHE_PREFIX = "dashboard:trending_topics"
 const CACHE_TTL_SECONDS = 3600 // 1 hour
 
 async function TrendingTopicsCardComponent() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const cacheKey = createCacheKey(CACHE_PREFIX)
   let topics: TrendingTopic[] | null = null
   let fetchError: Error | null = null

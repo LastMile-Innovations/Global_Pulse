@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { Zap } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cacheQuery, createCacheKey } from "@/lib/redis/enhanced-client"
@@ -15,7 +15,7 @@ const CACHE_PREFIX = "dashboard:suggested_topics"
 const CACHE_TTL_SECONDS = 3600
 
 async function SuggestedTopicsComponent() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const cacheKey = createCacheKey(CACHE_PREFIX)
   let topics: Topic[] | null = null
   let fetchError: Error | null = null

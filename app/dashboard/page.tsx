@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { db, schema } from "@/lib/db"
 import { eq } from "drizzle-orm"
 import { Button } from "@/components/ui/button"
@@ -15,14 +15,12 @@ import InsightSpotlightCard from "../../components/dashboard/insight-spotlight-c
 import GettingStartedChecklist from "../../components/dashboard/getting-started-checklist"
 
 export default async function DashboardPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // Get the current user (already checked in layout, but good practice)
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: userData } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (!userData.user) {
     redirect("/login") // Should be caught by layout, but belt-and-suspenders
   }
 
@@ -35,7 +33,7 @@ export default async function DashboardPage() {
         last_name: schema.profiles.lastName,
       })
       .from(schema.profiles)
-      .where(eq(schema.profiles.id, user.id))
+      .where(eq(schema.profiles.id, userData.user.id))
       .limit(1);
     profile = results.length > 0 ? results[0] : null;
 
@@ -45,7 +43,7 @@ export default async function DashboardPage() {
   }
 
   // Determine greeting name (first name, email part, or generic 'there')
-  const userName = profile?.first_name || user.email?.split("@")[0] || "there"
+  const userName = profile?.first_name || userData.user.email?.split("@")[0] || "there"
 
   return (
     <div className="container py-8">
@@ -103,7 +101,7 @@ export default async function DashboardPage() {
 
         {/* Getting Started Checklist (conditionally rendered) */}
         <Suspense fallback={null}>
-          <GettingStartedChecklist userId={user.id} />
+          <GettingStartedChecklist userId={userData.user.id} />
         </Suspense>
 
         {/* Main dashboard content */}
@@ -123,7 +121,7 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Suspense fallback={<RecentChats.Loading />}>
-                <RecentChats userId={user.id} />
+                <RecentChats userId={userData.user.id} />
               </Suspense>
             </CardContent>
           </Card>
@@ -181,7 +179,7 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<UserStatsCard.Loading />}>
-                  <UserStatsCard userId={user.id} />
+                  <UserStatsCard userId={userData.user.id} />
                 </Suspense>
               </CardContent>
             </Card>

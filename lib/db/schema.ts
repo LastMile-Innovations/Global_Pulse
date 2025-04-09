@@ -13,7 +13,7 @@ import {
   jsonb,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { relations, sql } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
 
 // --- Users & Auth ---
 export const users = pgTable('users', {

@@ -3,15 +3,19 @@
 import type React from "react"
 
 import { forwardRef } from "react"
-import NextLink from "next/link"
+import NextLink, { LinkProps as NextLinkProps } from "next/link"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
-export interface LinkProps extends React.ComponentPropsWithoutRef<typeof NextLink> {
-  // Additional props if needed
+interface LinkProps extends NextLinkProps {
+  // Explicitly add className and children as they are used in the component
+  className?: string;
+  children?: React.ReactNode;
 }
 
-const Link = forwardRef<HTMLAnchorElement, LinkProps>(({ href, className, children, scroll = true, ...props }, ref) => {
+export const Link: React.FC<
+  LinkProps & React.AnchorHTMLAttributes<HTMLAnchorElement>
+> = forwardRef<HTMLAnchorElement, LinkProps>(({ href, className, children, scroll = true, ...props }, ref) => {
   const router = useRouter()
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -49,5 +53,3 @@ const Link = forwardRef<HTMLAnchorElement, LinkProps>(({ href, className, childr
 })
 
 Link.displayName = "Link"
-
-export { Link }

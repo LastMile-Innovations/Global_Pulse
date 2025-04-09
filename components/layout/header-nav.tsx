@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link" 
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import type { User } from "@supabase/supabase-js" 
 
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,12 +17,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, User as UserIcon } from "lucide-react" 
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client" 
+import { createClient } from "@/utils/supabase/client" 
 import { logout } from "@/actions/auth" 
 
 export default function HeaderNav() {
   const pathname = usePathname()
-  const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 

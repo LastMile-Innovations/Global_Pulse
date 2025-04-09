@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { db, schema } from "@/lib/db"
 import { eq } from "drizzle-orm"
 import { Button } from "@/components/ui/button"
@@ -17,14 +17,12 @@ interface ChatPageProps {
 
 export default async function ChatPage({ params }: ChatPageProps) {
   const { id } = params
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // Get the current user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: userData } = await supabase.auth.getUser()
 
-  if (!user) {
+  if (!userData.user) {
     // Redirect to login if not authenticated
     return (
       <div className="container max-w-4xl py-8">
@@ -70,7 +68,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
     // For now, we'll let it proceed to the !chat check below, which will trigger notFound()
   }
 
-  if (!chat || chat.userId !== user.id) {
+  if (!chat || chat.userId !== userData.user.id) {
     return notFound()
   }
 

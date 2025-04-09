@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Send, User, MessageSquare, Zap, Phone, Building, Clock } from "lucide-react";
+import { Mail, Send, User, MessageSquare, Zap, Clock } from "lucide-react";
 
 export default function ContactPage() {
   // Placeholder handler

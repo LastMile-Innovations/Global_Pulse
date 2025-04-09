@@ -5,7 +5,7 @@ import { headers } from "next/headers" // Explicit import
 import { redirect } from "next/navigation"
 import { z } from "zod"
 
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { updatePasswordSchema } from "@/components/auth/update-password-schema"
 
 // --- Shared State Type for Auth Actions ---

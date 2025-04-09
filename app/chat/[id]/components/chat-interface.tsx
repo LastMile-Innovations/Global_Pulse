@@ -18,7 +18,7 @@ export default function ChatInterface({ chatId, initialMessages = [] }: ChatInte
   const router = useRouter()
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error, append } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error, reload, stop } = useChat({
     api: `/api/chat/${chatId}`,
     id: chatId,
     initialMessages,

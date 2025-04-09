@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import type { User } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/utils/supabase/client"
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)

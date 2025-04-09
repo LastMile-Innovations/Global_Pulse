@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/server"
-import { MessageSquare, BarChart2, Award, DollarSign, AlertTriangle } from "lucide-react"
+import { createClient } from "@/utils/supabase/server"
+import { MessageSquare, BarChart2, Award } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ErrorDisplay } from "@/components/ui/error-display"
 import type { PostgrestError } from "@supabase/supabase-js";
@@ -16,7 +16,7 @@ interface StatItemProps {
 }
 
 async function UserStatsCardComponent({ userId }: UserStatsCardProps) {
-  const supabase = createClient()
+  const supabase = await createClient()
   let chatCount: number = 0;
   let surveyCount: number = 0;
   let fetchError: Error | null = null;

@@ -4,11 +4,11 @@ import postgres from 'postgres';
 import * as schema from './schema';
 
 // Use the application's POOLED connection string
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.POSTGRES_URL;
 
 if (!connectionString) {
   throw new Error(
-    '🔴 Missing DATABASE_URL environment variable for the application.'
+    '🔴 Missing POSTGRES_URL environment variable for the application.'
   );
 }
 

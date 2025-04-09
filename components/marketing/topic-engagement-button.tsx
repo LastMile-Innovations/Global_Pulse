@@ -3,7 +3,7 @@
 import { useState, useOptimistic, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowUp } from "lucide-react"
-import { incrementTopicEngagement } from "@/app/api/topics/engagement/route"
+import { incrementTopicEngagement } from "@/actions/topics"
 
 type TopicEngagementButtonProps = {
   topicId: string
@@ -19,7 +19,7 @@ export default function TopicEngagementButton({ topicId, initialCount }: TopicEn
 
   const handleClick = () => {
     // Optimistically update the UI
-    addOptimisticCount()
+    addOptimisticCount(1)
 
     // Then perform the actual update
     startTransition(async () => {

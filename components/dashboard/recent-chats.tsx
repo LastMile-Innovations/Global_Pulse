@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { formatDistanceToNow } from "date-fns"
-import { MessageSquare, ChevronRight, AlertTriangle, CornerDownRight } from "lucide-react"
+import { MessageSquare, ChevronRight, CornerDownRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ErrorDisplay } from "@/components/ui/error-display"
@@ -25,7 +25,7 @@ interface RecentChatsProps {
 }
 
 async function RecentChatsComponent({ userId }: RecentChatsProps) {
-  const supabase = createClient()
+  const supabase = await createClient()
   let chats: Chat[] | null = null;
   let fetchError: Error | null = null;
 

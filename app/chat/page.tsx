@@ -1,17 +1,16 @@
 import { Suspense } from "react"
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Plus, Search } from "lucide-react"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import TrendingTopics from "./components/trending-topics"
 import ChatList from "./components/chat-list"
-import { safeQueryExecution } from "@/lib/supabase/error-handling"
 import { DatabaseErrorFallback } from "@/components/database-error-fallback"
 
 export default async function ChatIndexPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   try {
     // Get the current user with error handling

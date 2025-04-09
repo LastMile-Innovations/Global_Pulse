@@ -1,9 +1,8 @@
 import Link from "next/link"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { CheckCircle2, Circle, MessageSquare, BarChart2, Compass } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ErrorDisplay } from "@/components/ui/error-display"
 
 interface UserFlags {
   completed_first_chat: boolean;
@@ -16,7 +15,7 @@ interface GettingStartedChecklistProps {
 }
 
 async function GettingStartedChecklistComponent({ userId }: GettingStartedChecklistProps) {
-  const supabase = createClient()
+  const supabase = await createClient()
   let userFlags: UserFlags | null = null
   let fetchError: Error | null = null
   let showChecklist = false
@@ -84,16 +83,16 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
       
       <ul className="space-y-3">
         <li className="flex items-start gap-3">
-          {userFlags.completed_first_chat ? (
+          {userFlags?.completed_first_chat ? (
             <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
           ) : (
             <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
           )}
           <div>
-            <p className={`text-sm font-medium ${userFlags.completed_first_chat ? 'line-through text-muted-foreground' : ''}`}>
+            <p className={`text-sm font-medium ${userFlags?.completed_first_chat ? 'line-through text-muted-foreground' : ''}`}>
               Start your first chat with Pulse
             </p>
-            {!userFlags.completed_first_chat && (
+            {!userFlags?.completed_first_chat && (
               <Button variant="link" className="p-0 h-auto text-xs text-blue-500" asChild>
                 <Link href="/chat/new">
                   <MessageSquare className="h-3 w-3 mr-1" />
@@ -105,16 +104,16 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
         </li>
         
         <li className="flex items-start gap-3">
-          {userFlags.completed_first_survey ? (
+          {userFlags?.completed_first_survey ? (
             <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
           ) : (
             <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
           )}
           <div>
-            <p className={`text-sm font-medium ${userFlags.completed_first_survey ? 'line-through text-muted-foreground' : ''}`}>
+            <p className={`text-sm font-medium ${userFlags?.completed_first_survey ? 'line-through text-muted-foreground' : ''}`}>
               Complete your first survey
             </p>
-            {!userFlags.completed_first_survey && (
+            {!userFlags?.completed_first_survey && (
               <Button variant="link" className="p-0 h-auto text-xs text-blue-500" asChild>
                 <Link href="/survey">
                   <BarChart2 className="h-3 w-3 mr-1" />
@@ -126,16 +125,16 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
         </li>
         
         <li className="flex items-start gap-3">
-          {userFlags.viewed_explore ? (
+          {userFlags?.viewed_explore ? (
             <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
           ) : (
             <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
           )}
           <div>
-            <p className={`text-sm font-medium ${userFlags.viewed_explore ? 'line-through text-muted-foreground' : ''}`}>
+            <p className={`text-sm font-medium ${userFlags?.viewed_explore ? 'line-through text-muted-foreground' : ''}`}>
               Explore global insights
             </p>
-            {!userFlags.viewed_explore && (
+            {!userFlags?.viewed_explore && (
               <Button variant="link" className="p-0 h-auto text-xs text-blue-500" asChild>
                 <Link href="/explore">
                   <Compass className="h-3 w-3 mr-1" />

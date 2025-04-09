@@ -10,7 +10,7 @@ import LogoutButton from "@/components/auth/LogoutButton"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, X, MessageSquareIcon, User as UserIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client"
+import { createClient } from "@/utils/supabase/client"
 import { ThemeToggle } from "./theme-toggle"
 
 export default function MobileNav() {

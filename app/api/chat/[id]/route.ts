@@ -1,9 +1,9 @@
 import { type CoreMessage, streamText, type ToolSet } from "ai"
 import { createOpenAI } from "@ai-sdk/openai"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import type { NextRequest } from "next/server"
 import { rateLimit } from "@/lib/redis/client"
-import { safeQueryExecution, isTableNotFoundError } from "@/lib/supabase/error-handling"
+import { safeQueryExecution } from "@/utils/supabase/error-handling"
 import { NextResponse } from "next/server"
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   }
 
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
 
     // Get the current user
     const {
@@ -32,8 +32,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     // Verify the chat belongs to the user with safe error handling
     const { data: chat, tableNotFound } = await safeQueryExecution<{id: string, user_id: string}>(
-      () => supabase.from("chats").select("id, user_id").eq("id", chatId).single(),
-      null
+      async () => await supabase.from("chats").select("id, user_id").eq("id", chatId).single(),
+      { fallbackData: null }
     )
     
     // Handle case where database tables don't exist yet
@@ -54,12 +54,12 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // Save the user message to the database with safe error handling
     const userMessage = messages[messages.length - 1]
     const { error: insertError, tableNotFound: messagesTableNotFound } = await safeQueryExecution(
-      () => supabase.from("chat_messages").insert({
+      async () => await supabase.from("chat_messages").insert({
         chat_id: chatId,
         role: userMessage.role,
         content: userMessage.content,
       }),
-      null
+      { fallbackData: null }
     )
     
     // Handle case where database tables don't exist yet
@@ -194,18 +194,15 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 
     // Fetch previous messages for context with safe error handling
-    const { data: previousMessages, tableNotFound: prevMessagesTableNotFound } = await safeQueryExecution<any[]>(
-      () => supabase
+    const { data: previousMessages } = await safeQueryExecution<any[]>(
+      async () => await supabase
         .from("chat_messages")
         .select("role, content, created_at")
         .eq("chat_id", chatId)
         .order("created_at", { ascending: true })
         .limit(10), // Limit to recent messages for context
-      []
+      { fallbackData: [] }
     )
-    
-    // If table not found, we'll just use an empty array for previousMessages
-    // This was already handled above, so we can continue with an empty context
 
     // Format previous messages for the AI
     const contextMessages =
@@ -246,7 +243,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
     // Convert the response into a friendly text-stream
     return result.toDataStreamResponse(); 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error processing chat request:", error)
     return new Response("An error occurred", { status: 500 })
   }

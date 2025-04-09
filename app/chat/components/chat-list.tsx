@@ -1,20 +1,28 @@
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@/utils/supabase/server"
 import { formatDistanceToNow } from "date-fns"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
 import EmptyState from "./empty-state"
-import { safeQueryExecution } from "@/lib/supabase/error-handling"
+import { safeQueryExecution } from "@/utils/supabase/error-handling"
+
+interface ChatSummary {
+  id: string;
+  title: string | null;
+  created_at: Date | string; // Allow string initially, formatDistanceToNow handles it
+  updated_at: Date | string; // Allow string initially, formatDistanceToNow handles it
+  messages: any[];
+}
 
 interface ChatListProps {
   userId: string
 }
 
 export default async function ChatList({ userId }: ChatListProps) {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // Fetch user's chats from Supabase with safe error handling
-  const { data: chats, tableNotFound } = await safeQueryExecution<any[]>(
-    () => supabase
+  const { data: chats, tableNotFound } = await safeQueryExecution<ChatSummary[]>(
+    async () => await supabase
       .from("chats")
       .select(`
         id,
@@ -25,8 +33,8 @@ export default async function ChatList({ userId }: ChatListProps) {
       `)
       .eq("user_id", userId)
       .order("updated_at", { ascending: false })
-      .limit(10),
-    [] // Fallback to empty array if table doesn't exist
+      .limit(5),
+    { fallbackData: [] } // Use fallbackData
   )
 
   // Handle case where database tables don't exist yet
@@ -45,9 +53,9 @@ export default async function ChatList({ userId }: ChatListProps) {
 
   return (
     <div className="space-y-4">
-      {chats.map((chat) => {
+      {chats.map((chat: ChatSummary) => {
         // Get the last message for preview
-        const messages = (chat.messages as any[]) || []
+        const messages = chat.messages || []
         const lastMessage = messages.sort(
           (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
         )[0]
