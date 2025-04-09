@@ -1,7 +1,9 @@
 import Link from "next/link"
 import { MessageSquareIcon } from "lucide-react"
+import { memo } from "react"
 
-export function Footer() {
+// Memoize the Footer component to prevent unnecessary re-renders
+export const Footer = memo(function Footer() {
   const currentYear = new Date().getFullYear()
 
   // Define footer sections for better organization
@@ -194,4 +196,4 @@ export function Footer() {
       </div>
     </footer>
   )
-}
+})

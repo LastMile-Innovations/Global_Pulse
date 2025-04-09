@@ -81,6 +81,7 @@
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.2",
+    "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
     "dotenv": "^16.4.7",
     "drizzle-kit": "^0.30.6",
     "eslint": "^9.24.0",

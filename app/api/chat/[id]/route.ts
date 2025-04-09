@@ -6,8 +6,13 @@ import { rateLimit } from "@/lib/redis/rate-limit"
 import { safeQueryExecution } from "@/utils/supabase/error-handling"
 import { NextResponse } from "next/server"
 
-export async function POST(request: NextRequest, context: { params: { id: string } }) {
-  const { id: chatId } = context.params
+export async function POST(
+  request: NextRequest
+  // { params }: { params: { id: string } } // Reverted: Caused build error
+) {
+  // Extract the chat ID from the URL - Reverted method
+  const chatId = request.nextUrl.pathname.split('/').pop();
+  // const { id: chatId } = params; // Reverted
 
   // Apply rate limiting
   const rateLimitResult = await rateLimit(request, { limit: 20, window: 60 }) // 20 requests per minute
@@ -229,14 +234,11 @@ export async function POST(request: NextRequest, context: { params: { id: string
     const allMessages = [...contextMessages, userMessage]
 
     // Create an OpenAI provider instance
-    const openai = createOpenAI({
-      // Add your OpenAI API key here
-    })
+    const openai = createOpenAI({})
 
     // Ask OpenAI for a streaming chat response
     const result = await streamText({
       model: openai("gpt-4o"),
-      system: process.env.SYSTEM_PROMPT,
       messages: allMessages as CoreMessage[],
       tools: tools,
       maxTokens: 1000, 
@@ -244,7 +246,7 @@ export async function POST(request: NextRequest, context: { params: { id: string
       async onFinish({ text }) {
         // Save the assistant's final response to the database
         if (text) {
-          await safeQueryExecution(
+          const { error: insertError } = await safeQueryExecution(
             async () =>
               await supabase.from("chat_messages").insert({
                 chat_id: chatId,
@@ -255,7 +257,11 @@ export async function POST(request: NextRequest, context: { params: { id: string
                 // tool_results: toolResults,
               }),
             { fallbackData: null }
-          )
+          );
+          if (insertError) {
+            console.error("Error saving assistant message:", insertError);
+            // Decide if you need to handle this failure more actively
+          }
         }
       },
     })

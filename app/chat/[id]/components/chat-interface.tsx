@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useTransition, useOptimistic } from "react"
 import { useChat } from "ai/react"
 import type { Message } from "ai"
 import { useRouter } from "next/navigation"
@@ -17,23 +17,55 @@ interface ChatInterfaceProps {
 export default function ChatInterface({ chatId, initialMessages = [] }: ChatInterfaceProps) {
   const router = useRouter()
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [isPending, startTransition] = useTransition()
+  
+  // Optimistic UI state handling
+  const [optimisticMessages, addOptimisticMessage] = useOptimistic(
+    initialMessages,
+    (state: Message[], newMessage: Message) => [...state, newMessage]
+  )
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error, setMessages } = useChat({
     api: `/api/chat/${chatId}`,
     id: chatId,
     initialMessages,
-    onFinish: () => {
-      // Refresh the page to update the chat title if needed
-      router.refresh()
-    },
+    onFinish() {
+      // Use transition to refresh without blocking the UI
+      startTransition(() => {
+        router.refresh()
+      })
+    }
   })
 
-  // Scroll to bottom when messages change
+  // Optimized scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+      // Use requestAnimationFrame for smoother scrolling
+      requestAnimationFrame(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+      })
     }
   }, [messages])
+  
+  // Custom submit handler with optimistic updates
+  const handleOptimisticSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    
+    if (!input.trim() || isLoading) return
+    
+    // Create optimistic message
+    const optimisticUserMessage: Message = {
+      id: `${Date.now()}-user`,
+      content: input,
+      role: 'user'
+    }
+    
+    // Add optimistic message to UI immediately
+    addOptimisticMessage(optimisticUserMessage)
+    
+    // Submit the actual request
+    handleSubmit(e)
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -93,8 +125,8 @@ export default function ChatInterface({ chatId, initialMessages = [] }: ChatInte
         <ChatInput
           input={input}
           handleInputChange={handleInputChange as (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void}
-          handleSubmit={handleSubmit}
-          isLoading={isLoading}
+          handleSubmit={handleOptimisticSubmit}
+          isLoading={isLoading || isPending}
         />
       </div>
     </div>

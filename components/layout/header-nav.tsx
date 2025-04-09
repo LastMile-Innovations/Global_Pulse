@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, memo } from "react"
 import Link from "next/link" 
 import { usePathname } from "next/navigation"
 import type { User } from "@supabase/supabase-js" 
@@ -20,30 +20,32 @@ import { cn } from "@/lib/utils"
 import { createClient } from "@/utils/supabase/client" 
 import { logout } from "@/actions/auth" 
 
-export default function HeaderNav() {
+// Memoize the HeaderNav component to prevent unnecessary re-renders
+const HeaderNav = memo(function HeaderNav() {
   const pathname = usePathname()
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchSession = async () => {
-      const supabase = createClient()
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession()
-        if (error) {
-          console.error("Error fetching session:", error.message)
-        } else {
-          setUser(session?.user ?? null)
-        }
-      } catch (error) {
-        console.error("Unexpected error fetching session:", error)
-      } finally {
-        setIsLoading(false)
+  // Use useCallback to memoize the fetchSession function
+  const fetchSession = useCallback(async () => {
+    const supabase = createClient()
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession()
+      if (error) {
+        console.error("Error fetching session:", error.message)
+      } else {
+        setUser(session?.user ?? null)
       }
+    } catch (error) {
+      console.error("Unexpected error fetching session:", error)
+    } finally {
+      setIsLoading(false)
     }
+  }, [])
 
+  useEffect(() => {
     fetchSession()
-  }, []) 
+  }, [fetchSession]) 
 
   const isMarketingPage = pathname === "/" || pathname.startsWith("/(marketing)")
 
@@ -71,6 +73,7 @@ export default function HeaderNav() {
           <Link
             key={link.href}
             href={link.href}
+            prefetch={true}
             className={cn(
               "px-3 py-2 text-sm font-medium transition-colors hover:text-foreground",
               pathname === link.href || pathname.startsWith(`${link.href}/`)
@@ -89,10 +92,10 @@ export default function HeaderNav() {
         ) : !user ? (
           <>
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">Log In</Link>
+              <Link href="/login" prefetch={true}>Log In</Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href="/signup">Sign Up</Link>
+              <Link href="/signup" prefetch={true}>Sign Up</Link>
             </Button>
           </>
         ) : (
@@ -117,7 +120,7 @@ export default function HeaderNav() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/account" className="flex items-center w-full cursor-pointer">
+                <Link href="/account" prefetch={true} className="flex items-center w-full cursor-pointer">
                   <UserIcon className="mr-2 h-4 w-4" />
                   <span>Account Settings</span>
                 </Link>
@@ -137,4 +140,6 @@ export default function HeaderNav() {
       </div>
     </>
   )
-}
+})
+
+export default HeaderNav

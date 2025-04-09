@@ -1,3 +1,4 @@
+import { Metadata } from "next"
 import {
   AiConversationClient,
   AnimatedStatClient,
@@ -31,6 +32,15 @@ import {
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { Suspense } from "react"
+
+// Define homepage-specific metadata for SEO
+export const metadata: Metadata = {
+  title: "Global Pulse - Real-time global opinion insights",
+  description: "Instantly see what the world thinks. Participate in AI-led conversations and surveys, explore live global sentiment.",
+}
+
+// Enable Partial Prerendering for this page
+export const experimental_ppr = true
 
 // Dynamically import heavy components with proper loading states
 const TopicEngagement = dynamic(() => import("@/components/marketing/topic-engagement"), {
@@ -99,7 +109,7 @@ export default function HomePage() {
 
               {/* Strong, action-oriented CTA buttons */}
               <div className="flex flex-col sm:flex-row gap-5 mt-4">
-                <AnimatedCTAButton href="/signup">Get Started — Free</AnimatedCTAButton>
+                <AnimatedCTAButton href="/signup" prefetch={true}>Get Started — Free</AnimatedCTAButton>
                 <Button
                   size="lg"
                   variant="outline"
@@ -273,7 +283,11 @@ export default function HomePage() {
             <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
               <div className="flex items-center justify-center order-last lg:order-first">
                 <div className="relative w-full max-w-[550px] rounded-2xl border-2 border-primary/20 bg-background p-4 shadow-2xl transition-all hover:shadow-primary/5 hover:border-primary/40 group">
-                  <AiConversationClient />
+                  <div className="h-[400px]">
+                    <Suspense fallback={<div className="h-full w-full flex items-center justify-center bg-muted/20"><div className="animate-pulse text-primary">Loading conversation demo...</div></div>}>
+                      <AiConversationClient />
+                    </Suspense>
+                  </div>
                   <div className="absolute -top-4 -left-4 bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
                     Feature 1
                   </div>
@@ -308,122 +322,66 @@ export default function HomePage() {
                     <div className="flex-shrink-0 mt-1 bg-primary/10 p-1 rounded-full">
                       <CheckCircle2 className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-lg">Sentiment analysis that helps understand emotional context</span>
+                    <span className="text-lg">Insights from your conversations contribute to global understanding</span>
                   </li>
                 </ul>
-                <div className="pt-6">
-                  <Button size="lg" className="group" asChild>
-                    <Link href="/signup">
-                      Try AI Conversations
-                      <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </div>
+                <Button variant="link" size="lg" className="w-fit px-0 text-primary" asChild>
+                  <Link href="/features/ai-conversations" prefetch={true}>
+                    Learn more <ChevronRight className="h-4 w-4 ml-1" />
+                  </Link>
+                </Button>
               </div>
             </div>
 
-            {/* Quick Survey Feed */}
+            {/* Structured Surveys */}
             <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-              <div className="flex items-center justify-center">
-                <div className="relative w-full max-w-[550px] rounded-2xl border-2 border-bluebg-blue-300/20 bg-background p-4 shadow-2xl transition-all hover:shadow-bluebg-blue-300/5 hover:border-bluebg-blue-300/40 group">
-                  <SurveyFeedClient />
-                  <div className="absolute -top-4 -right-4 bg-blue-300 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
-                    Feature 2
-                  </div>
-
-                  {/* Animated pulse effect */}
-                  <div className="absolute -z-10 inset-0 rounded-2xl bg-blue-300/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 animate-pulse"></div>
-                </div>
-              </div>
               <div className="flex flex-col justify-center space-y-6">
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-300/10 text-bluebg-blue-300">
-                  <Zap className="h-8 w-8" />
-                </div>
-                <h3 className="text-3xl font-bold">Quick Survey Feed</h3>
-                <p className="text-xl text-muted-foreground leading-relaxed">
-                  Prefer speed? Tap through focused questions one-by-one in our dedicated survey feed. Filter by topic
-                  and see results instantly as they come in from around the world.
-                </p>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1 bg-blue-300/10 p-1 rounded-full">
-                      <CheckCircle2 className="h-5 w-5 text-bluebg-blue-300" />
-                    </div>
-                    <span className="text-lg">One-tap responses for quick participation</span>
-                  </li>
-                  <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1 bg-blue-300/10 p-1 rounded-full">
-                      <CheckCircle2 className="h-5 w-5 text-bluebg-blue-300" />
-                    </div>
-                    <span className="text-lg">Topic-based filtering to focus on what matters to you</span>
-                  </li>
-                  <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1 bg-blue-300/10 p-1 rounded-full">
-                      <CheckCircle2 className="h-5 w-5 text-bluebg-blue-300" />
-                    </div>
-                    <span className="text-lg">Instant result visualization as responses come in</span>
-                  </li>
-                </ul>
-                <div className="pt-6">
-                  <Button size="lg" className="bg-blue-300 hover:bg-blue-200 group" asChild>
-                    <Link href="/signup">
-                      Explore Quick Surveys
-                      <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Real-Time Exploration */}
-            <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-              <div className="flex items-center justify-center order-last lg:order-first">
-                <div className="relative w-full max-w-[550px] rounded-2xl border-2 border-teal-500/20 bg-background p-4 shadow-2xl transition-all hover:shadow-teal-500/5 hover:border-teal-500/40 group">
-                  <DataVisualizationClient />
-                  <div className="absolute -top-4 -left-4 bg-teal-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
-                    Feature 3
-                  </div>
-
-                  {/* Animated pulse effect */}
-                  <div className="absolute -z-10 inset-0 rounded-2xl bg-teal-500/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 animate-pulse"></div>
-                </div>
-              </div>
-              <div className="flex flex-col justify-center space-y-6">
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-500/10 text-teal-500">
+                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                   <BarChartBig className="h-8 w-8" />
                 </div>
-                <h3 className="text-3xl font-bold">Real-Time Exploration</h3>
+                <h3 className="text-3xl font-bold">Structured Surveys</h3>
                 <p className="text-xl text-muted-foreground leading-relaxed">
-                  Watch global opinions shift live on our Explore page. Dive into dynamic charts, AI summaries, and
-                  insight dashboards that update in real-time as new data flows in.
+                  Respond to focused surveys on trending topics. Our surveys are designed to be quick, engaging, and
+                  thought-provoking, with results visualized in real-time.
                 </p>
                 <ul className="space-y-4">
                   <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1 bg-teal-500/10 p-1 rounded-full">
-                      <CheckCircle2 className="h-5 w-5 text-teal-500" />
+                    <div className="flex-shrink-0 mt-1 bg-primary/10 p-1 rounded-full">
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-lg">Live-updating visualizations that show opinion shifts</span>
+                    <span className="text-lg">Carefully crafted questions on important global issues</span>
                   </li>
                   <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1 bg-teal-500/10 p-1 rounded-full">
-                      <CheckCircle2 className="h-5 w-5 text-teal-500" />
+                    <div className="flex-shrink-0 mt-1 bg-primary/10 p-1 rounded-full">
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-lg">AI-generated insight summaries that highlight key trends</span>
+                    <span className="text-lg">Instant visualization of your responses compared to global data</span>
                   </li>
                   <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1 bg-teal-500/10 p-1 rounded-full">
-                      <CheckCircle2 className="h-5 w-5 text-teal-500" />
+                    <div className="flex-shrink-0 mt-1 bg-primary/10 p-1 rounded-full">
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-lg">Demographic and geographic filtering for targeted analysis</span>
+                    <span className="text-lg">Filter results by demographics, region, and other factors</span>
                   </li>
                 </ul>
-                <div className="pt-6">
-                  <Button size="lg" className="bg-teal-500 hover:bg-teal-600 group" asChild>
-                    <Link href="/signup">
-                      View Live Insights
-                      <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
+                <Button variant="link" size="lg" className="w-fit px-0 text-primary" asChild>
+                  <Link href="/features/surveys" prefetch={true}>
+                    Learn more <ChevronRight className="h-4 w-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+              <div className="flex items-center justify-center">
+                <div className="relative w-full max-w-[550px] rounded-2xl border-2 border-primary/20 bg-background p-4 shadow-2xl transition-all hover:shadow-primary/5 hover:border-primary/40 group">
+                  <div className="h-[400px]">
+                    <Suspense fallback={<div className="h-full w-full flex items-center justify-center bg-muted/20"><div className="animate-pulse text-primary">Loading survey demo...</div></div>}>
+                      <SurveyFeedClient />
+                    </Suspense>
+                  </div>
+                  <div className="absolute -top-4 -right-4 bg-primary text-primary-foreground px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
+                    Feature 2
+                  </div>
+                  {/* Animated pulse effect */}
+                  <div className="absolute -z-10 inset-0 rounded-2xl bg-primary/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 animate-pulse"></div>
                 </div>
               </div>
             </div>
@@ -478,10 +436,9 @@ export default function HomePage() {
 
           {/* CTA for data section */}
           <div className="mt-12 text-center">
-            <Button size="lg" className="gap-2" asChild>
-              <Link href="/explore">
-                Explore All Live Data
-                <ArrowRight className="h-4 w-4 ml-1" />
+            <Button size="lg" className="gap-2 h-14 shadow-lg" asChild>
+              <Link href="/signup" prefetch={true}>
+                Get Started — Free <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
           </div>
@@ -603,6 +560,119 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section - Strong Conversion Focus */}
+      {/* Live data visualization section */}
+      <section className="w-full py-24 md:py-32 lg:py-40 bg-background border-t">
+        <div className="container px-4 md:px-6">
+          <div className="text-center mb-16 max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight lg:text-5xl">The World&apos;s Opinion, Visualized</h2>
+            <p className="mt-4 text-xl text-muted-foreground">
+              Explore real-time data visualizations showing what people around the world are thinking and discussing right now.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:gap-12">
+            {/* Global Map - Wrapped in Suspense for streaming */}
+            <Card className="overflow-hidden border-2 border-primary/20">
+              <CardHeader className="pb-0">
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-primary" />
+                  Global Engagement Map
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                  <div className="h-[500px] w-full">
+                    <Suspense fallback={<div className="h-full w-full flex items-center justify-center bg-muted/20"><div className="animate-pulse text-primary">Loading global map...</div></div>}>
+                      <GlobalMapClient />
+                    </Suspense>
+                  </div>
+              </CardContent>
+            </Card>
+
+            {/* Data visualization grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Topic engagement - Wrapped in Suspense for streaming */}
+              <Card className="overflow-hidden border-2 border-primary/20">
+                <CardHeader className="pb-0">
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                    Topic Engagement Trends
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <Suspense fallback={<TopicEngagementSkeleton />}>
+                    <TopicEngagement />
+                  </Suspense>
+                </CardContent>
+              </Card>
+
+              {/* Regional engagement - Wrapped in Suspense for streaming */}
+              <Card className="overflow-hidden border-2 border-primary/20">
+                <CardHeader className="pb-0">
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChartBig className="h-5 w-5 text-primary" />
+                    Regional Engagement
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="h-[300px]">
+                    <Suspense fallback={<div className="h-full w-full flex items-center justify-center bg-muted/20"><div className="animate-pulse text-primary">Loading regional data...</div></div>}>
+                      <RegionalEngagementClient />
+                    </Suspense>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* AI Conversation and Survey Feed Preview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+              {/* AI Conversation Preview - Wrapped in Suspense for streaming */}
+              <Card className="md:col-span-2 overflow-hidden border-2 border-primary/20">
+                <CardHeader className="pb-0">
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquareText className="h-5 w-5 text-primary" />
+                    AI-Powered Conversations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="h-[300px]">
+                    <Suspense fallback={<div className="h-full w-full flex items-center justify-center bg-muted/20"><div className="animate-pulse text-primary">Loading conversation preview...</div></div>}>
+                      <AiConversationClient />
+                    </Suspense>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Survey Feed Preview - Wrapped in Suspense for streaming */}
+              <Card className="overflow-hidden border-2 border-primary/20">
+                <CardHeader className="pb-0">
+                  <CardTitle className="flex items-center gap-2">
+                    <Zap className="h-5 w-5 text-primary" />
+                    Live Survey Feed
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="h-[300px]">
+                    <Suspense fallback={<div className="h-full w-full flex items-center justify-center bg-muted/20"><div className="animate-pulse text-primary">Loading survey feed...</div></div>}>
+                      <SurveyFeedClient />
+                    </Suspense>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* CTA for data section */}
+            <div className="mt-12 text-center">
+              <Button size="lg" className="gap-2 h-14 shadow-lg" asChild>
+                <Link href="/signup" prefetch={true}>
+                  Get Started — Free <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section - Strong Conversion Focus */}
       <section className="w-full py-24 md:py-32 lg:py-40 bg-gradient-to-br from-primary/10 via-background to-background border-t">
         <div className="container px-4 md:px-6">
           <div className="max-w-5xl mx-auto">
@@ -639,14 +709,14 @@ export default function HomePage() {
                 </ul>
 
                 <div className="flex flex-col sm:flex-row gap-5 mt-6">
-                  <AnimatedCTAButton href="/signup">Get Started — Free</AnimatedCTAButton>
+                  <AnimatedCTAButton href="/signup" prefetch={true}>Get Started — Free</AnimatedCTAButton>
                   <Button
                     size="lg"
                     variant="outline"
                     className="gap-2 h-14 border-2 hover:border-primary/50 transition-all"
                     asChild
                   >
-                    <Link href="/login">Log In</Link>
+                    <Link href="/login" prefetch={true}>Log In</Link>
                   </Button>
                 </div>
 
@@ -659,7 +729,11 @@ export default function HomePage() {
 
               <div className="relative lg:ml-auto order-first lg:order-last">
                 <div className="relative rounded-2xl border-2 border-primary/20 bg-background p-4 shadow-2xl">
-                  <GlobalMapClient showPulse={true} className="h-[400px]" />
+                  <div className="h-[400px]">
+                    <Suspense fallback={<div className="h-full w-full flex items-center justify-center bg-muted/20"><div className="animate-pulse text-primary">Loading global map...</div></div>}>
+                      <GlobalMapClient showPulse={true} />
+                    </Suspense>
+                  </div>
 
                   {/* Floating elements for visual interest */}
                   <div className="absolute -top-8 -right-8 bg-primary text-white p-4 rounded-full shadow-lg transform rotate-6 hover:rotate-0 transition-transform">

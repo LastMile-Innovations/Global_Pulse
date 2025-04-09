@@ -1,66 +1,106 @@
-import { createRequire } from 'module'; 
-const require = createRequire(import.meta.url); 
+// @ts-check
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
 
-let userConfig = undefined
-try {
-  // try to import ESM first
-  userConfig = await import('./v0-user-next.config.mjs')
-} catch (e) {
-  try {
-    // fallback to CJS import
-    userConfig = await import("./v0-user-next.config");
-  } catch (innerError) {
-    // ignore error if user config doesn't exist
-  }
-}
-
-/** @type {import('next').NextConfig} */
-// Define the base configuration
-const baseNextConfig = {
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
+  // Enable React Server Components
+  reactStrictMode: true,
+  
+  // Skip ESLint and TypeScript checks during build for faster builds
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true
   },
+  
+  // Image optimization configuration
   images: {
-    // unoptimized: true, // Removed to enable optimization
+    formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
+  
+  // Experimental features
   experimental: {
+    // Enable React Compiler
+    reactCompiler: true,
+    
+    // Enable Partial Prerendering
+    ppr: true,
+    
+    // Configure stale times for different route segments
+    staleTimes: {
+      static: 60,  // Static routes cache time in seconds
+      dynamic: 10, // Dynamic routes cache time in seconds
+    },
+    
+    // Server Actions configuration
+    serverActions: { 
+      allowedOrigins: ['localhost:3000', 'pulse-app.vercel.app']
+    },
+    
+    // Optimize package imports
+    optimizePackageImports: [
+      'lucide-react',
+      '@radix-ui/react-icons',
+    ],
+    
+    // Build optimizations
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+  
+  // Security and performance headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=31536000',
+          },
+        ],
+      },
+      {
+        source: '/',
+        headers: [
+          {
+            key: 'Link',
+            value: [
+              '<https://fonts.googleapis.com>; rel=preconnect',
+              '<https://fonts.gstatic.com>; rel=preconnect; crossorigin',
+            ].join(', '),
+          },
+        ],
+      },
+    ];
+  },
 };
 
-// Merge user config into the base config if it exists
-if (userConfig) {
-  const config = userConfig.default || userConfig; // Handle ESM/CJS export
-  for (const key in config) {
-    if (
-      typeof baseNextConfig[key] === 'object' &&
-      !Array.isArray(baseNextConfig[key]) &&
-      baseNextConfig[key] !== null // Ensure it's not null
-    ) {
-      // Deep merge objects
-      baseNextConfig[key] = {
-        ...baseNextConfig[key],
-        ...config[key],
-      };
-    } else {
-      // Overwrite arrays or primitives
-      baseNextConfig[key] = config[key];
-    }
-  }
-}
-
-// --- Bundle Analyzer Integration --- 
-// Configure the analyzer wrapper
+// Bundle Analyzer Integration
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
-// Wrap the fully prepared and merged config object
-const finalConfig = withBundleAnalyzer(baseNextConfig);
-
-export default finalConfig;
+// Export the final config with bundle analyzer
+export default withBundleAnalyzer(nextConfig);

@@ -10,9 +10,10 @@ import Link from "next/link"
 interface AnimatedCTAButtonProps {
   href: string
   children: React.ReactNode
+  prefetch?: boolean
 }
 
-export default function AnimatedCTAButton({ href, children }: AnimatedCTAButtonProps) {
+export default function AnimatedCTAButton({ href, children, prefetch = false }: AnimatedCTAButtonProps) {
   const [isAnimating, setIsAnimating] = useState(false)
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function AnimatedCTAButton({ href, children }: AnimatedCTAButtonP
       }`}
       asChild
     >
-      <Link href={href}>
+      <Link href={href} prefetch={prefetch}>
         <span className="relative z-10 flex items-center">
           {children}
           <ArrowRight

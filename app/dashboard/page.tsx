@@ -13,6 +13,7 @@ import TrendingTopicsCard from "../../components/dashboard/trending-topics-card"
 import UserStatsCard from "../../components/dashboard/user-stats-card"
 import InsightSpotlightCard from "../../components/dashboard/insight-spotlight-card"
 import GettingStartedChecklist from "../../components/dashboard/getting-started-checklist"
+import { unstable_cache } from "next/cache"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -24,23 +25,30 @@ export default async function DashboardPage() {
     redirect("/login") // Should be caught by layout, but belt-and-suspenders
   }
 
-  // Fetch user profile for personalized greeting - wrapped in try/catch
-  let profile: { first_name: string | null; last_name: string | null } | null = null
-  try {
-    const results = await db
-      .select({
-        first_name: schema.profiles.firstName,
-        last_name: schema.profiles.lastName,
-      })
-      .from(schema.profiles)
-      .where(eq(schema.profiles.id, userData.user.id))
-      .limit(1);
-    profile = results.length > 0 ? results[0] : null;
+  // Cached profile fetching function with tag-based revalidation
+  const getUserProfile = unstable_cache(
+    async (userId: string) => {
+      try {
+        const results = await db
+          .select({
+            first_name: schema.profiles.firstName,
+            last_name: schema.profiles.lastName,
+          })
+          .from(schema.profiles)
+          .where(eq(schema.profiles.id, userId))
+          .limit(1);
+        return results.length > 0 ? results[0] : null;
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        return null;
+      }
+    },
+    ['user-profile'],
+    { tags: [`user:${userData.user.id}`], revalidate: 60 } // Cache for 60 seconds with tag-based invalidation
+  );
 
-  } catch (error) {
-    console.error("Error fetching profile:", error)
-    // Continue without profile data if fetch fails
-  }
+  // Fetch user profile for personalized greeting
+  const profile = await getUserProfile(userData.user.id);
 
   // Determine greeting name (first name, email part, or generic 'there')
   const userName = profile?.first_name || userData.user.email?.split("@")[0] || "there"
@@ -67,31 +75,31 @@ export default async function DashboardPage() {
         {/* Primary actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Button size="lg" className="h-auto py-6 text-base sm:text-lg" asChild>
-            <Link href="/chat/new">
+            <Link href="/chat/new" prefetch={true}>
               <MessageSquareText className="mr-2 h-5 w-5" />
               Start New Chat with Pulse
             </Link>
           </Button>
           <div className="flex flex-col gap-2">
             <Button size="lg" variant="outline" className="h-auto py-6 text-base sm:text-lg" asChild>
-              <Link href="/survey">
+              <Link href="/survey" prefetch={true}>
                 <Zap className="mr-2 h-5 w-5" />
                 Answer Quick Surveys
               </Link>
             </Button>
             <div className="flex gap-2 justify-center">
               <Button variant="ghost" size="sm" className="text-xs flex-1" asChild>
-                <Link href="/survey?topic=Technology">
+                <Link href="/survey?topic=Technology" prefetch={true}>
                   Tech Surveys
                 </Link>
               </Button>
               <Button variant="ghost" size="sm" className="text-xs flex-1" asChild>
-                <Link href="/survey?topic=World+News">
+                <Link href="/survey?topic=World+News" prefetch={true}>
                   World News Surveys
                 </Link>
               </Button>
               <Button variant="ghost" size="sm" className="text-xs flex-1" asChild>
-                <Link href="/survey?topic=Climate">
+                <Link href="/survey?topic=Climate" prefetch={true}>
                   Climate Surveys
                 </Link>
               </Button>
@@ -114,7 +122,7 @@ export default async function DashboardPage() {
                 <CardDescription>Continue where you left off</CardDescription>
               </div>
               <Button variant="ghost" size="sm" className="gap-1 text-xs sm:text-sm" asChild>
-                <Link href="/chat">
+                <Link href="/chat" prefetch={true}>
                   View All <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -134,7 +142,7 @@ export default async function DashboardPage() {
                 <CardDescription>Start a conversation about these</CardDescription>
               </div>
               <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                <Link href="/chat">
+                <Link href="/chat" prefetch={true}>
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">Start Chat</span>
                 </Link>
@@ -158,7 +166,7 @@ export default async function DashboardPage() {
                 <CardDescription>Trending topics across Global Pulse</CardDescription>
               </div>
               <Button variant="ghost" size="sm" className="gap-1 text-xs sm:text-sm" asChild>
-                <Link href="/explore">
+                <Link href="/explore" prefetch={true}>
                   Explore <BarChartBig className="h-4 w-4" />
                 </Link>
               </Button>

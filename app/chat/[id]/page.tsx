@@ -8,12 +8,27 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft } from "lucide-react"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import ChatInterface from "./components/chat-interface"
+import { unstable_cache } from "next/cache"
 
+import type { Metadata } from 'next'
+
+// Define standard PageProps structure - Reverted
 type ChatPageProps = {
   params: {
     id: string
+  };
+  searchParams?: Record<string, string | string[] | undefined>;
+};
+
+// Generate metadata for SEO
+export const generateMetadata = async ({ params }: ChatPageProps): Promise<Metadata> => {
+  // Fetch minimal chat data for title if needed, or just use ID
+  const chatId = params.id;
+  // Potentially fetch chat title here if important for SEO
+  return {
+    title: `Chat ${chatId} - Global Pulse`, // Use chat ID in title
+    description: 'Engage in meaningful conversations about global topics.'
   }
-  searchParams?: Record<string, string | string[] | undefined>
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
@@ -47,27 +62,32 @@ export default async function ChatPage({ params }: ChatPageProps) {
     )
   }
 
-  // Fetch the chat to verify it exists and belongs to the user
-  let chat: { id: string; title: string | null; userId: string } | null = null;
-  try {
-    const results = await db
-      .select({
-        id: schema.chats.id,
-        title: schema.chats.title,
-        userId: schema.chats.userId,
-      })
-      .from(schema.chats)
-      .where(eq(schema.chats.id, id))
-      .limit(1);
+  // Cached chat fetching function with tag-based revalidation
+  const getChatById = unstable_cache(
+    async (chatId: string, userId: string) => {
+      try {
+        const results = await db
+          .select({
+            id: schema.chats.id,
+            title: schema.chats.title,
+            userId: schema.chats.userId,
+          })
+          .from(schema.chats)
+          .where(eq(schema.chats.id, chatId))
+          .limit(1);
 
-    if (results.length > 0) {
-      chat = results[0];
-    }
-  } catch (error) {
-    console.error("Error fetching chat:", error);
-    // Basic error handling: Log and potentially show a generic error or redirect
-    // For now, we'll let it proceed to the !chat check below, which will trigger notFound()
-  }
+        return results.length > 0 ? results[0] : null;
+      } catch (error) {
+        console.error("Error fetching chat:", error);
+        return null;
+      }
+    },
+    ['chat-by-id'],
+    { tags: [`chat:${id}`], revalidate: 60 } // Cache for 60 seconds with tag-based invalidation
+  );
+
+  // Fetch the chat to verify it exists and belongs to the user
+  const chat = await getChatById(id, userData.user.id);
 
   if (!chat || chat.userId !== userData.user.id) {
     return notFound()
@@ -77,7 +97,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
     <div className="container max-w-4xl py-4 flex flex-col h-[calc(100vh-64px)]">
       <div className="flex items-center mb-4">
         <Button variant="ghost" size="sm" className="mr-4" asChild>
-          <Link href="/chat">
+          <Link href="/chat" prefetch={true}>
             <ChevronLeft className="h-4 w-4 mr-1" />
             Back
           </Link>
@@ -85,6 +105,7 @@ export default async function ChatPage({ params }: ChatPageProps) {
         <h1 className="text-xl font-semibold truncate">{chat.title || "Chat"}</h1>
       </div>
 
+      {/* Use Suspense boundary for streaming UI */}
       <Suspense
         fallback={
           <div className="flex-1 flex items-center justify-center">
