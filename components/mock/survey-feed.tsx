@@ -93,11 +93,11 @@ export default function SurveyFeed() {
 
   return (
     <div className="relative">
-      <Card className="border-2 border-blue-500/20 shadow-md">
+      <Card className="border-2 border-blue-300/20 shadow-md">
         <CardHeader className="bg-muted/30 border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="bg-blue-500/20 text-blue-500 text-xs font-medium px-2 py-1 rounded">
+              <span className="bg-blue-300/20 text-blue-300 text-xs font-medium px-2 py-1 rounded">
                 {currentSurvey.category}
               </span>
               <span className="text-xs text-muted-foreground">Question {currentIndex + 1} of 3</span>
@@ -132,10 +132,10 @@ export default function SurveyFeed() {
                 key={option.id}
                 className={`relative rounded-lg border p-3 transition-all ${
                   option.selected
-                    ? "border-blue-500 bg-blue-500/10"
+                    ? "border-blue-300 bg-blue-300/10"
                     : currentSurvey.answered
                       ? "border-muted bg-muted/30"
-                      : "border-border hover:border-blue-500/50 hover:bg-blue-500/5 cursor-pointer"
+                      : "border-border hover:border-blue-300/50 hover:bg-blue-300/5 cursor-pointer"
                 }`}
                 onClick={() => !currentSurvey.answered && handleOptionSelect(option.id)}
               >
@@ -147,7 +147,7 @@ export default function SurveyFeed() {
                   <div className="mt-2 h-2 bg-muted rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full ${
-                        option.selected ? "bg-blue-500" : "bg-blue-500/30"
+                        option.selected ? "bg-blue-300" : "bg-blue-300/30"
                       } transition-all`}
                       style={{ width: `${option.percentage}%` }}
                     ></div>

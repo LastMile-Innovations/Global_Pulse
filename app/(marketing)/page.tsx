@@ -57,7 +57,7 @@ export default function HomePage() {
         {/* Animated background elements */}
         <div className="absolute top-20 left-20 w-32 h-32 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
         <div
-          className="absolute bottom-20 right-40 w-48 h-48 bg-blue-500/20 rounded-full blur-xl animate-pulse"
+          className="absolute bottom-20 right-40 w-48 h-48 bg-blue-300/20 rounded-full blur-xl animate-pulse"
           style={{ animationDelay: "1s" }}
         ></div>
         <div
@@ -325,18 +325,18 @@ export default function HomePage() {
             {/* Quick Survey Feed */}
             <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
               <div className="flex items-center justify-center">
-                <div className="relative w-full max-w-[550px] rounded-2xl border-2 border-blue-500/20 bg-background p-4 shadow-2xl transition-all hover:shadow-blue-500/5 hover:border-blue-500/40 group">
+                <div className="relative w-full max-w-[550px] rounded-2xl border-2 border-bluebg-blue-300/20 bg-background p-4 shadow-2xl transition-all hover:shadow-bluebg-blue-300/5 hover:border-bluebg-blue-300/40 group">
                   <SurveyFeedClient />
-                  <div className="absolute -top-4 -right-4 bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
+                  <div className="absolute -top-4 -right-4 bg-blue-300 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">
                     Feature 2
                   </div>
 
                   {/* Animated pulse effect */}
-                  <div className="absolute -z-10 inset-0 rounded-2xl bg-blue-500/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 animate-pulse"></div>
+                  <div className="absolute -z-10 inset-0 rounded-2xl bg-blue-300/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700 animate-pulse"></div>
                 </div>
               </div>
               <div className="flex flex-col justify-center space-y-6">
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-500">
+                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-300/10 text-bluebg-blue-300">
                   <Zap className="h-8 w-8" />
                 </div>
                 <h3 className="text-3xl font-bold">Quick Survey Feed</h3>
@@ -346,26 +346,26 @@ export default function HomePage() {
                 </p>
                 <ul className="space-y-4">
                   <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1 bg-blue-500/10 p-1 rounded-full">
-                      <CheckCircle2 className="h-5 w-5 text-blue-500" />
+                    <div className="flex-shrink-0 mt-1 bg-blue-300/10 p-1 rounded-full">
+                      <CheckCircle2 className="h-5 w-5 text-bluebg-blue-300" />
                     </div>
                     <span className="text-lg">One-tap responses for quick participation</span>
                   </li>
                   <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1 bg-blue-500/10 p-1 rounded-full">
-                      <CheckCircle2 className="h-5 w-5 text-blue-500" />
+                    <div className="flex-shrink-0 mt-1 bg-blue-300/10 p-1 rounded-full">
+                      <CheckCircle2 className="h-5 w-5 text-bluebg-blue-300" />
                     </div>
                     <span className="text-lg">Topic-based filtering to focus on what matters to you</span>
                   </li>
                   <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 mt-1 bg-blue-500/10 p-1 rounded-full">
-                      <CheckCircle2 className="h-5 w-5 text-blue-500" />
+                    <div className="flex-shrink-0 mt-1 bg-blue-300/10 p-1 rounded-full">
+                      <CheckCircle2 className="h-5 w-5 text-bluebg-blue-300" />
                     </div>
                     <span className="text-lg">Instant result visualization as responses come in</span>
                   </li>
                 </ul>
                 <div className="pt-6">
-                  <Button size="lg" className="bg-blue-500 hover:bg-blue-600 group" asChild>
+                  <Button size="lg" className="bg-blue-300 hover:bg-blue-200 group" asChild>
                     <Link href="/signup">
                       Explore Quick Surveys
                       <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
