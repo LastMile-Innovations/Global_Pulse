@@ -84,11 +84,11 @@ export default function HomePage() {
 
               {/* Clear, compelling headline */}
               <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl/none lg:text-8xl/none">
-                <span className="bg-gradient-to-r from-blue-200 via-primary/60 to-blue-200/60 text-transparent bg-clip-text inline-block">
-                  The World&apos;s Pulse.
+                <span className="bg-gradient-to-r from-primary *:via-primary/60 to-primary/60 dark:from-blue-300 dark:via-blue-300/60 dark:to-blue-300/60 text-transparent bg-clip-text inline-block">
+                  The World&apos;s Pulse<span className=" text-blue-400 animate-pulse">.</span>
                 </span>
                 <br />
-                <span>In Real Time.</span>
+                <span>In Real Time<span className=" text-blue-400  animate-pulse">.</span></span>
               </h1>
 
               {/* Concise, benefit-focused subheading */}
