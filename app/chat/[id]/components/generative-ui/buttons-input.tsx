@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { submitSurveyResponse } from "@/app/api/surveys/actions"
+import { submitSurveyResponse } from "@/actions/survey"
+import { createClient } from "@/utils/supabase/client"
 
 interface ButtonsInputProps {
   questionId: string
@@ -11,25 +12,54 @@ interface ButtonsInputProps {
 }
 
 export default function ButtonsInput({ questionId, options, chatId }: ButtonsInputProps) {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null)
+  const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  
+  // Fetch the user on component mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient()
+      const { data } = await supabase.auth.getUser()
+      setUser(data.user)
+    }
+    
+    fetchUser()
+  }, [])
 
   const handleSelect = async (optionId: string) => {
     if (isSubmitted || isSubmitting) return
 
-    setSelectedOption(optionId)
+    setSelectedOptionId(optionId)
     setIsSubmitting(true)
 
+    if (!user) {
+      console.error("User not found, cannot submit response.")
+      // TODO: Add user-facing error handling
+      setIsSubmitting(false)
+      return
+    }
+
+    // Attempt to parse questionId
+    const numericQuestionId = parseInt(questionId, 10);
+    if (isNaN(numericQuestionId)) {
+      console.error(`Invalid questionId format: ${questionId}`);
+      // TODO: Add user-facing error handling
+      setIsSubmitting(false)
+      return;
+    }
+
     try {
-      // Create a FormData object to use with the server action
-      const formData = new FormData()
-      formData.append("questionId", questionId)
-      formData.append("optionId", optionId)
-      formData.append("chatId", chatId)
+      // Construct the correct payload
+      const payload = {
+        userId: user.id,
+        questionId: numericQuestionId,
+        answer: optionId,
+      }
 
       // Submit the response using the server action
-      await submitSurveyResponse(formData)
+      await submitSurveyResponse(payload)
       setIsSubmitted(true)
     } catch (error) {
       console.error("Error submitting response:", error)
@@ -43,9 +73,9 @@ export default function ButtonsInput({ questionId, options, chatId }: ButtonsInp
       {options.map((option) => (
         <Button
           key={option.id}
-          variant={selectedOption === option.id ? "default" : "outline"}
+          variant={selectedOptionId === option.id ? "default" : "outline"}
           onClick={() => handleSelect(option.id)}
-          disabled={isSubmitted && selectedOption !== option.id}
+          disabled={isSubmitted && selectedOptionId !== option.id}
           className={isSubmitting ? "cursor-not-allowed" : ""}
         >
           {option.text}

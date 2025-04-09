@@ -2,7 +2,7 @@ import Link from "next/link"
 import { createClient } from "@/utils/supabase/server"
 import { Zap } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { cacheQuery, createCacheKey } from "@/lib/redis/enhanced-client"
+import { cacheQuery, createCacheKey } from "@/lib/redis/client"
 import { ErrorDisplay } from "@/components/ui/error-display"
 
 interface Topic {

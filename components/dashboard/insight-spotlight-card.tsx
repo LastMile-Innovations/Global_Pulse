@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server"
 import { Lightbulb, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { cacheQuery, createCacheKey } from "@/lib/redis/enhanced-client"
+import { cacheQuery, createCacheKey } from "@/lib/redis/client"
 import { ErrorDisplay } from "@/components/ui/error-display"
 
 interface InsightSpotlight {

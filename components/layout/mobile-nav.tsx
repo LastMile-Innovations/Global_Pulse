@@ -135,7 +135,7 @@ export default function MobileNav() {
                   <UserIcon className="mr-2 h-4 w-4" />
                   My Account
                 </Link>
-                <LogoutButton variant="default" />
+                <LogoutButton variant="ghost" />
               </>
             )}
           </div>
