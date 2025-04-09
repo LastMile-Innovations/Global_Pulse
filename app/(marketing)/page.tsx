@@ -1,36 +1,36 @@
-import Link from "next/link"
-import { Suspense } from "react"
+import {
+  AiConversationClient,
+  AnimatedStatClient,
+  DataVisualizationClient,
+  GlobalMapClient,
+  RegionalEngagementClient,
+  SurveyFeedClient
+} from "@/components/client-wrappers"
+import AnimatedCTAButton from "@/components/marketing/animated-cta-button"
+import TopicEngagementSkeleton from "@/components/marketing/topic-engagement-skeleton"
+import TrustedByLogos from "@/components/marketing/trusted-by-logos"
+import ScrollToTopButton from "@/components/scroll-to-top-button"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-  MessageSquareText,
+  ArrowRight,
   BarChartBig,
-  Zap,
+  Brain,
+  CheckCircle2,
+  ChevronRight,
   Globe,
   Lock,
-  ArrowRight,
-  CheckCircle2,
-  Users,
-  TrendingUp,
-  Sparkles,
+  MessageSquareText,
   Rocket,
-  Brain,
-  ChevronRight,
+  Sparkles,
   Star,
+  TrendingUp,
+  Users,
+  Zap,
 } from "lucide-react"
-import TopicEngagementSkeleton from "@/components/marketing/topic-engagement-skeleton"
 import dynamic from "next/dynamic"
-import TrustedByLogos from "@/components/marketing/trusted-by-logos"
-import AnimatedCTAButton from "@/components/marketing/animated-cta-button"
-import ScrollToTopButton from "@/components/scroll-to-top-button"
-import {
-  GlobalMapClient,
-  AiConversationClient,
-  SurveyFeedClient,
-  DataVisualizationClient,
-  RegionalEngagementClient,
-  AnimatedStatClient
-} from "@/components/client-wrappers"
+import Link from "next/link"
+import { Suspense } from "react"
 
 // Dynamically import heavy components with proper loading states
 const TopicEngagement = dynamic(() => import("@/components/marketing/topic-engagement"), {
@@ -84,7 +84,7 @@ export default function HomePage() {
 
               {/* Clear, compelling headline */}
               <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl/none lg:text-8xl/none">
-                <span className="bg-gradient-to-r from-primary via-blue-500 to-teal-400 text-transparent bg-clip-text">
+                <span className="bg-gradient-to-r from-blue-200 via-primary/60 to-blue-200/60 text-transparent bg-clip-text inline-block">
                   The World&apos;s Pulse.
                 </span>
                 <br />
@@ -145,7 +145,7 @@ export default function HomePage() {
                 <div className="rounded-xl overflow-hidden">
                   <GlobalMapClient />
                 </div>
-                <div className="absolute -bottom-5 -right-5 bg-blue-500 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-lg">
+                <div className="absolute -bottom-5 -right-5 bg-blue-300 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-lg">
                   Updated in real-time
                 </div>
               </div>

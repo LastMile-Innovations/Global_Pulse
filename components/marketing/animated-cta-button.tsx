@@ -59,7 +59,7 @@ export default function AnimatedCTAButton({ href, children }: AnimatedCTAButtonP
             }`}
           />
         </span>
-        <span className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+        <span className="absolute inset-0 bg-gradient-to-r from-primary to-blue-200/50 opacity-0 group-hover:opacity-100 transition-opacity"></span>
 
         {/* Animated highlight effect */}
         <span
