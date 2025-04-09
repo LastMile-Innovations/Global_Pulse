@@ -17,9 +17,11 @@ export default function SurveyComplete({ onReset }: SurveyCompleteProps) {
             <CheckCircle2 className="h-8 w-8 text-primary" />
           </div>
         </div>
-        <h3 className="text-xl font-medium mb-2">All Caught Up!</h3>
-        <p className="text-muted-foreground">
-          You've answered all the available questions matching your current filters.
+        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+          Survey Submitted!
+        </h2>
+        <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+          Thank you for sharing your perspective. Your insights help paint a clearer picture of the world&apos;s pulse.
         </p>
       </CardContent>
       <CardFooter className="flex justify-center pb-6">

@@ -18,7 +18,7 @@ export default function ChatInterface({ chatId, initialMessages = [] }: ChatInte
   const router = useRouter()
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error, reload, stop } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
     api: `/api/chat/${chatId}`,
     id: chatId,
     initialMessages,
@@ -92,7 +92,7 @@ export default function ChatInterface({ chatId, initialMessages = [] }: ChatInte
       <div className="border-t p-4">
         <ChatInput
           input={input}
-          handleInputChange={handleInputChange}
+          handleInputChange={handleInputChange as (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void}
           handleSubmit={handleSubmit}
           isLoading={isLoading}
         />

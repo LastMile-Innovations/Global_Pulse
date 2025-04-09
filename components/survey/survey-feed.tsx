@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { fetchNextQuestion, submitSurveyResponse } from "../actions"
+import { fetchNextQuestion, submitSurveyResponse } from "../../actions/survey"
 import SurveyQuestionCard from "./survey-question-card"
 import SurveyFilters from "./survey-filters"
 import SurveyComplete from "./survey-complete"
@@ -15,6 +15,15 @@ interface Topic {
   name: string
 }
 
+interface SurveyQuestion {
+  id: number
+  text: string
+  type: string
+  parameters: any // TODO: Define specific types for parameters based on question type
+  topicId: string | null
+  topicName: string | null
+}
+
 interface SurveyFeedProps {
   userId: string
   initialTopics: Topic[]
@@ -22,8 +31,8 @@ interface SurveyFeedProps {
 
 export default function SurveyFeed({ userId, initialTopics }: SurveyFeedProps) {
   const router = useRouter()
-  const [currentQuestion, setCurrentQuestion] = useState<any | null>(null)
-  const [selectedAnswer, setSelectedAnswer] = useState<any>(null)
+  const [currentQuestion, setCurrentQuestion] = useState<SurveyQuestion | null>(null)
+  const [selectedAnswer, setSelectedAnswer] = useState<string | number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -71,7 +80,7 @@ export default function SurveyFeed({ userId, initialTopics }: SurveyFeedProps) {
   }
 
   // Handle answer selection
-  const handleAnswerSelect = (answer: any) => {
+  const handleAnswerSelect = (answer: string | number) => {
     setSelectedAnswer(answer)
   }
 

@@ -194,7 +194,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     }
 
     // Fetch previous messages for context with safe error handling
-    const { data: previousMessages } = await safeQueryExecution<any[]>(
+    const { data: previousMessages } = await safeQueryExecution<Array<{ role: string; content: string; created_at: string; }>>(
       async () => await supabase
         .from("chat_messages")
         .select("role, content, created_at")
