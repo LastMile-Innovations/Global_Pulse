@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { submitSurveyResponse } from "@/app/api/surveys/actions"
+import { submitSurveyResponse } from "@/actions/survey"
 
 interface SliderInputProps {
   questionId: string
@@ -36,14 +36,23 @@ export default function SliderInput({
         setIsSubmitting(true)
 
         try {
-          // Create a FormData object to use with the server action
-          const formData = new FormData()
-          formData.append("questionId", questionId)
-          formData.append("value", value.toString())
-          formData.append("chatId", chatId)
+          // Attempt to parse questionId to a number
+          const numericQuestionId = parseInt(questionId, 10);
+          if (isNaN(numericQuestionId)) {
+            console.error(`Invalid questionId format: ${questionId}`);
+            return;
+          }
 
-          // Submit the response using the server action
-          await submitSurveyResponse(formData)
+          // Get the current user from localStorage or session if available
+          // For now using a placeholder - in a real app, you'd get this from authentication
+          const userId = localStorage.getItem('userId') || 'anonymous-user';
+
+          // Submit the response using the server action with the expected parameter structure
+          await submitSurveyResponse({
+            userId,
+            questionId: numericQuestionId,
+            answer: value
+          })
           setIsSubmitted(true)
         } catch (error) {
           console.error("Error submitting response:", error)

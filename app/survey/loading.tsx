@@ -1,4 +1,4 @@
-import SurveyFeedSkeleton from "./components/survey-feed-skeleton"
+import SurveyFeedSkeleton from "@/components/survey/survey-feed-skeleton"
 
 export default function Loading() {
   return (

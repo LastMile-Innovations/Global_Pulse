@@ -1,10 +1,21 @@
 "use client"
-import type { Message } from "ai"
+import type { Message as AIMessage } from "ai"
 import { User, Bot } from "lucide-react"
 import { cn } from "@/lib/utils"
 import MultipleChoiceInput from "./generative-ui/multiple-choice-input"
 import SliderInput from "./generative-ui/slider-input"
 import ButtonsInput from "./generative-ui/buttons-input"
+
+// Define the structure of parts within message.content when it's an array
+// Based on usage within the component
+type MessagePart = 
+  | { type: 'text'; text: string }
+  | { type: 'tool_call'; tool_call: { id: string; name: string; parameters: Record<string, any> } };
+
+// Extend the Message type from the AI package to support our custom content format
+type Message = Omit<AIMessage, 'content'> & {
+  content: string | MessagePart[]
+};
 
 interface ChatMessageProps {
   message: Message
@@ -24,7 +35,7 @@ export default function ChatMessage({ message, isLastMessage }: ChatMessageProps
 
     // If the message has parts (for Generative UI)
     if (Array.isArray(message.content)) {
-      return message.content.map((part, index) => {
+      return message.content.map((part: MessagePart, index: number) => {
         // Text part
         if (part.type === "text") {
           return (

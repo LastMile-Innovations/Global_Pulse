@@ -7,7 +7,9 @@ export interface RateLimitConfig {
 }
 
 export async function rateLimit(request: NextRequest, config: RateLimitConfig = { limit: 10, window: 60 }) {
-  const ip = request.ip || "127.0.0.1"
+  // Get IP from headers or use a fallback
+  const forwardedFor = request.headers.get('x-forwarded-for')
+  const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : '127.0.0.1'
   const key = `rate-limit:${ip}`
 
   // Get the existing count and time
