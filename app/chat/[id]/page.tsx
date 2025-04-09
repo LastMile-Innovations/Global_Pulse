@@ -9,10 +9,11 @@ import { ChevronLeft } from "lucide-react"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import ChatInterface from "./components/chat-interface"
 
-interface ChatPageProps {
+type ChatPageProps = {
   params: {
     id: string
   }
+  searchParams?: Record<string, string | string[] | undefined>
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {

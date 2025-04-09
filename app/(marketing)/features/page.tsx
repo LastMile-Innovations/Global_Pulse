@@ -142,7 +142,7 @@ export default function FeaturesPage() {
               Beyond the Buzz: Experience the Real Global Pulse.
             </h1>
             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
-              Stop navigating the noise. Discover how Global Pulse's unique fusion of intelligent AI conversation, lightning-fast data collection, and dynamic visualization transforms raw global opinions into living, breathing insights you can explore and understand—instantly.
+              Stop navigating the noise. Discover how Global Pulse&apos;s unique fusion of intelligent AI conversation, lightning-fast data collection, and dynamic visualization transforms raw global opinions into living, breathing insights you can explore and understand—instantly.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <AnimatedCTAButton href="/signup">Get Started Free</AnimatedCTAButton>
@@ -214,7 +214,7 @@ export default function FeaturesPage() {
               The world is constantly speaking. Are you ready to listen? Global Pulse offers the most immediate, nuanced, and accessible window into collective human perspective ever created. Sign up free today, lend your voice to the global conversation, and start exploring insights that matter.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <AnimatedCTAButton href="/signup">Sign Up - It's Free</AnimatedCTAButton>
+              <AnimatedCTAButton href="/signup">Sign Up - It&apos;s Free</AnimatedCTAButton>
               <Button size="lg" variant="outline" className="gap-2 h-14 text-base" asChild>
                 <Link href="/explore">
                   Explore the Platform <ArrowRight className="h-4 w-4 ml-1" />

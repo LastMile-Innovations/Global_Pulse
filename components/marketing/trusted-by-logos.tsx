@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface TrustedByLogosProps {
   className?: string
@@ -38,7 +38,7 @@ export default function TrustedByLogos({ className }: TrustedByLogosProps) {
           }`}
           style={{ transitionDelay: `${index * 100}ms` }}
         >
-          <Image
+          <OptimizedImage
             src={`/placeholder.svg?height=40&width=${company.width}&text=${company.name}`}
             alt={`${company.name} logo`}
             width={company.width}

@@ -24,7 +24,7 @@ const baseNextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    // unoptimized: true, // Removed to enable optimization
   },
   experimental: {
     webpackBuildWorker: true,

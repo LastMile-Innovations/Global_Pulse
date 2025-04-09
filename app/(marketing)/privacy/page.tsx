@@ -82,7 +82,7 @@ export default function PrivacyPage() {
           </section>
 
           <section className="border-b border-border pb-8 mb-8">
-            <h2 className="text-2xl font-semibold tracking-tight mb-4 text-foreground">7. Children's Privacy</h2>
+            <h2 className="text-2xl font-semibold tracking-tight mb-4 text-foreground">7. Children&apos;s Privacy</h2>
             <p>Our Services are not directed to children under 13, and we do not knowingly collect personal information from children under 13. If we learn that we have collected personal information from a child under 13, we will take steps to delete that information as soon as possible.</p>
           </section>
 

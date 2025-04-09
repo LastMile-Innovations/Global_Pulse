@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Users, Globe, RefreshCw } from "lucide-react"
 
 interface RegionData {
@@ -21,7 +21,7 @@ export default function RegionalEngagement() {
     { name: "Oceania", code: "OC", percentage: 31, color: "red-500" },
   ])
 
-  const refreshData = () => {
+  const refreshData = useCallback(() => {
     setIsLoading(true)
     setTimeout(() => {
       setRegions(
@@ -32,7 +32,7 @@ export default function RegionalEngagement() {
       )
       setIsLoading(false)
     }, 1000)
-  }
+  }, [regions])
 
   useEffect(() => {
     const interval = setInterval(() => {

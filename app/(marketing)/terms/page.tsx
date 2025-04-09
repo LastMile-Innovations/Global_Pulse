@@ -51,7 +51,7 @@ export default function TermsPage() {
           <h3 className="text-lg font-medium mb-2 mt-4">2.3 Age Restrictions</h3>
           <p>
             You must be at least 18 years old to use our Services. If you are under 18, you represent that you have your
-            parent or guardian's permission to use the Services and that they have read and agree to these Terms on your
+            parent or guardian&apos;s permission to use the Services and that they have read and agree to these Terms on your
             behalf.
           </p>
         </section>

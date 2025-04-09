@@ -64,7 +64,7 @@ export default async function SurveyPage() {
       </p>
 
       <Suspense fallback={<SurveyFeedSkeleton />}>
-        <SurveyFeed userId={user.id} initialTopics={topics} />
+        <SurveyFeed initialTopics={topics} />
       </Suspense>
     </div>
   )

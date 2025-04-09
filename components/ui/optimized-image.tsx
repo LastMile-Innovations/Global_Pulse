@@ -75,7 +75,7 @@ export function OptimizedImage({
     >
       {(isInView || priority) && (
         <Image
-          src={src || "/placeholder.svg"}
+          src={src || ""}
           alt={alt}
           width={width}
           height={height}

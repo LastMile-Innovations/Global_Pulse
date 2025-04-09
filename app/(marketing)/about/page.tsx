@@ -1,4 +1,4 @@
-import Image from "next/image"
+import { OptimizedImage } from "@/components/ui/optimized-image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -176,7 +176,7 @@ export default function AboutPage() {
             <div className="relative">
               <div className="absolute -z-10 inset-0 bg-gradient-to-tr from-primary/30 to-blue-500/20 rounded-3xl transform rotate-3"></div>
               <div className="relative rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl">
-                <Image
+                <OptimizedImage
                   src="/placeholder.svg?height=600&width=800&text=The+Sprint"
                   alt="The 10-Day Sprint"
                   width={800}
@@ -302,7 +302,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="relative w-full aspect-square mb-6 overflow-hidden rounded-lg bg-muted">
-                  <Image
+                  <OptimizedImage
                     src="/placeholder.svg?height=400&width=400&text=Greyson"
                     alt="Greyson Paynter"
                     width={400}
@@ -385,7 +385,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="relative w-full aspect-square mb-6 overflow-hidden rounded-lg bg-muted">
-                  <Image
+                  <OptimizedImage
                     src="/placeholder.svg?height=400&width=400&text=Niklas"
                     alt="Niklas Bognar"
                     width={400}
@@ -498,7 +498,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="relative w-full aspect-square mb-6 overflow-hidden rounded-lg bg-muted">
-                  <Image
+                  <OptimizedImage
                     src="/placeholder.svg?height=400&width=400&text=Omar"
                     alt="Omar El hassani Alaoui"
                     width={400}
@@ -696,7 +696,7 @@ export default function AboutPage() {
                 <div className="relative">
                   <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-2xl blur-md"></div>
                   <div className="relative rounded-xl overflow-hidden border">
-                    <Image
+                    <OptimizedImage
                       src="/placeholder.svg?height=500&width=600&text=Global+Team"
                       alt="Global Team Collaboration"
                       width={600}
@@ -727,7 +727,7 @@ export default function AboutPage() {
         <div className="container px-4 md:px-6">
           <div className="max-w-4xl mx-auto">
             <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-primary/20 text-primary">
-              <Trophy className="mr-2 h-4 w-4" /> Why We'll Win
+              <Trophy className="mr-2 h-4 w-4" /> Why We&apos;ll Win
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-10">
               What makes Global Pulse <span className="text-primary">hackathon-worthy</span>
@@ -1005,8 +1005,8 @@ export default function AboutPage() {
               <div key={index} className="bg-background rounded-xl p-6 border hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4">
                   <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
-                    <Image
-                      src={testimonial.image || "/placeholder.svg"}
+                    <OptimizedImage
+                      src={testimonial.image || ""}
                       alt={testimonial.name}
                       width={100}
                       height={100}

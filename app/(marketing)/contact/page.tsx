@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Send, User, MessageSquare, Zap, Clock } from "lucide-react";
+import { Mail, Send, User, MessageSquare, Clock } from "lucide-react";
 
 export default function ContactPage() {
   // Placeholder handler
@@ -35,7 +35,7 @@ export default function ContactPage() {
           <div className="max-w-4xl mx-auto text-center">
              {/* Introductory badge */}
              <div className="inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-semibold border-transparent bg-primary/20 text-primary w-fit mb-8 animate-fade-in shadow-sm">
-               <Zap className="mr-2 h-4 w-4" /> We're Here to Help
+               <MessageSquare className="mr-2 h-4 w-4" /> Connect With Our Team
              </div>
              {/* Gradient Title */}
              <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl/none lg:text-8xl/none mb-6">
@@ -44,7 +44,7 @@ export default function ContactPage() {
                 </span>
              </h1>
              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-               Have questions, feedback, or brilliant ideas? We're eager to hear from you. Reach out using the form below or through our direct channels.
+               Have questions, feedback, or innovative ideas? We&apos;re committed to building a platform that amplifies global voices. Share your thoughts through our form below or reach out directly through our channels.
              </p>
            </div>
          </div>
@@ -57,10 +57,10 @@ export default function ContactPage() {
              {/* Column 1: Contact Form Card */}
              <Card className="border-primary/20 shadow-lg overflow-hidden lg:sticky lg:top-24"> {/* Added sticky for form */}
                <CardHeader className="bg-muted/30 border-b border-primary/10">
-                 <CardTitle className="text-2xl font-semibold flex items-center gap-3 text-primary">
-                   <Mail className="h-6 w-6" />
-                   Send Us a Message
-                 </CardTitle>
+                  <CardTitle className="text-2xl font-semibold flex items-center gap-3 text-primary">
+                    <Mail className="h-6 w-6" />
+                    Share Your Perspective
+                  </CardTitle>
                </CardHeader>
                <CardContent className="p-6 md:p-8">
                  <form onSubmit={handleSubmit} className="grid gap-6">
@@ -81,32 +81,42 @@ export default function ContactPage() {
                      <Label htmlFor="message" className="flex items-center gap-1.5 font-medium">
                        <MessageSquare className="h-4 w-4 text-muted-foreground" /> Your Message
                      </Label>
-                     <Textarea
-                       id="message"
-                       placeholder="Let us know how we can help or what's on your mind..."
-                       required
-                       rows={6}
-                       className="text-base"
-                     />
+                      <Textarea
+                        id="message"
+                        placeholder="Share your thoughts, feedback, or how you'd like to see Global Pulse evolve..."
+                        required
+                        rows={6}
+                        className="text-base"
+                      />
                    </div>
-                   <Button type="submit" size="lg" className="w-full gap-2 h-12 text-base group relative overflow-hidden">
-                     <span className="relative z-10 flex items-center">
-                       Send Message <Send className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform" />
-                     </span>
-                      <span className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                   </Button>
+                    <Button type="submit" size="lg" className="w-full gap-2 h-12 text-base group relative overflow-hidden">
+                      <span className="relative z-10 flex items-center">
+                        Submit Feedback <Send className="h-4 w-4 ml-1.5 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                       <span className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    </Button>
                  </form>
                </CardContent>
              </Card>
 
              {/* Column 2: Contact Details */}
              <div className="space-y-8 lg:pt-4">
-                <h2 className="text-3xl font-bold tracking-tight">Direct Contact Information</h2>
-                <p className="text-muted-foreground text-lg">
-                  Prefer not to use the form? Here are other ways to reach our team. We typically respond within one business day.
-                </p>
+                <h2 className="text-3xl font-bold tracking-tight">Connect With Global Pulse</h2>
+                 <p className="text-muted-foreground text-lg">
+                   Your insights help shape our platform. Reach out directly to our team and become part of the global conversation that drives our innovation.
+                 </p>
 
                 <div className="space-y-6">
+                  {/* Response Time Indicator */}
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 bg-primary/10 text-primary p-3 rounded-lg">
+                      <Clock className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold">Fast Response</h3>
+                      <p className="text-muted-foreground">Our team typically responds within 24 hours, aligned with our commitment to real-time insights.</p>
+                    </div>
+                  </div>
                   {/* Email */}
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 bg-primary/10 text-primary p-3 rounded-lg">
@@ -114,7 +124,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold">Email Us</h3>
-                      <p className="text-muted-foreground">For support, inquiries, or feedback:</p>
+                       <p className="text-muted-foreground">For feature suggestions, partnerships, or support:</p>
                       <a href="mailto:support@globalpulse.app" className="font-medium text-primary hover:underline text-lg break-all">
                         support@globalpulse.app
                       </a>

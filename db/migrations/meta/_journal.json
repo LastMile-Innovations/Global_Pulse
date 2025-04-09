@@ -8,6 +8,13 @@
       "when": 1744169222617,
       "tag": "0000_wandering_warhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1744199295624,
+      "tag": "0001_medical_leader",
+      "breakpoints": true
     }
   ]
 }

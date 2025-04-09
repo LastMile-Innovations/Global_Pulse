@@ -2,21 +2,23 @@ import { type CoreMessage, streamText, type ToolSet } from "ai"
 import { createOpenAI } from "@ai-sdk/openai"
 import { createClient } from "@/utils/supabase/server"
 import type { NextRequest } from "next/server"
-import { rateLimit } from "@/lib/redis/client"
+import { rateLimit } from "@/lib/redis/rate-limit"
 import { safeQueryExecution } from "@/utils/supabase/error-handling"
 import { NextResponse } from "next/server"
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id: chatId } = params
+export async function POST(request: NextRequest, context: { params: { id: string } }) {
+  const { id: chatId } = context.params
 
   // Apply rate limiting
-  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'anonymous';
-  const identifier = ip;
-  const rateLimitResult = await rateLimit(identifier, 20, 60) // 20 requests per minute
+  const rateLimitResult = await rateLimit(request, { limit: 20, window: 60 }) // 20 requests per minute
 
-  if (!rateLimitResult.success) {
-    return new Response("Rate limit exceeded. Please try again later.", { status: 429 })
+  // If rate limit response is a NextResponse, it means rate limit was exceeded
+  if (rateLimitResult instanceof NextResponse) {
+    return rateLimitResult
   }
+  
+  // Otherwise, rateLimitResult is Headers to be included in our eventual response
+  // We'll use these headers later when constructing the final response
 
   try {
     const supabase = await createClient()
@@ -239,10 +241,39 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       tools: tools,
       maxTokens: 1000, 
       temperature: 0.7,
+      async onFinish({ text }) {
+        // Save the assistant's final response to the database
+        if (text) {
+          await safeQueryExecution(
+            async () =>
+              await supabase.from("chat_messages").insert({
+                chat_id: chatId,
+                role: "assistant",
+                content: text,
+                // Optionally store tool usage if needed
+                // tool_calls: toolCalls,
+                // tool_results: toolResults,
+              }),
+            { fallbackData: null }
+          )
+        }
+      },
     })
 
+    // Important: Consume the stream to ensure onFinish runs
+    result.consumeStream()
+
     // Convert the response into a friendly text-stream
-    return result.toDataStreamResponse(); 
+    const response = result.toDataStreamResponse();
+    
+    // Add rate limit headers to the response if available
+    if (rateLimitResult instanceof Headers) {
+      rateLimitResult.forEach((value, key) => {
+        response.headers.set(key, value);
+      });
+    }
+    
+    return response;
   } catch (error: unknown) {
     console.error("Error processing chat request:", error)
     return new Response("An error occurred", { status: 500 })

@@ -1,6 +1,5 @@
-
 import Link from "next/link";
-import Image from "next/image";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { memo } from "react";
@@ -68,8 +67,8 @@ function FeatureShowcaseComponent({ feature, index }: FeatureShowcaseProps) {
         {/* Visual Representation */}
         <div className={`relative rounded-xl overflow-hidden border-2 border-muted/20 shadow-xl transition-all duration-500 group-hover:border-${feature.colorClass}-500/40 group-hover:shadow-${feature.colorClass}-500/10 group-hover:scale-[1.02] ${isEven ? "md:order-2" : "md:order-1"}`}>
           <div className={`absolute inset-0 bg-gradient-to-br from-${feature.colorClass}-900/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-          {/* Use next/image for optimized images */}
-          <Image
+          {/* Use OptimizedImage instead of next/image */}
+          <OptimizedImage
             src={feature.image}
             alt={`${feature.title} visual representation`}
             width={400}
@@ -77,8 +76,6 @@ function FeatureShowcaseComponent({ feature, index }: FeatureShowcaseProps) {
             className="object-cover w-full aspect-[4/3]"
             priority={index < 2} // Prioritize loading for the first couple of features
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-            loading={index < 2 ? "eager" : "lazy"}
-            fetchPriority={index < 2 ? "high" : "auto"}
           />
           <div className="absolute bottom-2 right-2 bg-background/70 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium border border-border/50">
             Feature Visual

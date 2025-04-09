@@ -19,17 +19,16 @@ interface SurveyQuestion {
   id: number
   text: string
   type: string
-  parameters: any // TODO: Define specific types for parameters based on question type
+  parameters: Record<string, unknown> // More specific than 'any', can be refined further based on question types
   topicId: string | null
   topicName: string | null
 }
 
 interface SurveyFeedProps {
-  userId: string
   initialTopics: Topic[]
 }
 
-export default function SurveyFeed({ userId, initialTopics }: SurveyFeedProps) {
+export default function SurveyFeed({ initialTopics }: SurveyFeedProps) {
   const router = useRouter()
   const [currentQuestion, setCurrentQuestion] = useState<SurveyQuestion | null>(null)
   const [selectedAnswer, setSelectedAnswer] = useState<string | number | null>(null)
@@ -46,13 +45,12 @@ export default function SurveyFeed({ userId, initialTopics }: SurveyFeedProps) {
 
     try {
       const result = await fetchNextQuestion({
-        userId,
         topicId: filters.topicId,
       })
 
       if (result.success) {
         if (result.question) {
-          setCurrentQuestion(result.question)
+          setCurrentQuestion(result.question as SurveyQuestion)
           setIsComplete(false)
         } else {
           setCurrentQuestion(null)
@@ -67,7 +65,7 @@ export default function SurveyFeed({ userId, initialTopics }: SurveyFeedProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [userId, filters.topicId])
+  }, [filters.topicId])
 
   // Fetch first question on mount and when filters change
   useEffect(() => {
@@ -93,7 +91,6 @@ export default function SurveyFeed({ userId, initialTopics }: SurveyFeedProps) {
 
     try {
       const result = await submitSurveyResponse({
-        userId,
         questionId: currentQuestion.id,
         answer: selectedAnswer,
       })

@@ -101,8 +101,11 @@ importers:
       '@supabase/supabase-js':
         specifier: latest
         version: 2.49.4
+      '@upstash/ratelimit':
+        specifier: ^2.0.5
+        version: 2.0.5(@upstash/redis@1.34.7)
       '@upstash/redis':
-        specifier: latest
+        specifier: ^1.34.7
         version: 1.34.7
       ai:
         specifier: latest
@@ -1867,6 +1870,15 @@ packages:
     resolution: {integrity: sha512-hVXaObGI2lGFmrtT77KSbPQ3I+zk9IU500wobjk0+oX59vg/0VqAzABNtt3YSQYgXTC2a/LYxekLfND/wlt0yQ==}
     cpu: [x64]
     os: [win32]
+
+  '@upstash/core-analytics@0.0.10':
+    resolution: {integrity: sha512-7qJHGxpQgQr9/vmeS1PktEwvNAF7TI4iJDi8Pu2CFZ9YUGHZH4fOP5TfYlZ4aVxfopnELiE4BS4FBjyK7V1/xQ==}
+    engines: {node: '>=16.0.0'}
+
+  '@upstash/ratelimit@2.0.5':
+    resolution: {integrity: sha512-1FRv0cs3ZlBjCNOCpCmKYmt9BYGIJf0J0R3pucOPE88R21rL7jNjXG+I+rN/BVOvYJhI9niRAS/JaSNjiSICxA==}
+    peerDependencies:
+      '@upstash/redis': ^1.34.3
 
   '@upstash/redis@1.34.7':
     resolution: {integrity: sha512-EJ/g+ttDL3MFS8WNDLj/Buybo3FpPw2IAFl4X8lxh8/l7YTq6kTqT6FKkq8eYRdN6lGlVw+W6qnmym734m39Tg==}
@@ -5279,6 +5291,15 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.4.1':
     optional: true
+
+  '@upstash/core-analytics@0.0.10':
+    dependencies:
+      '@upstash/redis': 1.34.7
+
+  '@upstash/ratelimit@2.0.5(@upstash/redis@1.34.7)':
+    dependencies:
+      '@upstash/core-analytics': 0.0.10
+      '@upstash/redis': 1.34.7
 
   '@upstash/redis@1.34.7':
     dependencies:

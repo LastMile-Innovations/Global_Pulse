@@ -10,7 +10,7 @@ import ButtonsInput from "./generative-ui/buttons-input"
 // Based on usage within the component
 type MessagePart = 
   | { type: 'text'; text: string }
-  | { type: 'tool_call'; tool_call: { id: string; name: string; parameters: Record<string, any> } };
+  | { type: 'tool_call'; tool_call: { id: string; name: string; parameters: Record<string, unknown> } };
 
 // Extend the Message type from the AI package to support our custom content format
 type Message = Omit<AIMessage, 'content'> & {

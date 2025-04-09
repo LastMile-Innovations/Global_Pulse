@@ -9,7 +9,7 @@ interface MultipleChoiceInputProps {
   chatId: string
 }
 
-export default function MultipleChoiceInput({ questionId, options, chatId }: MultipleChoiceInputProps) {
+export default function MultipleChoiceInput({ questionId, options }: MultipleChoiceInputProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -28,13 +28,8 @@ export default function MultipleChoiceInput({ questionId, options, chatId }: Mul
         return;
       }
 
-      // Get the current user from localStorage or session if available
-      // For now using a placeholder - in a real app, you'd get this from authentication
-      const userId = localStorage.getItem('userId') || 'anonymous-user';
-
       // Submit the response using the server action with the expected parameter structure
       await submitSurveyResponse({
-        userId,
         questionId: numericQuestionId,
         answer: optionId
       })

@@ -1,4 +1,5 @@
 import type React from "react"
+import { Suspense } from "react"
 import "./globals.css"
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from 'next-themes'
@@ -24,7 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
             </main>
             <Footer />
-            <ScrollToTop />
+            <Suspense fallback={null}>
+              <ScrollToTop />
+            </Suspense>
             <Toaster />
           </div>
         </ThemeProvider>
