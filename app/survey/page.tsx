@@ -1,19 +1,17 @@
 import { Suspense } from "react"
-import { createClient } from "@/lib/supabase/server"
-import SurveyFeed from "./components/survey-feed"
-import SurveyFeedSkeleton from "./components/survey-feed-skeleton"
+import { db, schema } from "@/lib/db"
+import { asc } from "drizzle-orm"
+import SurveyFeed from "@/components/survey/survey-feed"
+import SurveyFeedSkeleton from "@/components/survey/survey-feed-skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { safeQueryExecution } from "@/lib/supabase/error-handling"
 
 export default async function SurveyPage() {
-  const supabase = createClient()
-
   // Get the current user
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await db.$client.auth.getUser()
 
   // If user is not authenticated, show login prompt
   if (!user) {
@@ -35,11 +33,25 @@ export default async function SurveyPage() {
     )
   }
 
-  // Fetch available topics for filters with safe error handling
-  const { data: topics, tableNotFound } = await safeQueryExecution(
-    () => supabase.from("topics").select("id, name").order("name").limit(20),
-    [] // Fallback to empty array if table doesn't exist
-  )
+  // Fetch available topics for filters with Drizzle and basic error handling
+  let topics: { id: string; name: string }[] = [];
+  try {
+    const dbTopics = await db
+      .select({ id: schema.topics.id, name: schema.topics.name })
+      .from(schema.topics)
+      .orderBy(asc(schema.topics.name))
+      .limit(20);
+    
+    // Map results to convert numeric ID to string
+    topics = dbTopics.map(topic => ({
+      ...topic,
+      id: topic.id.toString(), 
+    }));
+
+  } catch (error) {
+    console.error("Error fetching topics:", error);
+    // Fallback to empty array on error
+  }
 
   return (
     <div className="container max-w-4xl py-8">
@@ -50,7 +62,7 @@ export default async function SurveyPage() {
       </p>
 
       <Suspense fallback={<SurveyFeedSkeleton />}>
-        <SurveyFeed userId={user.id} initialTopics={topics || []} />
+        <SurveyFeed userId={user.id} initialTopics={topics} />
       </Suspense>
     </div>
   )

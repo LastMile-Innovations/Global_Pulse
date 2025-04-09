@@ -18,10 +18,10 @@ import {
   ChevronRight,
   Star,
 } from "lucide-react"
-import TopicEngagementSkeleton from "@/components/topic-engagement-skeleton"
+import TopicEngagementSkeleton from "@/components/marketing/topic-engagement-skeleton"
 import dynamic from "next/dynamic"
-import TrustedByLogos from "@/components/trusted-by-logos"
-import AnimatedCTAButton from "@/components/animated-cta-button"
+import TrustedByLogos from "@/components/marketing/trusted-by-logos"
+import AnimatedCTAButton from "@/components/marketing/animated-cta-button"
 import ScrollToTopButton from "@/components/scroll-to-top-button"
 import {
   GlobalMapClient,
@@ -33,7 +33,7 @@ import {
 } from "@/components/client-wrappers"
 
 // Dynamically import heavy components with proper loading states
-const TopicEngagement = dynamic(() => import("@/components/topic-engagement"), {
+const TopicEngagement = dynamic(() => import("@/components/marketing/topic-engagement"), {
   loading: () => <TopicEngagementSkeleton />,
   ssr: true,
 })
@@ -42,7 +42,7 @@ const TopicEngagement = dynamic(() => import("@/components/topic-engagement"), {
 // which is marked with 'use client'
 
 // Optimized feature card component
-const FeatureCard = dynamic(() => import("@/components/feature-card"), {
+const FeatureCard = dynamic(() => import("@/components/marketing/feature-card"), {
   ssr: true,
 })
 

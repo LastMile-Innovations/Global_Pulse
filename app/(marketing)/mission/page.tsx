@@ -12,7 +12,7 @@ import {
   ExternalLink,
   Rocket,
 } from "lucide-react"
-import AnimatedCTAButton from "@/components/animated-cta-button"
+import AnimatedCTAButton from "@/components/marketing/animated-cta-button"
 
 export default function MissionPage() {
   return (

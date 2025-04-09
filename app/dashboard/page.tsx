@@ -2,17 +2,17 @@ import { Suspense } from "react"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
+import { db, schema } from "@/lib/db"
+import { eq } from "drizzle-orm"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { MessageSquareText, BarChartBig, Zap, ArrowRight, Plus, Settings } from "lucide-react"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import RecentChats from "../../components/dashboard/recent-chats"
 import SuggestedTopics from "../../components/dashboard/suggested-topics"
 import TrendingTopicsCard from "../../components/dashboard/trending-topics-card"
 import UserStatsCard from "../../components/dashboard/user-stats-card"
 import InsightSpotlightCard from "../../components/dashboard/insight-spotlight-card"
 import GettingStartedChecklist from "../../components/dashboard/getting-started-checklist"
-import DashboardLoading from "./loading" // Import the loading component
 
 export default async function DashboardPage() {
   const supabase = createClient()
@@ -27,10 +27,18 @@ export default async function DashboardPage() {
   }
 
   // Fetch user profile for personalized greeting - wrapped in try/catch
-  let profile = null
+  let profile: { first_name: string | null; last_name: string | null } | null = null
   try {
-    const { data } = await supabase.from("profiles").select("first_name, last_name").eq("id", user.id).maybeSingle()
-    profile = data
+    const results = await db
+      .select({
+        first_name: schema.profiles.firstName,
+        last_name: schema.profiles.lastName,
+      })
+      .from(schema.profiles)
+      .where(eq(schema.profiles.id, user.id))
+      .limit(1);
+    profile = results.length > 0 ? results[0] : null;
+
   } catch (error) {
     console.error("Error fetching profile:", error)
     // Continue without profile data if fetch fails
@@ -95,7 +103,6 @@ export default async function DashboardPage() {
 
         {/* Getting Started Checklist (conditionally rendered) */}
         <Suspense fallback={null}>
-          {/* @ts-expect-error Server Component */}
           <GettingStartedChecklist userId={user.id} />
         </Suspense>
 
@@ -116,7 +123,6 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Suspense fallback={<RecentChats.Loading />}>
-                {/* @ts-expect-error Server Component */}
                 <RecentChats userId={user.id} />
               </Suspense>
             </CardContent>
@@ -138,7 +144,6 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Suspense fallback={<SuggestedTopics.Loading />}>
-                {/* @ts-expect-error Server Component */}
                 <SuggestedTopics />
               </Suspense>
             </CardContent>
@@ -162,7 +167,6 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <Suspense fallback={<TrendingTopicsCard.Loading />}>
-                {/* @ts-expect-error Server Component */}
                 <TrendingTopicsCard />
               </Suspense>
             </CardContent>
@@ -177,7 +181,6 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<UserStatsCard.Loading />}>
-                  {/* @ts-expect-error Server Component */}
                   <UserStatsCard userId={user.id} />
                 </Suspense>
               </CardContent>
@@ -186,7 +189,6 @@ export default async function DashboardPage() {
             {/* Insight Spotlight Card */}
             <Card className="border-0 p-0 shadow-none overflow-hidden">
               <Suspense fallback={<InsightSpotlightCard.Loading />}>
-                {/* @ts-expect-error Server Component */}
                 <InsightSpotlightCard />
               </Suspense>
             </Card>

@@ -3,7 +3,7 @@
 import { useState, useOptimistic, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowUp } from "lucide-react"
-import { incrementTopicEngagement } from "@/app/api/surveys/actions"
+import { incrementTopicEngagement } from "@/app/api/topics/engagement/route"
 
 type TopicEngagementButtonProps = {
   topicId: string

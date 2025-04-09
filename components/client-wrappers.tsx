@@ -29,6 +29,6 @@ export const RegionalEngagementClient = dynamic(() => import("@/components/mock/
   ssr: false,
 })
 
-export const AnimatedStatClient = dynamic(() => import("@/components/animated-stats"), {
+export const AnimatedStatClient = dynamic(() => import("@/components/marketing/animated-stats"), {
   ssr: false,
 })

@@ -9,7 +9,7 @@ import FeatureShowcase from "@/components/features/feature-showcase";
 // ScrollToTop is already in the main layout
 
 // Dynamic imports with loading fallbacks for client components
-const AnimatedCTAButton = dynamic(() => import("@/components/animated-cta-button"), {
+const AnimatedCTAButton = dynamic(() => import("@/components/marketing/animated-cta-button"), {
   loading: () => <Button size="lg" className="h-14 animate-pulse bg-primary/80">Loading...</Button>
 });
 
