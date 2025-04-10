@@ -14,21 +14,23 @@ import {
   numeric,
   pgEnum,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { relations } from 'drizzle-orm';
 
 // Define Enums for Status fields - improves type safety and consistency
 export const userRoleEnum = pgEnum('user_role', ['user', 'admin', 'moderator', 'analyst', 'support', 'guest']);
 
 export const questionTypeEnum = pgEnum('question_type', [
-  'multipleChoice',
-  'sliderScale', 
-  'buttons',
-  'openEnded',
-  'ranking',
-  'matrixGrid',
-  'imageChoice',
+  'multiple-choice',
+  'slider-scale', 
+  'simple-buttons', // Renamed from 'buttons' for clarity
+  'sentiment-reaction', // Added based on usage
+  'priority-ranking', // Added based on usage
+  'open-ended',
+  'matrix-grid',
+  'image-choice',
   'nps',
-  'dateTime',
+  'date-time',
   'dropdown'
 ]);
 
@@ -88,6 +90,12 @@ export const payoutStatusEnum = pgEnum('payout_status', [
   'scheduled'
 ]);
 
+// Define conversation question type enum for alternating question types
+export const conversationQuestionTypeEnum = pgEnum('conversation_question_type', [
+  'structured',
+  'open-ended'
+]);
+
 export const notificationTypeEnum = pgEnum('notification_type', [
   'info',
   'warning',
@@ -115,7 +123,8 @@ export const notificationStatusEnum = pgEnum('notification_status', [
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().references(() => profiles.id, { onDelete: 'cascade' }),
   email: text('email').notNull().unique(),
-  role: userRoleEnum('role').default('user').notNull(),
+  // Use text with enum values for compatibility
+  role: text('role', { enum: ['user', 'admin', 'moderator', 'analyst', 'support', 'guest'] }).default('user').notNull(),
   // Note: User onboarding flags (completed_first_chat, etc.) are stored in the profiles table
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(() => new Date()),
@@ -140,12 +149,31 @@ export const chatMessages = pgTable('chat_messages', {
   id: serial('id').primaryKey(),
   chatId: varchar('chat_id', { length: 21 }).notNull().references(() => chats.id, { onDelete: 'cascade' }),
   role: text('role', { enum: ['user', 'assistant', 'system', 'tool'] }).notNull(),
-  content: text('content').notNull(), // Store text content
-  toolCalls: jsonb('tool_calls'), // Store tool call info if needed
-  toolResults: jsonb('tool_results'), // Store tool result info if needed
+  content: text('content').notNull(), // Store primary text content for simplicity/indexing
+  toolCalls: jsonb('tool_calls'), // JSONB array of StoredToolCall objects
+  toolResults: jsonb('tool_results'), // JSONB array of StoredToolResult objects
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => ({
   chatIdIdx: index('messages_chat_id_idx').on(table.chatId),
+}));
+
+// --- Conversation States ---
+// Tracks the state of conversations for alternating question types
+export const conversation_states = pgTable('conversation_states', {
+  chatId: varchar('chat_id', { length: 50 }).primaryKey().references(() => chats.id, { onDelete: 'cascade' }),
+  // Keep as varchar for now to avoid migration issues, but we'll treat it as the enum type in our code
+  lastQuestionType: varchar('last_question_type', { length: 20 }).notNull().default('open-ended'),
+  questionCount: integer('question_count').notNull().default(0),
+  structuredQuestionCount: integer('structured_question_count').notNull().default(0),
+  openEndedQuestionCount: integer('open_ended_question_count').notNull().default(0),
+  topicFocus: varchar('topic_focus', { length: 100 }),
+  lastQuestionTimestamp: numeric('last_question_timestamp').notNull().default(
+    sql`extract(epoch from now()) * 1000`
+  ),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(() => new Date()),
+}, (table) => ({
+  chatIdIdx: index('idx_conversation_states_chat_id').on(table.chatId),
 }));
 
 // --- Surveys ---
@@ -161,11 +189,34 @@ export const topics = pgTable('topics', {
 export const questions = pgTable('questions', {
   id: serial('id').primaryKey(),
   text: text('text').notNull(),
-  type: questionTypeEnum('type').notNull(),
-  status: questionStatusEnum('status').default('active').notNull(), // Added status for lifecycle management
-  parameters: jsonb('parameters'), // Store options, min/max, labels etc.
+  // Use text with enum values for compatibility
+  type: text('type', { enum: [
+    'multiple-choice',
+    'slider-scale', 
+    'simple-buttons',
+    'sentiment-reaction',
+    'priority-ranking',
+    'open-ended',
+    'matrix-grid',
+    'image-choice',
+    'nps',
+    'date-time',
+    'dropdown'
+  ] }).notNull(),
+  status: text('status', { enum: [
+    'draft',
+    'review',
+    'active',
+    'paused',
+    'archived',
+    'flagged',
+    'deleted'
+  ] }).default('active').notNull(),
+  parameters: jsonb('parameters').notNull(), // Store type-specific parameters (MultipleChoiceParams, SliderScaleParams, etc.)
   topicId: varchar('topic_id', { length: 50 }).references(() => topics.id, { onDelete: 'set null' }),
-  tags: text('tags').array(), // Added for more granular categorization
+  tags: text('tags').array(), // Array of string tags
+  isGenerated: boolean('is_generated').default(false).notNull(), // Added based on usage
+  generationContext: text('generation_context'), // Added based on usage
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(() => new Date()),
 }, (table) => ({
@@ -178,10 +229,19 @@ export const surveyResponses = pgTable('survey_responses', {
   id: varchar('id', { length: 21 }).primaryKey(), // Match nanoid length
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   questionId: integer('question_id').notNull().references(() => questions.id, { onDelete: 'cascade' }),
-  optionId: text('option_id'), // For multipleChoice, buttons
-  numericValue: integer('numeric_value'), // For sliderScale
-  textValue: text('text_value'), // Future: for open-ended questions
-  source: responseSourceEnum('source').notNull(), // Where answer was given
+  optionId: varchar('option_id', { length: 50 }), // For multiple-choice, simple-buttons, sentiment-reaction
+  numericValue: numeric('numeric_value'), // For slider-scale
+  textValue: text('text_value'), // For open-ended, priority-ranking (JSON string), etc.
+  // Use text with enum values for compatibility
+  source: text('source', { enum: [
+    'chat',
+    'survey_feed',
+    'embedded_widget',
+    'email_campaign',
+    'api',
+    'mobile_app',
+    'import'
+  ] }).default('chat').notNull(),
   chatId: varchar('chat_id', { length: 21 }).references(() => chats.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => ({
@@ -223,6 +283,7 @@ export const chatsRelations = relations(chats, ({ one, many }) => ({
   user: one(users, { fields: [chats.userId], references: [users.id] }),
   messages: many(chatMessages),
   surveyResponses: many(surveyResponses), // Answers given within this chat
+  conversationState: one(conversation_states, { fields: [chats.id], references: [conversation_states.chatId] }),
 }));
 
 export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
@@ -262,15 +323,25 @@ export const organizations = pgTable('organizations', {
 export const marketplace_purchases = pgTable('marketplace_purchases', {
   id: uuid('id').primaryKey().defaultRandom(),
   buyerIdentifier: text('buyer_identifier').notNull(), // Simple identifier for P1
-  // Link to the organization/user making the purchase (nullable if buyers aren't required to have accounts initially)
   buyerOrganizationId: uuid('buyer_organization_id').references(() => organizations.id, { onDelete: 'set null' }),
-  buyerUserId: uuid('buyer_user_id').references(() => users.id, { onDelete: 'set null' }), // If buyers can be individual users
+  buyerUserId: uuid('buyer_user_id').references(() => users.id, { onDelete: 'set null' }),
   purchaseDate: timestamp('purchase_date', { withTimezone: true }).defaultNow().notNull(),
   totalAmount: numeric('total_amount', { precision: 10, scale: 2 }).notNull(),
-  currency: text('currency').notNull().default('USD'),
-  status: purchaseStatusEnum('status').notNull().default('processing'),
-  paymentProviderRef: text('payment_provider_ref'), // e.g., Stripe Charge ID
-  datasetAccessInfo: jsonb('dataset_access_info'), // e.g., { downloadUrl: "...", expiry: "...", format: "csv" }
+  currency: text('currency').default('USD').notNull(),
+  // Use text with enum values for compatibility
+  status: text('status', { enum: [
+    'pending',
+    'awaiting_payment',
+    'processing',
+    'completed',
+    'failed',
+    'refunded',
+    'partially_refunded',
+    'cancelled',
+    'disputed'
+  ] }).default('pending').notNull(),
+  paymentProviderRef: text('payment_provider_ref'),
+  datasetAccessInfo: jsonb('dataset_access_info'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(() => new Date()),
 }, (table) => ({
@@ -296,12 +367,21 @@ export const payouts = pgTable('payouts', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   amount: numeric('amount', { precision: 10, scale: 2 }).notNull(),
-  currency: text('currency').notNull().default('USD'),
-  status: payoutStatusEnum('status').notNull().default('requested'),
-  // Store non-sensitive payout method references (e.g., last 4 digits, provider type, Stripe Account ID)
-  // Avoid storing raw bank details or full credentials here.
+  currency: text('currency').default('USD').notNull(),
+  // Use text with enum values for compatibility
+  status: text('status', { enum: [
+    'requested',
+    'approved',
+    'processing',
+    'completed',
+    'failed',
+    'cancelled',
+    'on_hold',
+    'rejected',
+    'scheduled'
+  ] }).default('requested').notNull(),
   payoutMethodInfo: jsonb('payout_method_info'),
-  providerReference: text('provider_reference'), // e.g., Stripe Transfer ID
+  providerReference: text('provider_reference'),
   requestedAt: timestamp('requested_at', { withTimezone: true }).defaultNow().notNull(),
   processedAt: timestamp('processed_at', { withTimezone: true }),
   updatedAt: timestamp('updated_at', { withTimezone: true }).$onUpdate(() => new Date()),
@@ -314,10 +394,21 @@ export const marketplace_earnings = pgTable('marketplace_earnings', {
   id: serial('id').primaryKey(),
   userPseudonym: uuid('user_pseudonym').notNull(), // Matches profiles.pseudonym value
   purchaseItemId: integer('purchase_item_id').notNull().references(() => marketplace_purchase_items.id, { onDelete: 'cascade' }),
-  amount: numeric('amount', { precision: 10, scale: 4 }).notNull(),
-  currency: text('currency').notNull().default('USD'),
-  status: earningStatusEnum('status').notNull().default('pending'),
-  payoutId: uuid('payout_id').references(() => payouts.id, { onDelete: 'set null' }), // Nullable FK to payouts table
+  amount: numeric('amount', { precision: 10, scale: 2 }).notNull(),
+  currency: text('currency').default('USD').notNull(),
+  // Use text with enum values for compatibility
+  status: text('status', { enum: [
+    'pending',
+    'available',
+    'requested',
+    'processing',
+    'paid_out',
+    'failed',
+    'cancelled',
+    'on_hold',
+    'expired'
+  ] }).default('pending').notNull(),
+  payoutId: uuid('payout_id').references(() => payouts.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   processedAt: timestamp('processed_at', { withTimezone: true }), // When status moved from pending
 }, (table) => ({
@@ -326,22 +417,35 @@ export const marketplace_earnings = pgTable('marketplace_earnings', {
   payoutIdx: index('earnings_payout_idx').on(table.payoutId),
 }));
 
-// --- Relations for Marketplace ---
-// These relations will be replaced by the enhanced versions defined later in the file
-
-// Note: We deliberately DO NOT define an ORM-level relation from marketplace_earnings back to profiles/users via pseudonym.
-// to maintain a separation for anonymization purposes within the schema definition itself.
-// Lookup of earnings for a specific user requires querying marketplace_earnings using the user's pseudonym value from the profiles table.
-
 // --- Notifications Table ---
 // For potential future in-app notifications.
 export const notifications = pgTable('notifications', {
   id: serial('id').primaryKey(),
   userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  type: notificationTypeEnum('type').notNull().default('info'),
-  status: notificationStatusEnum('status').notNull().default('unread'),
+  // Use text with enum values for compatibility
+  type: text('type', { enum: [
+    'info',
+    'warning',
+    'error',
+    'success',
+    'payout',
+    'new_feature',
+    'survey_completion',
+    'earnings_update',
+    'system_maintenance',
+    'account_security',
+    'consent_update'
+  ] }).default('info').notNull(),
+  // Use text with enum values for compatibility
+  status: text('status', { enum: [
+    'unread',
+    'read',
+    'archived',
+    'deleted',
+    'actioned'
+  ] }).default('unread').notNull(),
   content: text('content').notNull(),
-  link: text('link'), // Optional link related to the notification
+  link: text('link'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 }, (table) => ({
   userIdx: index('notifications_user_id_idx').on(table.userId),
@@ -435,12 +539,18 @@ export const marketplaceEarningsRelations = relations(marketplace_earnings, ({ o
   payout: one(payouts, { fields: [marketplace_earnings.payoutId], references: [payouts.id] }),
 }));
 
+// Conversation states relations
+export const conversationStatesRelations = relations(conversation_states, ({ one }) => ({
+  chat: one(chats, { fields: [conversation_states.chatId], references: [chats.id] }),
+}));
+
 // --- Export Combined Schema ---
 export const schema = {
   // Tables
   users,
   chats,
   chatMessages,
+  conversation_states,
   topics,
   questions,
   surveyResponses,
@@ -472,4 +582,5 @@ export const schema = {
   marketplacePurchasesRelations,
   marketplacePurchaseItemsRelations,
   marketplaceEarningsRelations,
+  conversationStatesRelations,
 };

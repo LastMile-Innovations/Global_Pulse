@@ -1,0 +1,1 @@
+ALTER TABLE "conversation_states" ALTER COLUMN "last_question_type" SET DATA TYPE varchar(20);

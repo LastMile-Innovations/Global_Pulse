@@ -15,6 +15,34 @@
       "when": 1744199295624,
       "tag": "0001_medical_leader",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1744254941040,
+      "tag": "0002_calm_black_widow",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1744295480788,
+      "tag": "0003_narrow_songbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1744295548061,
+      "tag": "0004_overconfident_diamondback",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1744295688760,
+      "tag": "0005_flat_overlord",
+      "breakpoints": true
     }
   ]
 }
