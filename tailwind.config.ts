@@ -75,6 +75,28 @@ const config = {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.5" },
         },
+        "pulse-subtle": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.05)" },
+        },
+        "ping-slow": {
+          "75%, 100%": {
+            transform: "scale(2)",
+            opacity: "0",
+          },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "progress-indeterminate": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+        "flow-slow": {
+          "0%": { strokeDashoffset: "0" },
+          "100%": { strokeDashoffset: "100" },
+        },
         bounce: {
           "0%, 100%": {
             transform: "translateY(0)",
@@ -91,6 +113,11 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         // Optimized animations
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "pulse-subtle": "pulse-subtle 3s ease-in-out infinite",
+        "ping-slow": "ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite",
+        float: "float 3s ease-in-out infinite",
+        "progress-indeterminate": "progress-indeterminate 1.5s ease-in-out infinite",
+        "flow-slow": "flow-slow 3s linear infinite",
         bounce: "bounce 1s infinite",
       },
     },

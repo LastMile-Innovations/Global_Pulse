@@ -1,21 +1,71 @@
 "use client"
 
-import { useEffect, useState, useRef, memo } from "react"
-import { Globe } from "lucide-react"
+import { useEffect, useState, useRef, memo, useMemo } from "react"
+import { Globe, Activity, TrendingUp, Users, BarChart3, Info } from "lucide-react"
 
 interface GlobalMapProps {
   className?: string
   showPulse?: boolean
+  showRegions?: boolean
+  showStats?: boolean
+  interactiveHotspots?: boolean
 }
 
+// Predefined regions with data for visualization
+const REGIONS = [
+  { id: "na", name: "North America", code: "NA", x: 30, y: 20, size: 16, color: "primary", sentiment: 85 },
+  { id: "eu", name: "Europe", code: "EU", x: 55, y: 25, size: 14, color: "blue-500", sentiment: 72 },
+  { id: "as", name: "Asia", code: "AS", x: 70, y: 35, size: 16, color: "teal-500", sentiment: 68 },
+  { id: "af", name: "Africa", code: "AF", x: 50, y: 45, size: 12, color: "amber-500", sentiment: 63 },
+  { id: "sa", name: "South America", code: "SA", x: 35, y: 60, size: 14, color: "purple-500", sentiment: 77 },
+  { id: "oc", name: "Oceania", code: "OC", x: 80, y: 60, size: 12, color: "red-500", sentiment: 81 },
+]
+
 // Memoize the component to prevent unnecessary re-renders
-const GlobalMap = memo(function GlobalMap({ className, showPulse = true }: GlobalMapProps) {
+const GlobalMap = memo(function GlobalMap({ 
+  className, 
+  showPulse = true,
+  showRegions = true,
+  showStats = true,
+  interactiveHotspots = true 
+}: GlobalMapProps) {
   const [activePoints, setActivePoints] = useState<
-    { x: number; y: number; size: number; delay: number; duration: number }[]
+    { x: number; y: number; size: number; delay: number; duration: number; opacity: number }[]
   >([])
   const [isHovered, setIsHovered] = useState(false)
+  const [activeRegion, setActiveRegion] = useState<string | null>(null)
+  const [isAnimating, setIsAnimating] = useState(false)
   const mapRef = useRef<HTMLDivElement>(null)
   const isVisible = useRef(false)
+  const animationTimer = useRef<NodeJS.Timeout | null>(null)
+
+  // Generate random points with improved distribution
+  const generatePoints = useMemo(() => {
+    return (count: number) => {
+      // Create a grid-based distribution for more realistic global coverage
+      const gridSize = Math.ceil(Math.sqrt(count))
+      const cellWidth = 100 / gridSize
+      const cellHeight = 100 / gridSize
+      
+      return Array.from({ length: count }, (_, i) => {
+        const gridX = i % gridSize
+        const gridY = Math.floor(i / gridSize)
+        
+        // Add some randomness within each grid cell
+        const x = (gridX * cellWidth) + (Math.random() * cellWidth * 0.8)
+        const y = (gridY * cellHeight) + (Math.random() * cellHeight * 0.8)
+        
+        return {
+          x,
+          y,
+          size: Math.random() * 12 + 6,
+          delay: Math.random() * 5,
+          duration: Math.random() * 3 + 2, // Random duration between 2-5s
+          opacity: Math.random() * 0.5 + 0.3, // Varied opacity for depth
+        }
+      })
+    }
+  }, [])
 
   useEffect(() => {
     // Only generate points when component is visible (optimization)
@@ -23,16 +73,28 @@ const GlobalMap = memo(function GlobalMap({ className, showPulse = true }: Globa
       (entries) => {
         if (entries[0].isIntersecting && !isVisible.current) {
           isVisible.current = true
-
-          // Generate random points for the pulse effect
-          const points = Array.from({ length: 12 }, () => ({
-            x: Math.random() * 100,
-            y: Math.random() * 100,
-            size: Math.random() * 12 + 6,
-            delay: Math.random() * 5,
-            duration: Math.random() * 3 + 2, // Random duration between 2-5s
-          }))
-          setActivePoints(points)
+          setActivePoints(generatePoints(16))
+          
+          // Trigger a periodic refresh of points for a more dynamic feel
+          const refreshInterval = setInterval(() => {
+            if (isVisible.current) {
+              setActivePoints(prev => {
+                // Only replace some points to avoid jarring changes
+                const newPoints = [...prev]
+                const numToReplace = Math.floor(newPoints.length / 4)
+                const replacementPoints = generatePoints(numToReplace)
+                
+                for (let i = 0; i < numToReplace; i++) {
+                  const randomIndex = Math.floor(Math.random() * newPoints.length)
+                  newPoints[randomIndex] = replacementPoints[i]
+                }
+                
+                return newPoints
+              })
+            }
+          }, 8000) // Refresh some points every 8 seconds
+          
+          return () => clearInterval(refreshInterval)
         }
       },
       { threshold: 0.1 },
@@ -44,25 +106,49 @@ const GlobalMap = memo(function GlobalMap({ className, showPulse = true }: Globa
 
     return () => {
       observer.disconnect()
+      if (animationTimer.current) {
+        clearTimeout(animationTimer.current)
+      }
     }
   }, [])
 
+  // Handle region hover/click
+  const handleRegionInteraction = (regionId: string) => {
+    if (interactiveHotspots) {
+      setActiveRegion(regionId === activeRegion ? null : regionId)
+      
+      // Add a subtle animation effect when region is selected
+      setIsAnimating(true)
+      if (animationTimer.current) {
+        clearTimeout(animationTimer.current)
+      }
+      
+      animationTimer.current = setTimeout(() => {
+        setIsAnimating(false)
+      }, 1000)
+    }
+  }
+  
   return (
     <div
       ref={mapRef}
-      className={`relative w-full h-full min-h-[300px] bg-muted/20 rounded-xl overflow-hidden ${className}`}
+      className={`relative w-full h-full min-h-[400px] bg-gradient-to-br from-muted/30 to-muted/10 rounded-xl overflow-hidden ${className} ${isAnimating ? 'animate-subtle-pulse' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* World map outline - enhanced SVG */}
+      {/* Enhanced background with subtle gradient */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+      
+      {/* World map outline - enhanced SVG with more detailed continents */}
       <svg
         viewBox="0 0 1000 500"
-        className={`absolute inset-0 w-full h-full transition-opacity duration-500 ${isHovered ? "opacity-50" : "opacity-30"} text-primary/50`}
+        className={`absolute inset-0 w-full h-full transition-all duration-500 ${isHovered ? "opacity-60" : "opacity-40"} ${activeRegion ? 'scale-105' : 'scale-100'} text-primary/50`}
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.5"
+        strokeLinecap="round"
       >
-        {/* Simplified continent outlines with smoother paths */}
+        {/* More detailed continent outlines */}
         <path d="M250,120 C300,100 350,90 400,100 C450,110 500,130 550,120 C600,110 650,90 700,100 C750,110 800,140 850,130" />
         <path d="M200,150 C250,140 300,150 350,160 C400,170 450,160 500,150 C550,140 600,150 650,160 C700,170 750,160 800,150" />
         <path d="M150,200 C200,180 250,190 300,200 C350,210 400,200 450,190 C500,180 550,190 600,200 C650,210 700,200 750,190 C800,180 850,190 900,200" />
@@ -70,71 +156,159 @@ const GlobalMap = memo(function GlobalMap({ className, showPulse = true }: Globa
         <path d="M250,300 C300,280 350,290 400,300 C450,310 500,300 550,290 C600,280 650,290 700,300 C750,310 800,300 850,290" />
         <path d="M300,350 C350,330 400,340 450,350 C500,360 550,350 600,340 C650,330 700,340 750,350" />
 
-        {/* Add some curved lines for oceans */}
-        <path d="M100,150 Q150,180 100,220" className="opacity-30" />
-        <path d="M850,150 Q800,180 850,220" className="opacity-30" />
-        <path d="M400,50 Q500,80 600,50" className="opacity-30" />
-        <path d="M400,400 Q500,370 600,400" className="opacity-30" />
+        {/* North America detail */}
+        <path d="M220,140 C240,130 260,125 280,130" className="text-primary/30" />
+        <path d="M200,160 C220,150 240,145 260,150" className="text-primary/30" />
+        <path d="M180,180 C200,170 220,165 240,170" className="text-primary/30" />
+        
+        {/* Europe detail */}
+        <path d="M520,140 C540,130 560,125 580,130" className="text-blue-500/30" />
+        <path d="M500,160 C520,150 540,145 560,150" className="text-blue-500/30" />
+        
+        {/* Asia detail */}
+        <path d="M620,160 C640,150 660,145 680,150" className="text-teal-500/30" />
+        <path d="M640,180 C660,170 680,165 700,170" className="text-teal-500/30" />
+        <path d="M660,200 C680,190 700,185 720,190" className="text-teal-500/30" />
+
+        {/* Ocean currents with animation */}
+        <path d="M100,150 Q150,180 100,220" className="opacity-30 animate-flow-slow" />
+        <path d="M850,150 Q800,180 850,220" className="opacity-30 animate-flow-slow" style={{animationDelay: '1s'}} />
+        <path d="M400,50 Q500,80 600,50" className="opacity-30 animate-flow-slow" style={{animationDelay: '2s'}} />
+        <path d="M400,400 Q500,370 600,400" className="opacity-30 animate-flow-slow" style={{animationDelay: '3s'}} />
       </svg>
 
-      {/* Grid lines with animation */}
+      {/* Enhanced grid lines with animation */}
       <div
-        className={`absolute inset-0 grid grid-cols-6 grid-rows-3 transition-opacity duration-500 ${isHovered ? "opacity-30" : "opacity-15"}`}
+        className={`absolute inset-0 grid grid-cols-8 grid-rows-4 transition-all duration-500 ${isHovered ? "opacity-30" : "opacity-15"}`}
       >
-        {Array.from({ length: 24 }).map((_, i) => (
+        {Array.from({ length: 32 }).map((_, i) => (
           <div key={i} className="border border-primary/10"></div>
         ))}
       </div>
 
-      {/* Pulse points with improved animation */}
+      {/* Improved pulse points with better animation and varied colors */}
       {showPulse &&
-        activePoints.map((point, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-primary animate-pulse will-change-transform"
+        activePoints.map((point, i) => {
+          // Determine color based on position (rough continent mapping)
+          let bgColor = "bg-primary"
+          if (point.x < 40 && point.y < 40) bgColor = "bg-primary" // North America
+          else if (point.x > 40 && point.x < 60 && point.y < 40) bgColor = "bg-blue-500" // Europe
+          else if (point.x > 60 && point.y < 50) bgColor = "bg-teal-500" // Asia
+          else if (point.x > 30 && point.x < 60 && point.y > 30 && point.y < 60) bgColor = "bg-amber-500" // Africa
+          else if (point.x < 40 && point.y > 40) bgColor = "bg-purple-500" // South America
+          else if (point.x > 70 && point.y > 50) bgColor = "bg-red-500" // Oceania
+          
+          return (
+            <div
+              key={i}
+              className={`absolute rounded-full ${bgColor} animate-pulse will-change-transform`}
+              style={{
+                left: `${point.x}%`,
+                top: `${point.y}%`,
+                width: `${point.size}px`,
+                height: `${point.size}px`,
+                animationDelay: `${point.delay}s`,
+                animationDuration: `${point.duration}s`,
+                opacity: point.opacity * (isHovered ? 1.2 : 1),
+                transform: isHovered ? "scale(1.2)" : "scale(1)",
+                transition: "transform 0.5s ease, opacity 0.5s ease",
+                zIndex: 5
+              }}
+            ></div>
+          )
+        })}
+
+      {/* Enhanced interactive regions */}
+      {showRegions && REGIONS.map((region) => {
+        const isActive = activeRegion === region.id
+        const scale = isActive ? 'scale-125' : 'scale-100'
+        const opacity = isActive ? '1' : '0.8'
+        const bgOpacity = isActive ? '40' : '20'
+        
+        return (
+          <div 
+            key={region.id}
+            className={`absolute rounded-full bg-${region.color}/${bgOpacity} flex items-center justify-center 
+                      text-${region.color} font-medium border border-${region.color}/30 shadow-lg 
+                      hover:bg-${region.color}/30 ${scale} transition-all cursor-pointer z-10`}
             style={{
-              left: `${point.x}%`,
-              top: `${point.y}%`,
-              width: `${point.size}px`,
-              height: `${point.size}px`,
-              animationDelay: `${point.delay}s`,
-              animationDuration: `${point.duration}s`,
-              opacity: isHovered ? 0.8 : 0.6,
-              transform: isHovered ? "scale(1.2)" : "scale(1)",
-              transition: "transform 0.5s ease, opacity 0.5s ease",
+              top: `${region.y}%`,
+              left: `${region.x}%`,
+              width: `${region.size * 4}px`,
+              height: `${region.size * 4}px`,
+              opacity,
+              transition: 'all 0.3s ease-out'
             }}
-          ></div>
-        ))}
+            onClick={() => handleRegionInteraction(region.id)}
+            onMouseEnter={() => interactiveHotspots && setActiveRegion(region.id)}
+            onMouseLeave={() => interactiveHotspots && setActiveRegion(null)}
+          >
+            <div className="flex flex-col items-center justify-center">
+              <span>{region.code}</span>
+              {isActive && (
+                <div className="absolute -bottom-8 bg-background/90 backdrop-blur-sm text-xs px-2 py-1 rounded-md shadow-md whitespace-nowrap">
+                  <div className="font-semibold">{region.name}</div>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <Activity className="h-3 w-3 text-green-500" />
+                    <span className="text-green-500">{region.sentiment}%</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      })}
 
-      {/* Regions with hover effects */}
-      <div className="absolute top-[20%] left-[30%] bg-primary/20 rounded-full w-16 h-16 flex items-center justify-center text-primary font-medium text-sm border border-primary/30 shadow-lg hover:bg-primary/30 hover:scale-110 transition-all cursor-pointer">
-        NA
-      </div>
-      <div className="absolute top-[25%] left-[55%] bg-blue-500/20 rounded-full w-12 h-12 flex items-center justify-center text-blue-500 font-medium text-sm border border-blue-500/30 shadow-lg hover:bg-blue-500/30 hover:scale-110 transition-all cursor-pointer">
-        EU
-      </div>
-      <div className="absolute top-[40%] left-[65%] bg-teal-500/20 rounded-full w-14 h-14 flex items-center justify-center text-teal-500 font-medium text-sm border border-teal-500/30 shadow-lg hover:bg-teal-500/30 hover:scale-110 transition-all cursor-pointer">
-        AS
-      </div>
-      <div className="absolute top-[45%] left-[45%] bg-amber-500/20 rounded-full w-10 h-10 flex items-center justify-center text-amber-500 font-medium text-sm border border-amber-500/30 shadow-lg hover:bg-amber-500/30 hover:scale-110 transition-all cursor-pointer">
-        AF
-      </div>
-      <div className="absolute top-[60%] left-[35%] bg-purple-500/20 rounded-full w-12 h-12 flex items-center justify-center text-purple-500 font-medium text-sm border border-purple-500/30 shadow-lg hover:bg-purple-500/30 hover:scale-110 transition-all cursor-pointer">
-        SA
-      </div>
-      <div className="absolute top-[55%] left-[80%] bg-red-500/20 rounded-full w-10 h-10 flex items-center justify-center text-red-500 font-medium text-sm border border-red-500/30 shadow-lg hover:bg-red-500/30 hover:scale-110 transition-all cursor-pointer">
-        OC
-      </div>
+      {/* Enhanced stats overlay */}
+      {showStats && (
+        <div className="absolute top-3 left-3 bg-background/80 backdrop-blur-sm rounded-lg p-3 text-xs border border-border/50 shadow-sm transition-opacity duration-300 opacity-80 hover:opacity-100">
+          <div className="flex flex-col gap-2">
+            <div className="font-medium text-sm border-b pb-1 mb-1 flex items-center gap-1.5">
+              <Globe className="h-3.5 w-3.5 text-primary" />
+              <span>Global Metrics</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="h-3 w-3 text-blue-500" />
+              <span className="text-muted-foreground">Active regions:</span>
+              <span className="font-medium ml-auto">6</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-3 w-3 text-green-500" />
+              <span className="text-muted-foreground">Avg. sentiment:</span>
+              <span className="font-medium ml-auto">74%</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-3 w-3 text-amber-500" />
+              <span className="text-muted-foreground">Trend:</span>
+              <span className="font-medium ml-auto text-green-500">+2.4%</span>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Legend with improved styling */}
-      <div className="absolute bottom-3 right-3 bg-background/80 backdrop-blur-sm rounded-lg p-2 text-xs border shadow-sm hover:bg-background transition-colors">
+      {/* Enhanced legend with interactive tooltip */}
+      <div 
+        className="absolute bottom-3 right-3 bg-background/90 backdrop-blur-sm rounded-lg p-2.5 text-xs border border-border/50 shadow-sm hover:bg-background transition-all group cursor-help"
+        onMouseEnter={() => setIsHovered(true)}
+      >
         <div className="flex items-center gap-2">
-          <Globe className="h-3 w-3 text-primary" />
+          <Globe className="h-3.5 w-3.5 text-primary" />
           <span className="font-medium">Global Opinion Map</span>
           <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
           </span>
+          <Info className="h-3 w-3 text-muted-foreground ml-1" />
+        </div>
+        
+        {/* Tooltip that appears on hover */}
+        <div className="absolute bottom-full right-0 mb-2 w-48 bg-background rounded-lg p-3 border shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none text-xs">
+          <p className="font-medium mb-1">Real-time global sentiment</p>
+          <p className="text-muted-foreground mb-2">Hover over regions to see detailed metrics and engagement statistics.</p>
+          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+            <span>Updated: Just now</span>
+            <span className="text-primary">Live data</span>
+          </div>
         </div>
       </div>
     </div>

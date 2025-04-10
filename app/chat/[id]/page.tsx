@@ -14,14 +14,15 @@ import type { Metadata } from 'next'
 
 // Define standard PageProps structure - Reverted
 type ChatPageProps = {
-  params: {
+  params: Promise<{
     id: string
-  };
+  }>;
   searchParams?: Record<string, string | string[] | undefined>;
 };
 
 // Generate metadata for SEO
-export const generateMetadata = async ({ params }: ChatPageProps): Promise<Metadata> => {
+export const generateMetadata = async (props: ChatPageProps): Promise<Metadata> => {
+  const params = await props.params;
   // Fetch minimal chat data for title if needed, or just use ID
   const chatId = params.id;
   // Potentially fetch chat title here if important for SEO
@@ -31,7 +32,8 @@ export const generateMetadata = async ({ params }: ChatPageProps): Promise<Metad
   }
 }
 
-export default async function ChatPage({ params }: ChatPageProps) {
+export default async function ChatPage(props: ChatPageProps) {
+  const params = await props.params;
   const { id } = params
   const supabase = await createClient()
 

@@ -1,37 +1,72 @@
-"use client"
-
-import { useTheme } from "next-themes"
-import Image from "next/image"
+// Server Components
 import Link from "next/link"
-import { memo } from "react"
-import HeaderNav from "./header-nav"
+import { cn } from "@/lib/utils"
 import MobileNav from "./mobile-nav"
-import { ThemeToggle } from "./theme-toggle"
+import { ThemeLogo, ThemeToggle, UserAuth } from "./header-client"
 
-// Memoize the Header component to prevent unnecessary re-renders
-export const Header = memo(function Header() {
-  const { theme } = useTheme()
-  const logo = theme === "dark" ? "/global_pulse_logo_dark.png" : "/global_pulse_logo_light.png"
+// NavLinks - Server Component
+// Define the link type for better type safety
+interface NavLink {
+  href: string;
+  label: string;
+  prefetch?: boolean;
+}
 
+export function NavLinks({ pathname, className, onClick }: { pathname: string, className?: string, onClick?: () => void }) {
+  const isMarketingPage = pathname === "/" || pathname.startsWith("/(marketing)")
+
+  const marketingLinks: NavLink[] = [
+    { href: "/mission", label: "Our Mission", prefetch: true },
+    { href: "/features", label: "Features", prefetch: true },
+    { href: "/about", label: "About", prefetch: true },
+    { href: "/contact", label: "Contact" },
+    { href: "/terms", label: "Terms" },
+  ]
+
+  const appLinks: NavLink[] = [
+    { href: "/dashboard", label: "Dashboard", prefetch: true },
+    { href: "/explore", label: "Explore", prefetch: true },
+    { href: "/survey", label: "Survey", prefetch: true },
+    { href: "/chat", label: "Chat", prefetch: true }, 
+  ]
+
+  const links = isMarketingPage ? marketingLinks : appLinks
+
+  return (
+    <nav className={cn("flex items-center", className)}>
+      {links.map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          prefetch={link.prefetch}
+          className={cn(
+            "px-3 py-2 text-sm font-medium transition-colors hover:text-foreground",
+            pathname === link.href || pathname.startsWith(`${link.href}/`)
+              ? "text-foreground"
+              : "text-muted-foreground",
+          )}
+          onClick={onClick}
+        >
+          {link.label}
+        </Link>
+      ))}
+    </nav>
+  )
+}
+
+// Main Header - Server Component
+export function Header({ pathname = "/" }: { pathname?: string }) {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-30 items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link href="/" prefetch={true} className="flex items-center space-x-2" aria-label="Global Pulse Home">
-            <Image
-              src={logo}
-              alt="Global Pulse Logo"
-              width={100}
-              height={100}
-              className=""
-              priority
-            />
-          </Link>
+          <ThemeLogo />
         </div>
 
-        {/* Desktop Navigation - Server Component */}
+        {/* Desktop Navigation */}
         <div className="hidden md:flex md:items-center md:gap-2">
-          <HeaderNav />
+          <NavLinks pathname={pathname} className="space-x-1" />
+          <UserAuth />
           <ThemeToggle />
         </div>
 
@@ -42,4 +77,4 @@ export const Header = memo(function Header() {
       </div>
     </header>
   )
-})
+}

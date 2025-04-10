@@ -132,7 +132,6 @@ export const Footer = memo(function Footer() {
                   <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    prefetch={false}
                   >
                     {link.label}
                   </Link>
@@ -149,7 +148,6 @@ export const Footer = memo(function Footer() {
                   <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    prefetch={false}
                   >
                     {link.label}
                   </Link>
@@ -166,7 +164,6 @@ export const Footer = memo(function Footer() {
                   <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    prefetch={false}
                   >
                     {link.label}
                   </Link>
@@ -186,7 +183,6 @@ export const Footer = memo(function Footer() {
                 key={link.href}
                 href={link.href}
                 className="text-xs hover:underline underline-offset-4 text-muted-foreground"
-                prefetch={false}
               >
                 {link.label}
               </Link>

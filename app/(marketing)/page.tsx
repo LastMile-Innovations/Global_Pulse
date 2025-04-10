@@ -146,35 +146,115 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Visually engaging hero image with interactive elements */}
-            <div className="relative lg:ml-auto">
-              <div className="relative rounded-2xl border-2 border-primary/20 bg-background p-4 shadow-2xl transition-all hover:shadow-primary/5 hover:border-primary/30">
-                <div className="absolute -top-5 -left-5 bg-primary text-primary-foreground px-5 py-2 rounded-xl text-sm font-medium shadow-lg">
-                  Live Global Sentiment
+            {/* NEW SLEEK DESIGN - 3D PULSE VISUALIZATION */}
+            <div className="relative lg:ml-auto w-full max-w-[600px]">
+              {/* Main visualization container */}
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-background via-background to-primary/5 border border-primary/10 shadow-2xl aspect-[4/3]">
+                {/* Animated pulse rings */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    {/* Animated pulse rings */}
+                    <div className="absolute w-[300px] h-[300px] rounded-full border-4 border-primary/10 animate-ping-slow opacity-20"></div>
+                    <div className="absolute w-[250px] h-[250px] rounded-full border-4 border-primary/20 animate-ping-slow opacity-30" style={{animationDelay: '0.5s'}}></div>
+                    <div className="absolute w-[200px] h-[200px] rounded-full border-4 border-primary/30 animate-ping-slow opacity-40" style={{animationDelay: '1s'}}></div>
+                    <div className="absolute w-[150px] h-[150px] rounded-full border-4 border-primary/40 animate-ping-slow opacity-50" style={{animationDelay: '1.5s'}}></div>
+                    <div className="absolute w-[100px] h-[100px] rounded-full border-4 border-primary/50 animate-ping-slow opacity-60" style={{animationDelay: '2s'}}></div>
+                    
+                    {/* Central pulse element */}
+                    <div className="relative z-10 w-20 h-20 bg-gradient-to-br from-primary to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-primary/20 animate-pulse-subtle">
+                      <Globe className="h-10 w-10 text-white" />
+                    </div>
+                  </div>
                 </div>
-                <div className="rounded-xl overflow-hidden">
-                  <GlobalMapClient />
+                
+                {/* Floating data points */}
+                <div className="absolute inset-0">
+                  {/* Data point 1 */}
+                  <div className="absolute top-[15%] left-[20%] animate-float" style={{animationDelay: '0s'}}>
+                    <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md border border-primary/10">
+                      <div className="w-2 h-2 rounded-full bg-primary"></div>
+                      <span className="text-xs font-medium">North America</span>
+                    </div>
+                  </div>
+                  
+                  {/* Data point 2 */}
+                  <div className="absolute top-[25%] right-[15%] animate-float" style={{animationDelay: '0.5s'}}>
+                    <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md border border-primary/10">
+                      <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                      <span className="text-xs font-medium">Europe</span>
+                    </div>
+                  </div>
+                  
+                  {/* Data point 3 */}
+                  <div className="absolute bottom-[20%] left-[25%] animate-float" style={{animationDelay: '1s'}}>
+                    <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md border border-primary/10">
+                      <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                      <span className="text-xs font-medium">South America</span>
+                    </div>
+                  </div>
+                  
+                  {/* Data point 4 */}
+                  <div className="absolute bottom-[30%] right-[20%] animate-float" style={{animationDelay: '1.5s'}}>
+                    <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md border border-primary/10">
+                      <div className="w-2 h-2 rounded-full bg-teal-500"></div>
+                      <span className="text-xs font-medium">Asia</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="absolute -bottom-5 -right-5 bg-blue-300 text-white px-5 py-2 rounded-xl text-sm font-medium shadow-lg">
-                  Updated in real-time
+                
+                {/* Decorative elements */}
+                <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+                <div className="absolute top-10 right-10 w-20 h-20 bg-blue-500/10 rounded-full blur-xl"></div>
+                <div className="absolute bottom-10 left-10 w-24 h-24 bg-primary/10 rounded-full blur-xl"></div>
+                
+                {/* Live indicator */}
+                <div className="absolute top-4 left-4 flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md border border-primary/10">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  <span className="text-xs font-medium">Live Global Pulse</span>
+                </div>
+                
+                {/* Stats overlay */}
+                <div className="absolute bottom-0 inset-x-0 bg-background/80 backdrop-blur-md border-t border-primary/10 px-6 py-4">
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col">
+                      <div className="text-sm font-medium">Active Regions</div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-bold">150+</span>
+                        <span className="text-xs text-muted-foreground">countries</span>
+                      </div>
+                    </div>
+                    
+                    <div className="h-10 border-r border-primary/10"></div>
+                    
+                    <div className="flex flex-col">
+                      <div className="text-sm font-medium">Opinions Collected</div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-bold">10M+</span>
+                        <span className="text-xs text-muted-foreground">and growing</span>
+                      </div>
+                    </div>
+                    
+                    <div className="h-10 border-r border-primary/10"></div>
+                    
+                    <div className="flex flex-col">
+                      <div className="text-sm font-medium">Avg. Response Time</div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-bold">2.4s</span>
+                        <span className="text-xs text-green-500">-12% this week</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              {/* Floating stats cards for visual interest */}
-              <div className="absolute -top-8 -right-8 bg-background rounded-xl border-2 border-primary/10 shadow-xl p-3 text-sm transform rotate-3 hover:rotate-0 transition-transform">
+              
+              {/* Bottom badge */}
+              <div className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-primary to-blue-500 text-white px-5 py-2 rounded-full text-sm font-medium shadow-lg">
                 <div className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-primary" />
-                  <span>
-                    <span className="font-bold">150+</span> countries
-                  </span>
-                </div>
-              </div>
-              <div className="absolute -bottom-8 -left-8 bg-background rounded-xl border-2 border-primary/10 shadow-xl p-3 text-sm transform -rotate-3 hover:rotate-0 transition-transform">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  <span>
-                    <span className="font-bold">10M+</span> opinions
-                  </span>
+                  <Sparkles className="h-4 w-4" />
+                  <span>Real-time opinion insights</span>
                 </div>
               </div>
             </div>

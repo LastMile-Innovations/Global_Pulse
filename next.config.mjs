@@ -1,5 +1,6 @@
 // @ts-check
 import { createRequire } from 'module';
+import path from 'path';
 const require = createRequire(import.meta.url);
 
 /**
@@ -8,6 +9,12 @@ const require = createRequire(import.meta.url);
 const nextConfig = {
   // Enable React Server Components
   reactStrictMode: true,
+  
+  // Turbopack configuration
+  turbopack: {
+    // Configure default resolve extensions
+    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json', '.css']
+  },
   
   // Skip ESLint and TypeScript checks during build for faster builds
   eslint: {
@@ -54,11 +61,6 @@ const nextConfig = {
       'lucide-react',
       '@radix-ui/react-icons',
     ],
-    
-    // Build optimizations
-    webpackBuildWorker: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
   },
   
   // Security and performance headers
