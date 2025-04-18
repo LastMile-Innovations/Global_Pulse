@@ -148,7 +148,7 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="grid grid-cols-12 gap-8 py-12">
           {/* Article Content */}
           <article className="col-span-12 lg:col-span-9">
-            <div className="prose prose-zinc dark:prose-invert max-w-none">
+            <div className="prose dark:prose-invert max-w-none">
               <PostBody content={post.content} />
             </div>
 

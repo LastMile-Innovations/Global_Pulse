@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
-import Image from "next/image"
 import { useState, useEffect, useCallback } from "react"
 import type { User } from "@supabase/supabase-js"
 import { Button } from "@/components/ui/button"
@@ -21,88 +20,98 @@ import { createClient } from "@/utils/supabase/client"
 import { logout } from "@/actions/auth"
 import { Header } from "./header"
 
-// ThemeLogo - Client Component
+// ThemeLogo - Uses Tailwind + globals.css color system
 export function ThemeLogo() {
   return (
-    <Link href="/" prefetch={true} className="flex items-center space-x-3 group" aria-label="Global Pulse Home">
-      <span className="inline-flex items-center justify-center">
+    <Link
+      href="/"
+      prefetch={true}
+      className="flex items-center gap-3 group select-none"
+      aria-label="Global Pulse Home"
+    >
+      <span className="inline-flex items-center justify-center rounded-standard-full bg-gradient-to-br from-primary/80 to-secondary/80 shadow-glow p-1 transition-transform group-hover:scale-110">
         <svg
-          width="64"
-          height="64"
+          width="48"
+          height="48"
           viewBox="0 0 64 64"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="h-16 w-16 drop-shadow-md transition-transform group-hover:scale-105 animate-pulse-slow"
+          className="h-12 w-12 drop-shadow-lg transition-transform"
           aria-hidden="true"
         >
-          {/* Solid monochrome globe */}
+          {/* Globe */}
           <circle
             cx="32"
             cy="32"
             r="28"
-            fill="none"
+            fill="url(#pulseGradient)"
             stroke="currentColor"
             strokeWidth="2.5"
             opacity="0.95"
           />
-          {/* Subtle latitude and longitude lines */}
-          <ellipse
-            cx="32"
-            cy="32"
-            rx="22"
-            ry="9"
-            stroke="currentColor"
-            strokeWidth="0.7"
-            opacity="0.25"
-            fill="none"
-          />
-          <ellipse
-            cx="32"
-            cy="32"
-            rx="9"
-            ry="22"
-            stroke="currentColor"
-            strokeWidth="0.7"
-            opacity="0.25"
-            fill="none"
-          />
-          {/* Bold monochrome heartbeat line */}
+          {/* Heartbeat */}
           <path
             d="M10 36 H22 L26 28 L30 44 L34 20 L38 44 L42 32 H54"
-            stroke="currentColor"
-            strokeWidth="2"
+            stroke="white"
+            strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
+            className="animate-pulse"
           />
+          <defs>
+            <radialGradient id="pulseGradient" cx="0.5" cy="0.5" r="0.7">
+              <stop offset="0%" stopColor="hsl(var(--primary))" />
+              <stop offset="100%" stopColor="hsl(var(--secondary))" />
+            </radialGradient>
+          </defs>
         </svg>
       </span>
-      <span className="font-extrabold text-2xl md:text-3xl text-foreground tracking-tight">Global Pulse</span>
+      <span className="font-extrabold text-2xl md:text-3xl tracking-tight text-foreground drop-shadow-sm">
+        Global Pulse
+      </span>
     </Link>
   )
 }
 
-// ThemeToggle - Client Component
+// ThemeToggle - Uses Tailwind + globals.css color system
 export function ThemeToggle() {
   const { setTheme } = useTheme()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative rounded-standard-full border border-border hover:bg-accent/60 transition-all shadow-glow-sm"
+          aria-label="Toggle theme"
+        >
+          <Sun className="h-[1.3rem] w-[1.3rem] rotate-0 scale-100 transition-all text-yellow-400 dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-[1.3rem] w-[1.3rem] rotate-90 scale-0 transition-all text-blue-400 dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+      <DropdownMenuContent align="end" className="min-w-[8rem] shadow-glow rounded-standard-xl border border-border bg-popover/95 backdrop-blur">
+        <DropdownMenuItem
+          onClick={() => setTheme("light")}
+          className="flex items-center gap-2"
+        >
+          <Sun className="h-4 w-4 text-yellow-400" />
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem
+          onClick={() => setTheme("dark")}
+          className="flex items-center gap-2"
+        >
+          <Moon className="h-4 w-4 text-blue-400" />
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem
+          onClick={() => setTheme("system")}
+          className="flex items-center gap-2"
+        >
+          <span className="inline-block w-4 h-4 rounded-full bg-gradient-to-br from-primary to-secondary" />
           System
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -110,12 +119,11 @@ export function ThemeToggle() {
   )
 }
 
-// User Authentication - Client Component
+// User Authentication - Uses Tailwind + globals.css color system
 export function UserAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Use useCallback to memoize the fetchSession function
   const fetchSession = useCallback(async () => {
     const supabase = createClient()
     try {
@@ -139,47 +147,67 @@ export function UserAuth() {
   return (
     <div className="flex items-center gap-2 ml-2">
       {isLoading ? (
-        <div className="h-8 w-20 animate-pulse rounded-md bg-muted" /> 
+        <div className="h-8 w-24 animate-pulse rounded-lg bg-muted/60" />
       ) : !user ? (
         <>
-          <Button variant="ghost" size="sm" asChild>
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="rounded-standard-full px-4 font-semibold text-foreground hover:bg-primary/10 transition-all"
+          >
             <Link href="/login">Log In</Link>
           </Button>
-          <Button size="sm" asChild>
+          <Button
+            size="sm"
+            asChild
+            className="rounded-standard-full px-4 font-semibold bg-primary text-white shadow-glow hover:bg-primary/90 transition-all"
+          >
             <Link href="/signup">Sign Up</Link>
           </Button>
         </>
       ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback>
+            <Button
+              variant="ghost"
+              className="relative h-9 w-9 rounded-standard-full border border-border shadow-glow-sm hover:bg-accent/60 transition-all p-0"
+              aria-label="Open user menu"
+            >
+              <Avatar className="h-9 w-9 ring-2 ring-primary/60 ring-offset-2 ring-offset-background transition-all">
+                <AvatarFallback className="bg-primary text-white font-bold">
                   {user.email ? user.email[0].toUpperCase() : "U"}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
+          <DropdownMenuContent
+            className="w-60 rounded-standard-xl shadow-glow border border-border bg-popover/95 backdrop-blur"
+            align="end"
+            forceMount
+          >
+            <DropdownMenuLabel className="font-normal px-3 py-2">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">My Account</p>
-                <p className="text-xs leading-none text-muted-foreground">
+                <p className="text-base font-semibold leading-none text-foreground">My Account</p>
+                <p className="text-xs leading-none text-muted-foreground truncate">
                   {user.email}
                 </p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/account" className="flex items-center w-full cursor-pointer">
-                <UserIcon className="mr-2 h-4 w-4" />
+            <DropdownMenuItem asChild className="hover:bg-primary/10 transition-all rounded-md">
+              <Link href="/account" className="flex items-center w-full cursor-pointer py-2">
+                <UserIcon className="mr-2 h-4 w-4 text-primary" />
                 <span>Account Settings</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild className="p-0 cursor-pointer">
+            <DropdownMenuItem asChild className="p-0 cursor-pointer hover:bg-destructive/10 transition-all rounded-md">
               <form action={logout} className="w-full">
-                <button type="submit" className="flex items-center w-full px-2 py-1.5 text-sm">
+                <button
+                  type="submit"
+                  className="flex items-center w-full px-3 py-2 text-sm text-destructive font-semibold"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </button>

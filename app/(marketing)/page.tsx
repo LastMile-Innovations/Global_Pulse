@@ -1,5 +1,4 @@
-import "@/app/globals.css";
-import { Metadata } from "next";
+import { type Metadata as NextMetadata } from "next";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
@@ -29,12 +28,6 @@ import {
 } from "lucide-react";
 
 const FeatureCard = dynamic(() => import("@/components/marketing/feature-card"), { ssr: true });
-
-export const metadata: Metadata = {
-  title: "Global Pulse – Professional, Ethical AI for Self-Discovery",
-  description:
-    "Global Pulse is a pioneering AI companion, built on psychological science, privacy, and user empowerment. Join us as we set a new standard for ethical, human-centered AI.",
-};
 
 export const experimental_ppr = true;
 

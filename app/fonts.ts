@@ -21,3 +21,8 @@ export const poppins = Poppins({
   fallback: ["system-ui", "Helvetica", "Arial", "sans-serif"],
   adjustFontFallback: true,
 })
+
+// Utility to set text color based on theme (dark: white, light: black)
+export function getTextColorClass(theme: "dark" | "light") {
+  return theme === "dark" ? "text-white" : "text-black";
+}

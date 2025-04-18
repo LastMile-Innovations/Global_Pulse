@@ -78,27 +78,9 @@ const config = {
   					height: '0'
   				}
   			},
-  			pulse: {
-  				'0%, 100%': {
-  					opacity: '1'
-  				},
-  				'50%': {
-  					opacity: '0.5'
-  				}
-  			},
-  			'pulse-subtle': {
-  				'0%, 100%': {
-  					transform: 'scale(1)'
-  				},
-  				'50%': {
-  					transform: 'scale(1.05)'
-  				}
-  			},
-  			'ping-slow': {
-  				'75%, 100%': {
-  					transform: 'scale(2)',
-  					opacity: '0'
-  				}
+  			'gradient-x': {
+  				'0%, 100%': { backgroundPosition: '0% 50%' },
+  				'50%': { backgroundPosition: '100% 50%' },
   			},
   			float: {
   				'0%, 100%': {
@@ -108,43 +90,47 @@ const config = {
   					transform: 'translateY(-10px)'
   				}
   			},
-  			'progress-indeterminate': {
-  				'0%': {
-  					transform: 'translateX(-100%)'
-  				},
-  				'100%': {
-  					transform: 'translateX(100%)'
-  				}
+  			orbit: {
+  				from: { transform: 'rotate(0deg) translateX(110px) rotate(0deg)' },
+  				to: { transform: 'rotate(360deg) translateX(110px) rotate(-360deg)' },
   			},
-  			'flow-slow': {
-  				'0%': {
-  					strokeDashoffset: '0'
-  				},
-  				'100%': {
-  					strokeDashoffset: '100'
-  				}
-  			},
-  			bounce: {
+  			pulse: {
   				'0%, 100%': {
-  					transform: 'translateY(0)',
-  					animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)'
+  					opacity: '1'
   				},
   				'50%': {
-  					transform: 'translateY(-25%)',
-  					animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)'
+  					opacity: '.5'
   				}
-  			}
+  			},
+  			'pulse-subtle': {
+  				'0%, 100%': {
+  					opacity: '1'
+  				},
+  				'50%': {
+  					opacity: '0.7'
+  				}
+  			},
+  			ping: {
+  				'75%, 100%': {
+  					transform: 'scale(1.7)',
+  					opacity: '0'
+  				}
+  			},
+  			spin: {
+  				from: { transform: 'rotate(0deg)' },
+  				to: { transform: 'rotate(360deg)' },
+  			},
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-  			pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-  			'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
-  			'ping-slow': 'ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite',
-  			float: 'float 3s ease-in-out infinite',
-  			'progress-indeterminate': 'progress-indeterminate 1.5s ease-in-out infinite',
-  			'flow-slow': 'flow-slow 3s linear infinite',
-  			bounce: 'bounce 1s infinite'
+  			'gradient-x': 'gradient-x 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+  			float: 'float 2.5s ease-in-out infinite',
+  			orbit: 'orbit 12s linear infinite',
+  			pulse: 'pulse 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+  			'pulse-subtle': 'pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+  			ping: 'ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite',
+  			spin: 'spin 16s linear infinite',
   		}
   	}
   },

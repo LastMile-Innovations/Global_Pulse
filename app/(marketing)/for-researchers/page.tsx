@@ -31,9 +31,9 @@ export const metadata: Metadata = {
 export default function ForResearchersPage() {
   return (
     <Suspense fallback={<div>Loading researcher info...</div>}>
-      <div className="flex flex-col min-h-screen bg-darkBlue text-white">
+      <div className="flex flex-col min-h-screen bg-background text-foreground">
         {/* Header */}
-        <header className="sticky top-0 z-50 w-full border-b border-gray-800 bg-darkBlue/95 backdrop-blur supports-[backdrop-filter]:bg-darkBlue/60">
+        <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container flex h-16 items-center justify-between">
             <div className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-primary" />
@@ -65,21 +65,21 @@ export default function ForResearchersPage() {
 
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="py-16 md:py-20 relative">
-            <div className="container px-4 md:px-6">
+          <section className="relative py-24 md:py-36 overflow-hidden bg-background">
+            <div className="container px-4 md:px-6 relative z-10">
               <div className="max-w-4xl mx-auto text-center">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl mb-6">
                   Beyond the Lab, Beyond Surveys:
                   <span className="text-primary block mt-2">A New Lens on Human Experience</span>
                 </h1>
-                <div className="prose prose-invert max-w-3xl mx-auto">
-                  <p className="text-xl text-gray-300 mb-6">
+                <div className="prose max-w-3xl mx-auto">
+                  <p className="text-xl text-muted-foreground mb-6">
                     As researchers in psychology, sociology, HCI, computational science, and AI ethics, we know the
                     limitations of our current tools. Lab studies struggle with ecological validity, surveys capture
                     static self-reports often divorced from context, and existing digital data streams rarely provide
                     insight into the mechanisms underlying observed behavior or sentiment.
                   </p>
-                  <p className="text-lg text-gray-300 mb-6">
+                  <p className="text-lg text-muted-foreground mb-6">
                     We started Global Pulse with a perhaps audacious goal: to build a computational framework grounded in
                     modern psychological theory (primarily TCE, integrating MHH, SDT, FFM, Values Theory) that could
                     dynamically model the construction of emotional meaning within a rich, evolving representation of
@@ -87,7 +87,7 @@ export default function ForResearchersPage() {
                     aims to capture the interplay between context, identity (Attachments with PL/V), perception
                     (P_Appraised with MHH vars), core affect (VAD), and emotional categorization.
                   </p>
-                  <p className="text-lg text-gray-300">
+                  <p className="text-lg text-muted-foreground">
                     We believe this platform offers unprecedented opportunities for research. We are committed to
                     open-sourcing the core analytical framework to foster academic scrutiny and collaboration, and we
                     envision offering ethically sourced, anonymized datasets and potential secure research environments to
@@ -101,13 +101,13 @@ export default function ForResearchersPage() {
                       Explore the Open Source Code
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" className="border-gray-700 hover:bg-gray-800">
+                  <Button asChild variant="outline" className="border-border hover:bg-muted">
                     <Link href="#" className="flex items-center">
                       <FileText className="mr-2 h-4 w-4" />
                       Read Foundational Documents
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" className="border-gray-700 hover:bg-gray-800">
+                  <Button asChild variant="outline" className="border-border hover:bg-muted">
                     <Link href="#" className="flex items-center">
                       <Shield className="mr-2 h-4 w-4" />
                       Our Ethical Framework
@@ -119,20 +119,20 @@ export default function ForResearchersPage() {
           </section>
 
           {/* Framework Section */}
-          <section id="framework" className="py-16 bg-charcoal">
+          <section id="framework" className="py-16 bg-muted">
             <div className="container px-4 md:px-6">
               <div className="max-w-3xl mx-auto text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-4">
                   The Global Pulse Framework: A Research Platform
                 </h2>
-                <p className="text-gray-300">
+                <p className="text-muted-foreground">
                   A novel computational implementation of modern psychological theory, designed for research and
                   real-world application.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <BookOpen className="h-5 w-5 mr-2 text-primary" />
@@ -142,20 +142,20 @@ export default function ForResearchersPage() {
                   <CardContent className="space-y-4">
                     <div>
                       <h4 className="font-medium text-primary">Theory of Constructed Emotion (TCE)</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Modeling emotion via core affect (VAD), context, and concept application.
                       </p>
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Webb/MHH Cognitive Appraisal</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Using Source, Perspective, Timeframe, Acceptance as key variables differentiating emotional
                         experience.
                       </p>
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Unified Identity Graph (UIG)</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Persistently modeling stable traits (FFM), core values (Schwartz), needs (SDT), goals, beliefs,
                         roles, and their dynamic interrelationships (CONCEPT_RELATIONSHIP), power (PL), valence (V), and
                         activation (AW).
@@ -163,7 +163,7 @@ export default function ForResearchersPage() {
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Contextual Dynamics</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Explicitly modeling the influence of State (S), Culture (C), Personality (T), Social (SocialVars),
                         and Network (NetworkContext) factors.
                       </p>
@@ -171,7 +171,7 @@ export default function ForResearchersPage() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <BarChart className="h-5 w-5 mr-2 text-primary" />
@@ -181,24 +181,24 @@ export default function ForResearchersPage() {
                   <CardContent className="space-y-4">
                     <div>
                       <h4 className="font-medium text-primary">Evolution of Attachments</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Track changes in Power Level (PL) and Valence (V) for identity attachments over time.
                       </p>
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Emotional Response Sequences</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Sequences of ERInstance (VAD + Probabilities) linked to specific PInstance appraisals and
                         Interactions.
                       </p>
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">State Tracking</h4>
-                      <p className="text-gray-300 text-sm">Tracking shifts in UserStateInstance (S) over time.</p>
+                      <p className="text-muted-foreground text-sm">Tracking shifts in UserStateInstance (S) over time.</p>
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Bridging Qualitative & Quantitative</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Captures rich conversational data (Interaction) alongside structured, quantitative outputs (VAD,
                         MHH Variables, Attachment PL/V, Probabilities).
                       </p>
@@ -208,7 +208,7 @@ export default function ForResearchersPage() {
               </div>
 
               <div className="flex justify-center">
-                <Button asChild variant="outline" className="border-gray-700 hover:bg-gray-800">
+                <Button asChild variant="outline" className="border-border hover:bg-muted">
                   <Link href="#" className="flex items-center">
                     <FileText className="mr-2 h-4 w-4" />
                     Download Technical Framework Documentation
@@ -219,56 +219,56 @@ export default function ForResearchersPage() {
           </section>
 
           {/* Collaboration Opportunities Section */}
-          <section id="collaboration" className="py-16 bg-darkBlue">
+          <section id="collaboration" className="py-16 md:py-24 bg-muted/30">
             <div className="container px-4 md:px-6">
               <div className="max-w-3xl mx-auto text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-4">
                   Collaboration Opportunities: Help Build the Future of Understanding
                 </h2>
-                <p className="text-gray-300">
+                <p className="text-muted-foreground">
                   We are actively seeking collaboration with academic researchers, post-docs, and PhD students across
                   relevant disciplines.
                 </p>
               </div>
 
               <Tabs defaultValue="validation" className="max-w-4xl mx-auto">
-                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-gray-900 border border-gray-800 rounded-lg p-1">
-                  <TabsTrigger value="validation" className="data-[state=active]:bg-primary">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-card border border-border rounded-lg p-1">
+                  <TabsTrigger value="validation" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     Framework Validation
                   </TabsTrigger>
-                  <TabsTrigger value="development" className="data-[state=active]:bg-primary">
+                  <TabsTrigger value="development" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     Algorithm Development
                   </TabsTrigger>
-                  <TabsTrigger value="opensource" className="data-[state=active]:bg-primary">
+                  <TabsTrigger value="opensource" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     Open Source
                   </TabsTrigger>
-                  <TabsTrigger value="ethics" className="data-[state=active]:bg-primary">
+                  <TabsTrigger value="ethics" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                     Ethical AI Research
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="validation" className="mt-6 space-y-4">
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <Microscope className="h-5 w-5 mr-2 text-primary" />
                         Framework Validation & Refinement
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Help ensure our computational implementation accurately reflects psychological theory
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
                         <h4 className="font-medium text-primary">Theoretical Mapping</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Help ensure our computational implementation accurately reflects the nuances of TCE, MHH, FFM,
                           SDT, Schwartz, etc.
                         </p>
                       </div>
                       <div>
                         <h4 className="font-medium text-primary">Model Validation</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Design and conduct studies to validate the EWEF pipeline stages (Appraisal, VAD prediction,
                           Categorization) against behavioral data, self-report measures, or potentially physiological
                           signals.
@@ -276,14 +276,14 @@ export default function ForResearchersPage() {
                       </div>
                       <div>
                         <h4 className="font-medium text-primary">UIG Structure Validation</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Evaluate the psychological validity and completeness of the UIG schema. Propose refinements or
                           new node/edge types based on specific theoretical needs.
                         </p>
                       </div>
                       <div>
                         <h4 className="font-medium text-primary">Cross-Cultural Adaptation</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Help refine CulturalContextProfile implementation and EWEF modulation rules for diverse cultural
                           contexts.
                         </p>
@@ -293,40 +293,40 @@ export default function ForResearchersPage() {
                 </TabsContent>
 
                 <TabsContent value="development" className="mt-6 space-y-4">
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <Code className="h-5 w-5 mr-2 text-primary" />
                         Algorithm & Model Development
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Collaborate on developing more sophisticated models and algorithms
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
                         <h4 className="font-medium text-primary">Enhance PCE Modules</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Collaborate on developing more sophisticated ML models for appraisal, VAD prediction,
                           categorization, or social sub-models using the framework.
                         </p>
                       </div>
                       <div>
                         <h4 className="font-medium text-primary">Develop Learning Algorithms</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Work on advanced Learning Layer strategies (RL, Bayesian methods) for UIG personalization and
                           model adaptation.
                         </p>
                       </div>
                       <div>
                         <h4 className="font-medium text-primary">Causal Inference</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Explore methods for inferring potential causal links within the complex UIG structure.
                         </p>
                       </div>
                       <div>
                         <h4 className="font-medium text-primary">Narrative Analysis</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Develop techniques to extract and model LifeNarrativeTheme nodes from longitudinal interaction
                           data.
                         </p>
@@ -336,31 +336,31 @@ export default function ForResearchersPage() {
                 </TabsContent>
 
                 <TabsContent value="opensource" className="mt-6 space-y-4">
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <GitBranch className="h-5 w-5 mr-2 text-primary" />
                         Open Source Contribution
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Contribute directly to our open-source framework
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
                         <h4 className="font-medium text-primary">Code Contributions</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Directly contribute code, documentation, or tests to the open-source PCE framework.
                         </p>
                       </div>
                       <div>
                         <h4 className="font-medium text-primary">Extensions & Modules</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Develop extensions or modules that integrate with the core framework.
                         </p>
                       </div>
                       <div className="flex justify-center mt-4">
-                        <Button asChild variant="outline" className="border-gray-700 hover:bg-gray-800">
+                        <Button asChild variant="outline" className="border-border hover:bg-muted">
                           <Link href="#" className="flex items-center">
                             <GitBranch className="mr-2 h-4 w-4" />
                             View GitHub Repository
@@ -372,20 +372,20 @@ export default function ForResearchersPage() {
                 </TabsContent>
 
                 <TabsContent value="ethics" className="mt-6 space-y-4">
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <Shield className="h-5 w-5 mr-2 text-primary" />
                         Ethical AI Research
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Use our platform as a testbed for ethical AI research
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
                         <h4 className="font-medium text-primary">Ethics Testbed</h4>
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-muted-foreground text-sm">
                           Utilize the platform as a testbed for researching and developing novel AI ethics guardrails,
                           fairness assessment techniques, XAI methods, and privacy-preserving analytics.
                         </p>
@@ -406,20 +406,20 @@ export default function ForResearchersPage() {
           </section>
 
           {/* Data Access Section */}
-          <section id="data-access" className="py-16 bg-charcoal">
+          <section id="data-access" className="py-16 bg-muted">
             <div className="container px-4 md:px-6">
               <div className="max-w-3xl mx-auto text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-4">
                   Data Access for Research: Ethical, Anonymized, Consented
                 </h2>
-                <p className="text-gray-300">
+                <p className="text-muted-foreground">
                   We plan to make data available for external research under strict ethical guidelines, governance, and
                   with user consent.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Shield className="h-5 w-5 mr-2 text-primary" />
@@ -429,21 +429,21 @@ export default function ForResearchersPage() {
                   <CardContent className="space-y-4">
                     <div>
                       <h4 className="font-medium text-primary">User Consent is Paramount</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Data is only included in research datasets if users have given specific, informed, opt-in consent
                         for their anonymized data to be used for external research purposes.
                       </p>
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Rigorous Anonymization</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         All datasets shared for research will undergo state-of-the-art anonymization techniques (aiming
                         for Differential Privacy where feasible) to prevent individual re-identification.
                       </p>
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Ethical Oversight</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         All research data requests and proposed uses will be subject to review by an internal Ethics
                         Committee and likely require approval from the researcher's Institutional Review Board (IRB) or
                         equivalent body.
@@ -451,7 +451,7 @@ export default function ForResearchersPage() {
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Data Minimization & Security</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Datasets will be curated to contain only the data necessary for the approved research question and
                         provided via secure channels or within a controlled research environment.
                       </p>
@@ -459,20 +459,20 @@ export default function ForResearchersPage() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Database className="h-5 w-5 mr-2 text-primary" />
                       Potential Future Data Offerings
                     </CardTitle>
-                    <CardDescription className="text-gray-400">
+                    <CardDescription className="text-muted-foreground">
                       Subject to availability & ethical approval
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
                       <h4 className="font-medium text-primary">Anonymized Aggregate Trend Data</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Similar to potential commercial reports but tailored for academic questions (e.g., longitudinal
                         shifts in aggregate Value PL/V; correlation between aggregate UserState (S) and major
                         InformationEvents).
@@ -480,7 +480,7 @@ export default function ForResearchersPage() {
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Anonymized Structural UIG Data</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Datasets capturing anonymized graph structures or property distributions across consenting
                         populations (e.g., common CONCEPT_RELATIONSHIP conflict patterns; distribution of
                         PersonalityProfile scores).
@@ -488,7 +488,7 @@ export default function ForResearchersPage() {
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Anonymized Instance Sequences</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Datasets containing sequences of anonymized Interaction → PInstance → ERInstance nodes (excluding
                         raw text, focusing on VAD, MHH variables, Categories, context flags) for studying emotional
                         dynamics and appraisal patterns.
@@ -496,7 +496,7 @@ export default function ForResearchersPage() {
                     </div>
                     <div>
                       <h4 className="font-medium text-primary">Synthetic Datasets</h4>
-                      <p className="text-gray-300 text-sm">
+                      <p className="text-muted-foreground text-sm">
                         Generation of statistically similar but entirely artificial UIG subgraph data based on learned
                         patterns from the consenting population, providing utility while further enhancing privacy.
                       </p>
@@ -506,7 +506,7 @@ export default function ForResearchersPage() {
               </div>
 
               <div className="max-w-3xl mx-auto">
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Lock className="h-5 w-5 mr-2 text-primary" />
@@ -514,7 +514,7 @@ export default function ForResearchersPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <ol className="list-decimal list-inside text-gray-300 space-y-2">
+                    <ol className="list-decimal list-inside text-muted-foreground space-y-2">
                       <li>
                         Researchers submit a detailed proposal outlining research questions, data requirements, analysis
                         plan, ethical considerations, IRB status, and planned outputs.
@@ -540,11 +540,11 @@ export default function ForResearchersPage() {
           </section>
 
           {/* Getting Started Section */}
-          <section id="getting-started" className="py-16 bg-darkBlue">
+          <section id="getting-started" className="py-16 bg-background">
             <div className="container px-4 md:px-6">
               <div className="max-w-3xl mx-auto text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-4">Getting Started</h2>
-                <p className="text-gray-300">
+                <p className="text-muted-foreground">
                   We believe Global Pulse can be a powerful catalyst for understanding the human condition. We invite the
                   research community to join us in building, validating, and responsibly utilizing this technology to
                   generate meaningful knowledge.
@@ -552,14 +552,14 @@ export default function ForResearchersPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardContent className="pt-6 flex flex-col items-center text-center h-full">
                     <Code className="h-12 w-12 text-primary mb-4" />
                     <h3 className="text-xl font-bold mb-2">Explore the Code</h3>
-                    <p className="text-gray-400 mb-4 flex-grow">
+                    <p className="text-muted-foreground mb-4 flex-grow">
                       Dive into the core framework on GitHub. Understand the EWEF logic and UIG utilities.
                     </p>
-                    <Button asChild variant="outline" className="w-full border-gray-700 hover:bg-gray-800">
+                    <Button asChild variant="outline" className="w-full border-border hover:bg-muted">
                       <Link href="#" className="flex items-center justify-center">
                         <GitBranch className="mr-2 h-4 w-4" />
                         GitHub Repository
@@ -569,14 +569,14 @@ export default function ForResearchersPage() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardContent className="pt-6 flex flex-col items-center text-center h-full">
                     <BookOpen className="h-12 w-12 text-primary mb-4" />
                     <h3 className="text-xl font-bold mb-2">Read the Documentation</h3>
-                    <p className="text-gray-400 mb-4 flex-grow">
+                    <p className="text-muted-foreground mb-4 flex-grow">
                       Review our PCE Framework documents and schema definitions to understand the theoretical foundations.
                     </p>
-                    <Button asChild variant="outline" className="w-full border-gray-700 hover:bg-gray-800">
+                    <Button asChild variant="outline" className="w-full border-border hover:bg-muted">
                       <Link href="#" className="flex items-center justify-center">
                         <FileText className="mr-2 h-4 w-4" />
                         Documentation
@@ -586,11 +586,11 @@ export default function ForResearchersPage() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardContent className="pt-6 flex flex-col items-center text-center h-full">
                     <GraduationCap className="h-12 w-12 text-primary mb-4" />
                     <h3 className="text-xl font-bold mb-2">Contact Us</h3>
-                    <p className="text-gray-400 mb-4 flex-grow">
+                    <p className="text-muted-foreground mb-4 flex-grow">
                       Reach out with collaboration proposals or data inquiries via our research contact form.
                     </p>
                     <Button asChild className="w-full bg-primary hover:bg-primary/90">
@@ -607,7 +607,7 @@ export default function ForResearchersPage() {
           </section>
         </main>
 
-        <footer className="border-t border-gray-800 bg-charcoal">
+        <footer className="border-t border-border bg-background">
           <div className="container px-4 py-8 md:px-6">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               <div>
@@ -615,7 +615,7 @@ export default function ForResearchersPage() {
                   <Brain className="h-5 w-5 text-primary" />
                   <span className="text-lg font-bold">Global Pulse</span>
                 </div>
-                <p className="mt-2 text-sm text-gray-400">
+                <p className="mt-2 text-sm text-muted-foreground">
                   Your AI companion for deep self-discovery and collective insight.
                 </p>
               </div>
@@ -624,17 +624,17 @@ export default function ForResearchersPage() {
                   <h3 className="text-sm font-medium">Resources</h3>
                   <ul className="mt-2 space-y-2 text-sm">
                     <li>
-                      <Link href="#" className="text-gray-400 hover:text-primary">
+                      <Link href="#" className="text-muted-foreground hover:text-primary">
                         Privacy Policy
                       </Link>
                     </li>
                     <li>
-                      <Link href="#" className="text-gray-400 hover:text-primary">
+                      <Link href="#" className="text-muted-foreground hover:text-primary">
                         Terms of Service
                       </Link>
                     </li>
                     <li>
-                      <Link href="#" className="text-gray-400 hover:text-primary">
+                      <Link href="#" className="text-muted-foreground hover:text-primary">
                         Ethical Charter
                       </Link>
                     </li>
@@ -644,17 +644,17 @@ export default function ForResearchersPage() {
                   <h3 className="text-sm font-medium">Connect</h3>
                   <ul className="mt-2 space-y-2 text-sm">
                     <li>
-                      <Link href="#" className="text-gray-400 hover:text-primary">
+                      <Link href="#" className="text-muted-foreground hover:text-primary">
                         Contact
                       </Link>
                     </li>
                     <li>
-                      <Link href="#" className="text-gray-400 hover:text-primary">
+                      <Link href="#" className="text-muted-foreground hover:text-primary">
                         Blog
                       </Link>
                     </li>
                     <li>
-                      <Link href="#" className="text-gray-400 hover:text-primary">
+                      <Link href="#" className="text-muted-foreground hover:text-primary">
                         GitHub
                       </Link>
                     </li>
@@ -663,12 +663,12 @@ export default function ForResearchersPage() {
               </div>
               <div>
                 <h3 className="text-sm font-medium">Stay Updated</h3>
-                <p className="mt-2 text-sm text-gray-400">Subscribe to our newsletter for updates on Global Pulse.</p>
+                <p className="mt-2 text-sm text-muted-foreground">Subscribe to our newsletter for updates on Global Pulse.</p>
                 <form className="mt-4 flex items-center space-x-2">
                   <Input
                     placeholder="Email address"
                     type="email"
-                    className="flex-1 bg-gray-800 border-gray-700 text-white"
+                    className="flex-1 bg-card border-border text-foreground"
                   />
                   <Button type="submit" size="sm" className="bg-primary hover:bg-primary/90">
                     Subscribe
@@ -676,7 +676,7 @@ export default function ForResearchersPage() {
                 </form>
               </div>
             </div>
-            <div className="mt-8 border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+            <div className="mt-8 border-t border-border pt-8 text-center text-sm text-muted-foreground">
               <p>
                 Global Pulse by LastMile Innovations | Built in Public | © {new Date().getFullYear()} All Rights Reserved.
               </p>

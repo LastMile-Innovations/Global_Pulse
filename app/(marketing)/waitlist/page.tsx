@@ -33,6 +33,8 @@ import {
   CheckCircle,
 } from "lucide-react"
 
+import { cn } from "@/lib/utils"
+
 // Define waitlist-specific metadata for SEO
 export const metadata: Metadata = {
   title: "Global Pulse Waitlist - Your Feelings Aren't Random. We're Building the Engine to Prove It.",
@@ -42,15 +44,10 @@ export const metadata: Metadata = {
 
 export default function WaitlistPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white">
+    <div className="bg-background text-foreground min-h-screen">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="py-20 md:py-28 relative overflow-hidden">
-          {/* Abstract Neural Net/Pulse Animation Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black opacity-80"></div>
-          <div className="absolute -top-96 -right-96 w-[800px] h-[800px] bg-primary/10 rounded-full blur-3xl animate-pulse-slow"></div>
-          <div className="absolute -bottom-96 -left-96 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
-          
+        <section className="relative py-24 md:py-36 overflow-hidden bg-background">
           <div className="container px-4 md:px-6 relative z-10">
             <div className="max-w-4xl mx-auto">
               <div className="space-y-6">
@@ -59,14 +56,14 @@ export default function WaitlistPage() {
                   <br />
                   <span className="text-primary">We're Building the Engine to Prove It.</span>
                 </h1>
-                <p className="text-xl text-gray-300 max-w-[800px]">
+                <p className="text-xl text-muted-foreground max-w-[800px]">
                   Stop guessing why you react. Global Pulse is architecting a dynamic map of your unique identity 
                   ({"{self}"} Map / UIG) and an AI engine (PCE/EWEF) grounded in real psychology to decode the 
                   <em> mechanics</em> behind your emotions, in context. No bullshit, no wellness woo-woo – just computational 
                   insight into your internal operating system.
                 </p>
-                <div className="bg-gray-800/60 border border-gray-700 p-4 rounded-lg my-4">
-                  <p className="text-gray-300 text-sm">
+                <div className="bg-card border border-border p-4 rounded-lg my-4">
+                  <p className="text-muted-foreground text-sm">
                     <em>This is early days. Born from a 10-day hackathon sprint. We're building this openly, ethically, 
                     and inviting you to watch (and eventually participate) as we debug the human condition.</em>
                   </p>
@@ -82,13 +79,13 @@ export default function WaitlistPage() {
         </section>
 
         {/* The Problem Section */}
-        <section className="py-16 bg-gray-900">
+        <section className="py-16 bg-muted">
           <div className="container px-4 md:px-6">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8">
                 Sentiment Analysis is Shallow. Surveys are Stale. Your Brain is More Complex.
               </h2>
-              <div className="space-y-6 text-gray-300">
+              <div className="space-y-6 text-muted-foreground">
                 <p className="text-xl">
                   Let's be real. "Positive" or "Negative" tells you almost nothing. Polls ask <em>what</em> you think, 
                   not <em>why</em> you feel a certain way about it. Most "AI companions" are glorified pattern-matchers 
@@ -109,13 +106,13 @@ export default function WaitlistPage() {
         </section>
 
         {/* Introducing Global Pulse - The Engine */}
-        <section className="py-16 bg-black">
+        <section className="py-16 bg-background">
           <div className="container px-4 md:px-6">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8">
                 We're Not Just Building an App. We're Building the Engine.
               </h2>
-              <div className="space-y-6 text-gray-300">
+              <div className="space-y-6 text-muted-foreground">
                 <p className="text-xl">
                   Global Pulse isn't another mood tracker. At its core is the <strong>Pulse Context Engine (PCE)</strong> – 
                   a framework designed from the ground up to integrate cutting-edge psychology (like the Theory of 
@@ -157,7 +154,10 @@ export default function WaitlistPage() {
                     </div>
                   </div>
                 </div>
-                <div className="mt-6 border border-gray-800 rounded-xl p-6 bg-gray-900/50">
+                <div className={cn(
+                  "rounded-lg p-6 transition-all duration-300 shadow-md",
+                  "bg-card"
+                )}>
                   <Image
                     src="/system-connectivity-diagram.png"
                     alt="Pulse Engine Diagram - UIG → Context → Interaction → EWEF Analysis → VAD/Category Output"
@@ -176,7 +176,7 @@ export default function WaitlistPage() {
         </section>
 
         {/* Benefits Section */}
-        <section className="py-16 bg-gray-900">
+        <section className="py-16 bg-muted">
           <div className="container px-4 md:px-6">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8 text-center">
@@ -184,7 +184,10 @@ export default function WaitlistPage() {
               </h2>
               <div className="grid md:grid-cols-2 gap-8 mt-8">
                 {/* Self-Insight Column */}
-                <Card className="bg-gray-800 border-gray-700 shadow-xl">
+                <Card className={cn(
+                  "rounded-lg p-6 transition-all duration-300 shadow-md",
+                  "bg-card"
+                )}>
                   <CardContent className="p-6">
                     <h3 className="text-2xl font-bold mb-4 text-primary">Self-Insight</h3>
                     <ul className="space-y-4">
@@ -192,7 +195,7 @@ export default function WaitlistPage() {
                         <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                         <div>
                           <p className="font-bold">Decode Your Reactions:</p>
-                          <p className="text-gray-300">
+                          <p className="text-muted-foreground">
                             Finally see the connection: "When <em>[Situation X]</em> happened, it conflicted with my 
                             <em> [Value Y (High PL)]</em>, leading to that feeling of <em>[Predicted VAD/Category: 
                             e.g., 'Frustration']</em>."
@@ -203,7 +206,7 @@ export default function WaitlistPage() {
                         <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                         <div>
                           <p className="font-bold">Identify Your Triggers:</p>
-                          <p className="text-gray-300">
+                          <p className="text-muted-foreground">
                             Spot recurring patterns – what consistently activates certain parts of your identity map and 
                             leads to specific emotional states?
                           </p>
@@ -213,7 +216,7 @@ export default function WaitlistPage() {
                         <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                         <div>
                           <p className="font-bold">Map Your Core Drivers:</p>
-                          <p className="text-gray-300">
+                          <p className="text-muted-foreground">
                             Understand which Values, Needs, and Goals have the highest Power Level (PL) for you 
                             <em> right now</em>. Are you living in alignment with them?
                           </p>
@@ -223,7 +226,7 @@ export default function WaitlistPage() {
                         <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                         <div>
                           <p className="font-bold">See Your Blind Spots:</p>
-                          <p className="text-gray-300">
+                          <p className="text-muted-foreground">
                             Recognize common appraisal habits (MHH patterns) or potential cognitive biases influencing 
                             your interpretations.
                           </p>
@@ -234,7 +237,10 @@ export default function WaitlistPage() {
                 </Card>
                 
                 {/* Future Potential Column */}
-                <Card className="bg-gray-800 border-gray-700 shadow-xl">
+                <Card className={cn(
+                  "rounded-lg p-6 transition-all duration-300 shadow-md",
+                  "bg-card"
+                )}>
                   <CardContent className="p-6">
                     <h3 className="text-2xl font-bold mb-4 text-primary">Future Potential</h3>
                     <ul className="space-y-4">
@@ -242,7 +248,7 @@ export default function WaitlistPage() {
                         <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                         <div>
                           <p className="font-bold">Contextual AI That <em>Gets</em> It:</p>
-                          <p className="text-gray-300">
+                          <p className="text-muted-foreground">
                             Imagine an AI companion (<code>Pulse</code>) that truly understands the context of your feelings, 
                             offering validation and genuinely relevant reflection.
                           </p>
@@ -252,7 +258,7 @@ export default function WaitlistPage() {
                         <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                         <div>
                           <p className="font-bold">Personalized Growth Tools:</p>
-                          <p className="text-gray-300">
+                          <p className="text-muted-foreground">
                             Tools built on <em>your</em> UIG data to support goals, navigate value conflicts, or build 
                             emotional literacy (non-clinical).
                           </p>
@@ -261,10 +267,10 @@ export default function WaitlistPage() {
                       <li className="flex gap-3">
                         <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                         <div>
-                          <p className="font-bold">Anonymized Collective Insight:</p>
-                          <p className="text-gray-300">
-                            (With Explicit Consent ONLY) Contribute your <em>anonymized</em> patterns to help build a 
-                            real-time, nuanced understanding of global sentiment, moving beyond shallow polls.
+                          <p className="font-bold">Nuanced Collective Understanding:</p>
+                          <p className="text-muted-foreground">
+                            Opt-in to share anonymized, aggregated insights (NEVER raw data). See how core human Needs 
+                            manifest across populations, providing a richer picture than polls allow.
                           </p>
                         </div>
                       </li>
@@ -272,7 +278,7 @@ export default function WaitlistPage() {
                         <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                         <div>
                           <p className="font-bold">Get Rewarded for Your Perspective:</p>
-                          <p className="text-gray-300">
+                          <p className="text-muted-foreground">
                             (Future - Requires Consent) Our vision includes sharing value back. If anonymized insights 
                             derived from your consented data are used commercially, you get a share. Your perspective has 
                             economic value.
@@ -288,13 +294,13 @@ export default function WaitlistPage() {
         </section>
 
         {/* Ethics & Trust Section */}
-        <section id="ethics" className="py-16 bg-black">
+        <section id="ethics" className="py-16 bg-background">
           <div className="container px-4 md:px-6">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8">
                 Powerful Tech Demands Radical Responsibility. Full Stop.
               </h2>
-              <div className="space-y-6 text-gray-300">
+              <div className="space-y-6 text-muted-foreground">
                 <p className="text-xl">
                   Let's cut the corporate privacy theater. Modeling identity and emotion is serious business. If we screw 
                   this up, the potential for harm is real. That's why ethics aren't an afterthought; they're architected in.
@@ -305,7 +311,7 @@ export default function WaitlistPage() {
                       <ShieldCheck className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
                       <div>
                         <p className="font-bold text-green-400">Your Data, Your Rules:</p>
-                        <p className="text-gray-300">
+                        <p className="text-muted-foreground">
                           Granular, opt-in consent for <em>everything</em> non-essential. You control access (Data Hub), 
                           analysis depth (Detailed Logging), and data use (Aggregation, Training, Future Sale Pool). 
                           Easily view and revoke consent anytime. <strong>Your individual data is NEVER sold.</strong>
@@ -316,7 +322,7 @@ export default function WaitlistPage() {
                       <Lock className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
                       <div>
                         <p className="font-bold text-green-400">Privacy & Security Baked In:</p>
-                        <p className="text-gray-300">
+                        <p className="text-muted-foreground">
                           Encryption at rest and in transit. Strict access controls. Secure infrastructure. 
                           Pseudonymization for any potential future aggregate analysis.
                         </p>
@@ -328,7 +334,7 @@ export default function WaitlistPage() {
                       <Shield className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
                       <div>
                         <p className="font-bold text-green-400">Ethical Guardrails in Code:</p>
-                        <p className="text-gray-300">
+                        <p className="text-muted-foreground">
                           Active modules monitor interactions aiming to prevent manipulation and block responses predicted 
                           to cause significant distress. This isn't just policy; it's running code.
                         </p>
@@ -338,7 +344,7 @@ export default function WaitlistPage() {
                       <Github className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
                       <div>
                         <p className="font-bold text-green-400">Open Source Core:</p>
-                        <p className="text-gray-300">
+                        <p className="text-muted-foreground">
                           We're committed to open-sourcing the core analytical framework (PCE/EWEF logic, UIG utils). 
                           No black boxes for the fundamental engine. Transparency builds trust. Scrutinize our work. 
                           Help us make it better and safer.
@@ -349,7 +355,7 @@ export default function WaitlistPage() {
                       <AlertCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-1" />
                       <div>
                         <p className="font-bold text-green-400">We Are NOT Therapists:</p>
-                        <p className="text-gray-300">
+                        <p className="text-muted-foreground">
                           This is a tool for self-awareness and potentially societal insight. It is <em>not</em> a 
                           replacement for professional mental health diagnosis or treatment.
                         </p>
@@ -358,7 +364,7 @@ export default function WaitlistPage() {
                   </div>
                 </div>
                 <div className="flex justify-center mt-8">
-                  <Button variant="outline" size="lg" className="border-green-500 text-green-400" asChild>
+                  <Button variant="outline" className="border-primary text-primary hover:bg-primary/10" asChild>
                     <Link href="/ethics">
                       Read Our Full Ethical Framework (No Legalese) <ExternalLink className="ml-2 h-4 w-4" />
                     </Link>
@@ -370,13 +376,13 @@ export default function WaitlistPage() {
         </section>
 
         {/* Hackathon Reality Check Section */}
-        <section className="py-16 bg-gray-900">
+        <section className="py-16 bg-muted">
           <div className="container px-4 md:px-6">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8">
                 Built in 10 Days. Ready for... Feedback.
               </h2>
-              <div className="space-y-6 text-gray-300">
+              <div className="space-y-6 text-muted-foreground">
                 <p className="text-xl">
                   What you're signing up for isn't a polished product launch. It's early access to an ambitious 
                   <em> experiment</em>. The core engine concepts (UIG, EWEF) and the initial framework were hammered 
@@ -386,7 +392,7 @@ export default function WaitlistPage() {
                   It's raw. There will be bugs. The AI (<code>Pulse</code>) isn't fully interactive yet. The dashboard 
                   is basic. But the <em>foundational engine</em> is there, and the <em>vision</em> is clear.
                 </p>
-                <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mt-8">
+                <div className="bg-card border border-border rounded-lg p-6 mt-8">
                   <h3 className="text-2xl font-bold mb-4">Joining the waitlist means you're signing up to be part of the journey:</h3>
                   <ul className="space-y-3">
                     <li className="flex gap-3">
@@ -413,21 +419,21 @@ export default function WaitlistPage() {
         </section>
 
         {/* Waitlist Signup Section */}
-        <section id="waitlist" className="py-20 bg-black">
+        <section id="waitlist" className="py-20 md:py-28 bg-muted">
           <div className="container px-4 md:px-6">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
                   Unlock Deeper Understanding. Join the Global Pulse Waitlist.
                 </h2>
-                <p className="text-xl text-gray-300 max-w-[600px] mx-auto">
+                <p className="text-xl text-muted-foreground max-w-[600px] mx-auto">
                   Get priority access to the platform as features launch. Help us build the future of contextual AI and 
                   emotional insight. Spots are limited for early feedback rounds.
                 </p>
               </div>
               <div className="mt-8">
                 <WaitlistSignupForm />
-                <p className="text-sm text-gray-400 text-center mt-4">
+                <p className="text-sm text-muted-foreground text-center mt-4">
                   We respect your inbox. Updates will be infrequent and meaningful. You can unsubscribe anytime.
                 </p>
               </div>
@@ -435,6 +441,9 @@ export default function WaitlistPage() {
           </div>
         </section>
       </main>
+      <Suspense fallback={null}>
+        <ScrollToTopButton />
+      </Suspense>
     </div>
   )
 } 

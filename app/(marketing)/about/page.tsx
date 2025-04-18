@@ -20,29 +20,18 @@ import {
 
 export default function AboutPage() {
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden bg-background text-foreground">
       {/* Hero Section */}
-      <section className="relative py-24 md:py-32 bg-gradient-to-br from-primary/20 via-background to-background overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
-        {/* Animated sparkles */}
-        <div className="absolute top-20 left-20 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-pulse" />
-        <div
-          className="absolute bottom-20 right-40 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        />
-        <div
-          className="absolute top-40 right-20 w-16 h-16 bg-teal-500/20 rounded-full blur-xl animate-pulse"
-          style={{ animationDelay: "2s" }}
-        />
+      <section className="relative py-24 md:py-32 bg-background overflow-hidden">
         <div className="container px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-8 border-transparent bg-primary/20 text-primary">
+            <div className="inline-flex items-center rounded-full border border-primary/20 px-3 py-1 text-sm font-semibold mb-8 bg-primary/10 text-primary">
               <Flame className="mr-2 h-4 w-4" /> Vercel Hackathon Contender
             </div>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-6 leading-tight">
               We&apos;re not just building an app.
               <br />
-              <span className="bg-gradient-to-r from-primary via-blue-500 to-teal-400 text-transparent bg-clip-text">
+              <span className="bg-gradient-to-r from-primary via-secondary to-accent text-transparent bg-clip-text">
                 We&apos;re starting a movement.
               </span>
             </h1>
@@ -50,13 +39,13 @@ export default function AboutPage() {
               Global Pulse is more than a platform—it&apos;s a revolution in how the world shares opinions. Built in just 10 days for the Vercel Hackathon, we&apos;re here to make waves.
             </p>
             <div className="flex flex-wrap gap-4 items-center">
-              <Button size="lg" className="gap-2 h-12 text-base group relative overflow-hidden" asChild>
+              <Button size="lg" className="gap-2 h-12 text-base group relative overflow-hidden bg-primary hover:bg-primary/90" asChild>
                 <Link href="/signup">
                   <span className="relative z-10 flex items-center">
                     Join the revolution{" "}
                     <Rocket className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-accent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
               </Button>
               <div className="relative pl-4 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-10 before:w-px before:bg-border">
@@ -66,41 +55,6 @@ export default function AboutPage() {
                 </p>
               </div>
             </div>
-          </div>
-        </div>
-        {/* Decorative code snippet */}
-        <div className="hidden lg:block absolute bottom-10 right-10 max-w-xs bg-black/80 backdrop-blur-sm rounded-lg border border-primary/20 shadow-xl p-4 font-mono text-xs text-green-400 transform rotate-2">
-          <div className="flex items-center gap-2 mb-2 text-xs text-white/70">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span>global-pulse.tsx</span>
-          </div>
-          <div>
-            <span className="text-blue-400">const</span> <span className="text-yellow-400">GlobalPulse</span> = () =&gt;{" "}
-            {"{"}
-            <br />
-            &nbsp;&nbsp;<span className="text-purple-400">return</span> (
-            <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span className="text-blue-400">Revolution</span>
-            <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-yellow-400">team</span>={"{"}
-            <span className="text-orange-400">&quot;Solo&quot;</span>
-            {"}"}
-            <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-yellow-400">timeframe</span>={"{"}
-            <span className="text-orange-400">10</span>
-            {"}"}
-            <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-yellow-400">goal</span>={"{"}
-            <span className="text-green-400">&quot;Change the world&quot;</span>
-            {"}"}
-            <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;/&gt;
-            <br />
-            &nbsp;&nbsp;);
-            <br />
-            {"}"};
           </div>
         </div>
       </section>
@@ -132,13 +86,13 @@ export default function AboutPage() {
         <div className="container px-4 md:px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-primary text-primary-foreground">
+              <div className="inline-flex items-center rounded-full border border-primary/20 px-3 py-1 text-sm font-semibold mb-6 bg-primary text-primary-foreground">
                 <Bolt className="mr-2 h-4 w-4" /> The 10-Day Sprint
               </div>
               <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-8 leading-tight">
                 From zero to <span className="text-primary">game-changer</span> in less than two weeks
               </h2>
-              <div className="space-y-6 text-lg">
+              <div className="space-y-6 text-lg text-muted-foreground">
                 <p>
                   Global Pulse was conceived and built in just 10 days for the Vercel Hackathon. The goal: create a revolutionary platform that changes how the world shares opinions.
                 </p>
@@ -159,11 +113,10 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="relative">
-              <div className="absolute -z-10 inset-0 bg-gradient-to-tr from-primary/30 to-blue-500/20 rounded-3xl transform rotate-3"></div>
-              <div className="relative rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl flex items-center justify-center min-h-[300px]">
+              <div className="relative rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl flex items-center justify-center min-h-[300px] bg-card">
                 <div className="flex flex-col items-center justify-center w-full h-full p-8">
                   <Rocket className="h-16 w-16 text-primary mb-4" />
-                  <div className="text-lg font-bold text-white">10 days. 1 developer. 1 vision.</div>
+                  <div className="text-lg font-bold text-foreground">10 days. 1 developer. 1 vision.</div>
                 </div>
               </div>
               <div className="absolute -right-4 top-1/4 bg-background border-2 border-primary text-primary font-bold px-3 py-1 rounded-full shadow-lg transform transition-transform hover:scale-105 hover:-rotate-3">
@@ -181,10 +134,10 @@ export default function AboutPage() {
       </section>
 
       {/* Development Timeline */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 bg-muted">
         <div className="container px-4 md:px-6">
           <div className="max-w-3xl mx-auto">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-secondary text-secondary-foreground">
+            <div className="inline-flex items-center rounded-full border border-secondary/20 px-3 py-1 text-sm font-semibold mb-6 bg-secondary text-secondary-foreground">
               <Clock className="mr-2 h-4 w-4" /> The Timeline
             </div>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tighter mb-10">
@@ -204,21 +157,21 @@ export default function AboutPage() {
                   title: "Core Infrastructure",
                   description:
                     "Backend systems were built, authentication set up, and the AI logic and user experience began to take shape.",
-                  icon: <Cpu className="h-6 w-6 text-blue-500" />,
+                  icon: <Cpu className="h-6 w-6 text-secondary" />,
                 },
                 {
                   day: "Day 5-6",
                   title: "Feature Development",
                   description:
                     "The multi-agent multi-tool engine was implemented using Vercel AI SDK, along with real-time opinion tracking, global visualization, and user authentication systems.",
-                  icon: <Code className="h-6 w-6 text-teal-500" />,
+                  icon: <Code className="h-6 w-6 text-accent" />,
                 },
                 {
                   day: "Day 7-8",
                   title: "Integration & Testing",
                   description:
                     "All systems were connected and tested. Bugs were fixed and performance optimized across devices.",
-                  icon: <LineChart className="h-6 w-6 text-blue-500" />,
+                  icon: <LineChart className="h-6 w-6 text-secondary" />,
                 },
                 {
                   day: "Day 9-10",
@@ -232,7 +185,7 @@ export default function AboutPage() {
                   <div className="absolute -left-10 top-0 w-6 h-6 rounded-full border-2 border-primary bg-background flex items-center justify-center">
                     {phase.icon}
                   </div>
-                  <div className="bg-background rounded-lg border p-5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-background rounded-lg border border-border p-5 shadow-sm hover:shadow-md transition-shadow">
                     <div className="inline-block bg-primary/10 text-primary text-sm font-bold px-2 py-1 rounded mb-2">
                       {phase.day}
                     </div>
@@ -250,7 +203,7 @@ export default function AboutPage() {
       <section className="py-20 md:py-28">
         <div className="container px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-primary/20 text-primary">
+            <div className="inline-flex items-center rounded-full border border-primary/20 px-3 py-1 text-sm font-semibold mb-6 bg-primary/10 text-primary">
               <Sparkles className="mr-2 h-4 w-4" /> The Team
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">
@@ -265,20 +218,9 @@ export default function AboutPage() {
 
       {/* Global Collaboration Section */}
       <section className="py-20 md:py-28 bg-muted/30 relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <svg width="100%" height="100%" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M200,100 Q400,150 600,100 T1000,100" stroke="currentColor" strokeWidth="2" fill="none" />
-            <path d="M200,200 Q500,250 800,200 T1000,200" stroke="currentColor" strokeWidth="2" fill="none" />
-            <path d="M200,300 Q400,350 600,300 T1000,300" stroke="currentColor" strokeWidth="2" fill="none" />
-            <path d="M200,400 Q500,450 800,400 T1000,400" stroke="currentColor" strokeWidth="2" fill="none" />
-            <path d="M200,500 Q400,550 600,500 T1000,500" stroke="currentColor" strokeWidth="2" fill="none" />
-            <path d="M200,600 Q500,650 800,600 T1000,600" stroke="currentColor" strokeWidth="2" fill="none" />
-          </svg>
-        </div>
         <div className="container px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center mb-16">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-primary/20 text-primary">
+            <div className="inline-flex items-center rounded-full border border-primary/20 px-3 py-1 text-sm font-semibold mb-6 bg-primary/10 text-primary">
               <Globe className="mr-2 h-4 w-4" /> Global Collaboration
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">
@@ -334,7 +276,7 @@ export default function AboutPage() {
       <section className="py-20 md:py-28">
         <div className="container px-4 md:px-6">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-primary/20 text-primary">
+            <div className="inline-flex items-center rounded-full border border-primary/20 px-3 py-1 text-sm font-semibold mb-6 bg-primary/10 text-primary">
               <Trophy className="mr-2 h-4 w-4" /> Why We&apos;ll Win
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-10">
@@ -418,7 +360,7 @@ export default function AboutPage() {
       <section className="py-20 md:py-28 bg-muted/30">
         <div className="container px-4 md:px-6">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-secondary text-secondary-foreground">
+            <div className="inline-flex items-center rounded-full border border-secondary/20 px-3 py-1 text-sm font-semibold mb-6 bg-secondary text-secondary-foreground">
               <Code className="mr-2 h-4 w-4" /> Technical Excellence
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-10">
@@ -554,7 +496,7 @@ export default function AboutPage() {
       <section className="py-20 md:py-28">
         <div className="container px-4 md:px-6">
           <div className="max-w-4xl mx-auto text-center mb-16">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-primary/20 text-primary">
+            <div className="inline-flex items-center rounded-full border border-primary/20 px-3 py-1 text-sm font-semibold mb-6 bg-primary/10 text-primary">
               <Heart className="mr-2 h-4 w-4" /> Early Feedback
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">
@@ -615,12 +557,12 @@ export default function AboutPage() {
               Global Pulse is more than a hackathon project—it's the beginning of a movement to transform how the world shares opinions. Be part of it from day one.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="gap-2 h-12 text-base group relative overflow-hidden" asChild>
+              <Button size="lg" className="gap-2 h-12 text-base group relative overflow-hidden bg-primary hover:bg-primary/90" asChild>
                 <Link href="/signup">
                   <span className="relative z-10 flex items-center">
                     Sign Up Now <Rocket className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-accent opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="gap-2 h-12 text-base" asChild>

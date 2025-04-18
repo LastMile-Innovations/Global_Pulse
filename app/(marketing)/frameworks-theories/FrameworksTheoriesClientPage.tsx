@@ -13,20 +13,20 @@ import { Badge } from "@/components/ui/badge"
 
 export default function FrameworksTheoriesClientPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-darkBlue text-white">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Hero Section */}
-      <section className="py-16 md:py-20 bg-gradient-to-b from-purple-900/20 to-darkBlue">
+      <section className="py-16 md:py-20 bg-gradient-to-b from-secondary/20 to-background">
         <div className="container px-4 md:px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-6">
               The Science Behind the Pulse: Our Theoretical Toolkit
             </h1>
-            <p className="text-xl text-gray-300 mb-8">
+            <p className="text-xl text-muted-foreground mb-8">
               Global Pulse is not built on algorithmic guesswork. The Pulse Context Engine (PCE) is intentionally
               designed to operationalize and integrate insights from established scientific theories across psychology,
               neuroscience, sociology, and computational science.
             </p>
-            <p className="text-gray-300 mb-8">
+            <p className="text-muted-foreground mb-8">
               We believe that grounding our platform in validated frameworks leads to more meaningful, interpretable,
               and ultimately more useful insights. This page provides an overview of the key theoretical models and
               concepts that inform the structure of our Unified Identity Graph (UIG), the analytical processes of our
@@ -39,7 +39,7 @@ export default function FrameworksTheoriesClientPage() {
                   Open Source Repository
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="border-gray-700 hover:bg-gray-800">
+              <Button asChild variant="outline" className="border-border hover:bg-muted">
                 <Link href="/ethics">
                   <Scale className="mr-2 h-4 w-4" />
                   Safety & Ethics
@@ -51,24 +51,24 @@ export default function FrameworksTheoriesClientPage() {
       </section>
 
       {/* Main Content */}
-      <section className="py-12 bg-charcoal">
+      <section className="py-12 bg-muted">
         <div className="container px-4 md:px-6">
           <div className="max-w-5xl mx-auto">
             <Tabs defaultValue="meta-theory" className="w-full">
-              <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
-                <TabsTrigger value="meta-theory" className="data-[state=active]:bg-primary">
+              <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8 bg-card border border-border">
+                <TabsTrigger value="meta-theory" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Brain className="mr-2 h-4 w-4" />
                   Meta-Theory
                 </TabsTrigger>
-                <TabsTrigger value="appraisal" className="data-[state=active]:bg-primary">
+                <TabsTrigger value="appraisal" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Lightbulb className="mr-2 h-4 w-4" />
                   Appraisal Framework
                 </TabsTrigger>
-                <TabsTrigger value="uig-schema" className="data-[state=active]:bg-primary">
+                <TabsTrigger value="uig-schema" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Compass className="mr-2 h-4 w-4" />
                   UIG Schema
                 </TabsTrigger>
-                <TabsTrigger value="learning" className="data-[state=active]:bg-primary">
+                <TabsTrigger value="learning" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Zap className="mr-2 h-4 w-4" />
                   Learning & Adaptation
                 </TabsTrigger>
@@ -81,32 +81,32 @@ export default function FrameworksTheoriesClientPage() {
                     <Brain className="mr-2 h-6 w-6 text-primary" />
                     I. Core Meta-Theory: Guiding the Construction Process
                   </h2>
-                  <p className="text-gray-300 mb-6">
+                  <p className="text-muted-foreground mb-6">
                     The foundational theories that shape our overall approach to understanding emotion and identity.
                   </p>
                 </div>
 
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
                         <CardTitle className="text-xl">Theory of Constructed Emotion (TCE)</CardTitle>
-                        <CardDescription className="text-gray-400">Proponent: Dr. Lisa Feldman Barrett</CardDescription>
+                        <CardDescription className="text-muted-foreground">Proponent: Dr. Lisa Feldman Barrett</CardDescription>
                       </div>
                       <Badge className="bg-primary/20 text-primary border-primary">Primary Meta-Theory</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-medium text-gray-200 mb-2">Role in Global Pulse:</h4>
-                      <p className="text-gray-300">
+                      <h4 className="font-medium text-foreground mb-2">Role in Global Pulse:</h4>
+                      <p className="text-muted-foreground">
                         Primary meta-theory shaping the entire EWEF pipeline design and philosophy.
                       </p>
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-gray-200 mb-2">Key Concepts Integrated:</h4>
-                      <ul className="space-y-2 text-gray-300 list-disc pl-5">
+                      <h4 className="font-medium text-foreground mb-2">Key Concepts Integrated:</h4>
+                      <ul className="space-y-2 text-muted-foreground list-disc pl-5">
                         <li>
                           <span className="font-medium">Emotion as Construction:</span> Rejects innate emotion circuits;
                           models emotion as meaning-making events constructed in context.
@@ -138,15 +138,15 @@ export default function FrameworksTheoriesClientPage() {
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-gray-200 mb-2">Implementation in Global Pulse:</h4>
-                      <p className="text-gray-300">
+                      <h4 className="font-medium text-foreground mb-2">Implementation in Global Pulse:</h4>
+                      <p className="text-muted-foreground">
                         The multi-stage EWEF pipeline (Sec 4.3 of PCE doc), the focus on VAD output, the separate
                         categorization step, the use of contextual modulation, and the structure of the UIG's concept
                         layer directly reflect TCE principles.
                       </p>
                     </div>
                   </CardContent>
-                  <CardFooter className="border-t border-gray-800 pt-4">
+                  <CardFooter className="border-t border-border pt-4">
                     <Button variant="link" className="text-primary p-0" asChild>
                       <Link href="https://lisafeldmanbarrett.com/books/how-emotions-are-made/" target="_blank">
                         Learn more about TCE
@@ -156,9 +156,9 @@ export default function FrameworksTheoriesClientPage() {
                   </CardFooter>
                 </Card>
 
-                <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+                <div className="bg-card border border-border rounded-lg p-6">
                   <h3 className="text-xl font-bold mb-4">Theory Integration Diagram</h3>
-                  <div className="relative h-[300px] w-full bg-gray-800 rounded-lg flex items-center justify-center">
+                  <div className="relative h-[300px] w-full bg-muted rounded-lg flex items-center justify-center">
                     <Image
                       src="/interconnected-intelligence.png"
                       alt="Theory Integration Diagram"
@@ -176,14 +176,14 @@ export default function FrameworksTheoriesClientPage() {
                     <Lightbulb className="mr-2 h-6 w-6 text-primary" />
                     II. Core Appraisal & Categorization Framework
                   </h2>
-                  <p className="text-gray-300 mb-6">
+                  <p className="text-muted-foreground mb-6">
                     The specific frameworks that drive our emotion appraisal and categorization processes.
                   </p>
                 </div>
 
                 <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="ewef" className="border-gray-800">
-                    <AccordionTrigger className="text-xl font-medium py-4 hover:no-underline hover:bg-gray-800/50 px-4 rounded-t-lg">
+                  <AccordionItem value="ewef" className="border-border">
+                    <AccordionTrigger className="text-xl font-medium py-4 hover:no-underline hover:bg-muted/50 px-4 rounded-t-lg">
                       <div className="flex items-center">
                         <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
                           <Lightbulb className="h-4 w-4 text-primary" />
@@ -191,16 +191,16 @@ export default function FrameworksTheoriesClientPage() {
                         Enhanced Webb Emotional Framework (EWEF) / Mind Hacking Happiness (MHH) Variables
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="bg-gray-900 border border-gray-800 border-t-0 rounded-b-lg p-6">
+                    <AccordionContent className="bg-card border border-border border-t-0 rounded-b-lg p-6">
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-2">Proponent:</h4>
-                          <p className="text-gray-300">Sean Webb (originator of MHH/EoE concepts)</p>
+                          <h4 className="font-medium text-foreground mb-2">Proponent:</h4>
+                          <p className="text-muted-foreground">Sean Webb (originator of MHH/EoE concepts)</p>
                         </div>
 
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-2">Role in Global Pulse:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-2">Role in Global Pulse:</h4>
+                          <p className="text-muted-foreground">
                             Provides the specific structured cognitive variables and rule-based heuristics (V1) for
                             appraisal and initial emotion group identification, operating within the broader TCE
                             framework.
@@ -208,8 +208,8 @@ export default function FrameworksTheoriesClientPage() {
                         </div>
 
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-2">Key Concepts Integrated:</h4>
-                          <ul className="space-y-2 text-gray-300 list-disc pl-5">
+                          <h4 className="font-medium text-foreground mb-2">Key Concepts Integrated:</h4>
+                          <ul className="space-y-2 text-muted-foreground list-disc pl-5">
                             <li>
                               <span className="font-medium">EP vs. P Comparison:</span> Central computational step
                               evaluating Perception against Expectation/Preference derived from UIG {"{Attachments}"}.
@@ -250,8 +250,8 @@ export default function FrameworksTheoriesClientPage() {
                         </div>
 
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-2">Implementation in Global Pulse:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-2">Implementation in Global Pulse:</h4>
+                          <p className="text-muted-foreground">
                             lib/pce/perception-appraisal.ts and lib/pce/variable-inference.ts infer MHH variables.
                             lib/pce/webb-rules.ts and lib/pce/webb-severity.ts implement the categorization and severity
                             logic. lib/pce/emotion-categorization.ts integrates this with VAD. MHH variables serve as
@@ -262,8 +262,8 @@ export default function FrameworksTheoriesClientPage() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="cognitive-appraisal" className="border-gray-800">
-                    <AccordionTrigger className="text-xl font-medium py-4 hover:no-underline hover:bg-gray-800/50 px-4">
+                  <AccordionItem value="cognitive-appraisal" className="border-border">
+                    <AccordionTrigger className="text-xl font-medium py-4 hover:no-underline hover:bg-muted/50 px-4">
                       <div className="flex items-center">
                         <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center mr-3">
                           <Brain className="h-4 w-4 text-primary" />
@@ -271,24 +271,24 @@ export default function FrameworksTheoriesClientPage() {
                         Cognitive Appraisal Theories (Lazarus, Scherer/CPM)
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="bg-gray-900 border border-gray-800 border-t-0 rounded-b-lg p-6">
+                    <AccordionContent className="bg-card border border-border border-t-0 rounded-b-lg p-6">
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-2">Proponents:</h4>
-                          <p className="text-gray-300">Richard Lazarus, Klaus Scherer, and others.</p>
+                          <h4 className="font-medium text-foreground mb-2">Proponents:</h4>
+                          <p className="text-muted-foreground">Richard Lazarus, Klaus Scherer, and others.</p>
                         </div>
 
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-2">Role in Global Pulse:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-2">Role in Global Pulse:</h4>
+                          <p className="text-muted-foreground">
                             Provides structure and specific dimensions for the P Appraiser module to evaluate the
                             significance of the Perception (P) beyond just the MHH variables.
                           </p>
                         </div>
 
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-2">Key Concepts Integrated:</h4>
-                          <ul className="space-y-2 text-gray-300 list-disc pl-5">
+                          <h4 className="font-medium text-foreground mb-2">Key Concepts Integrated:</h4>
+                          <ul className="space-y-2 text-muted-foreground list-disc pl-5">
                             <li>
                               <span className="font-medium">Primary Appraisal (Lazarus):</span> Assessing relevance to
                               goals/values (Stressful, Benign-Positive, Irrelevant).
@@ -325,8 +325,8 @@ export default function FrameworksTheoriesClientPage() {
                         </div>
 
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-2">Implementation in Global Pulse:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-2">Implementation in Global Pulse:</h4>
+                          <p className="text-muted-foreground">
                             The logic within lib/pce/perception-appraisal.ts incorporates checks inspired by these
                             dimensions to calculate pValuationShiftEstimate, pPowerLevel, pAppraisalConfidence, and help
                             infer MHH variables more accurately.
@@ -337,9 +337,9 @@ export default function FrameworksTheoriesClientPage() {
                   </AccordionItem>
                 </Accordion>
 
-                <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+                <div className="bg-card border border-border rounded-lg p-6">
                   <h3 className="text-xl font-bold mb-4">EWEF Pipeline Visualization</h3>
-                  <div className="relative h-[300px] w-full bg-gray-800 rounded-lg flex items-center justify-center">
+                  <div className="relative h-[300px] w-full bg-muted rounded-lg flex items-center justify-center">
                     <Image src="/EWEF-Loop-Diagram.png" alt="EWEF Loop Diagram" fill className="object-contain p-4" />
                   </div>
                 </div>
@@ -352,34 +352,34 @@ export default function FrameworksTheoriesClientPage() {
                     <Compass className="mr-2 h-6 w-6 text-primary" />
                     III. UIG Schema Foundations: Modeling Identity & Context
                   </h2>
-                  <p className="text-gray-300 mb-6">
+                  <p className="text-muted-foreground mb-6">
                     The theoretical frameworks that inform how we model identity, personality, values, and social
                     relationships in the Unified Identity Graph.
                   </p>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2">
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <Users className="mr-2 h-5 w-5 text-primary" />
                         Personality: Five-Factor Model (FFM / Big Five)
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Proponents: Costa & McCrae, Goldberg, John & Srivastava, etc.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Role in Global Pulse:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-1">Role in Global Pulse:</h4>
+                          <p className="text-muted-foreground">
                             Provides the primary structure for the stable PersonalityProfile (T) node.
                           </p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Integration:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-1">Integration:</h4>
+                          <p className="text-muted-foreground">
                             Uses OCEAN dimensions (Openness, Conscientiousness, Extraversion, Agreeableness,
                             Neuroticism) as core attributes. These T scores act as contextual modulators within the EWEF
                             (e.g., Neuroticism amplifying negative Valence/Arousal).
@@ -389,26 +389,26 @@ export default function FrameworksTheoriesClientPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <Compass className="mr-2 h-5 w-5 text-primary" />
                         Values: Schwartz's Theory of Basic Human Values
                       </CardTitle>
-                      <CardDescription className="text-gray-400">Proponent: Shalom H. Schwartz</CardDescription>
+                      <CardDescription className="text-muted-foreground">Proponent: Shalom H. Schwartz</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Role in Global Pulse:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-1">Role in Global Pulse:</h4>
+                          <p className="text-muted-foreground">
                             Structures the :Value attachment nodes and informs the structure of :CONCEPT_RELATIONSHIP
                             edges (Conflict/Support) between them, impacting NetworkContext.
                           </p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Integration:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-1">Integration:</h4>
+                          <p className="text-muted-foreground">
                             Uses Schwartz's 10/19 value types (e.g., Security, Hedonism, Benevolence, Universalism) as
                             potential node labels or properties. Crucially, implements :CONCEPT_RELATIONSHIP edges
                             (Conflict, Support) between Value nodes based on the Schwartz circular model, informing the
@@ -419,25 +419,25 @@ export default function FrameworksTheoriesClientPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <Heart className="mr-2 h-5 w-5 text-primary" />
                         Needs: Self-Determination Theory (SDT)
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Proponents: Richard Ryan & Edward Deci
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Role in Global Pulse:</h4>
-                          <p className="text-gray-300">Defines core psychological needs acting as fundamental EPs.</p>
+                          <h4 className="font-medium text-foreground mb-1">Role in Global Pulse:</h4>
+                          <p className="text-muted-foreground">Defines core psychological needs acting as fundamental EPs.</p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Integration:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-1">Integration:</h4>
+                          <p className="text-muted-foreground">
                             Models :Need attachment nodes for Autonomy, Competence, and Relatedness. These Needs often
                             have high baseline PL and their perceived fulfillment/thwarting significantly impacts VAD
                             and categorization (e.g., thwarted Autonomy -&gt; Anger/Frustration).
@@ -447,13 +447,13 @@ export default function FrameworksTheoriesClientPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <Brain className="mr-2 h-5 w-5 text-primary" />
                         Beliefs & Cognition
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Theories: Cognitive Therapy (CT/Beck), REBT (Ellis), Schema Theory, Dual Process Theory
                         (Kahneman)
                       </CardDescription>
@@ -461,12 +461,12 @@ export default function FrameworksTheoriesClientPage() {
                     <CardContent>
                       <div className="space-y-3">
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Role in Global Pulse:</h4>
-                          <p className="text-gray-300">Informs representation and processing of cognitive elements.</p>
+                          <h4 className="font-medium text-foreground mb-1">Role in Global Pulse:</h4>
+                          <p className="text-muted-foreground">Informs representation and processing of cognitive elements.</p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Integration:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-1">Integration:</h4>
+                          <p className="text-muted-foreground">
                             :Belief nodes store propositions. Core beliefs identified via CT principles have high PL.
                             The EWEF conceptually models potential System 1 (fast/heuristic) vs. System 2
                             (slow/deliberative) influences on appraisal and re-appraisal. Cognitive Biases modeled as
@@ -477,27 +477,27 @@ export default function FrameworksTheoriesClientPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <Target className="mr-2 h-5 w-5 text-primary" />
                         Goals & Motivation
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Theories: Goal-Setting Theory (Locke & Latham), Self-Efficacy (Bandura)
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Role in Global Pulse:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-1">Role in Global Pulse:</h4>
+                          <p className="text-muted-foreground">
                             Structures goal representation and its link to action/emotion.
                           </p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Integration:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-1">Integration:</h4>
+                          <p className="text-muted-foreground">
                             :Goal nodes include attributes like Specificity, Difficulty, Commitment (from Goal-Setting
                             Theory). Self-efficacy estimate (linked to Goal or user T profile) influences Coping
                             Potential appraisal and potentially Dominance.
@@ -507,13 +507,13 @@ export default function FrameworksTheoriesClientPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gray-900 border-gray-800">
+                  <Card className="bg-card border-border">
                     <CardHeader>
                       <CardTitle className="flex items-center">
                         <Users className="mr-2 h-5 w-5 text-primary" />
                         Social Relationships & Cognition
                       </CardTitle>
-                      <CardDescription className="text-gray-400">
+                      <CardDescription className="text-muted-foreground">
                         Theories: Attachment Theory (Bowlby, Ainsworth), Social Exchange/Equity Theory, Investment Model
                         (Rusbult), Theory of Mind (ToM), Attribution Theory (Weiner)
                       </CardDescription>
@@ -521,12 +521,12 @@ export default function FrameworksTheoriesClientPage() {
                     <CardContent>
                       <div className="space-y-3">
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Role in Global Pulse:</h4>
-                          <p className="text-gray-300">Models the structure and dynamics of the user's social world.</p>
+                          <h4 className="font-medium text-foreground mb-1">Role in Global Pulse:</h4>
+                          <p className="text-muted-foreground">Models the structure and dynamics of the user's social world.</p>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-200 mb-1">Integration:</h4>
-                          <p className="text-gray-300">
+                          <h4 className="font-medium text-foreground mb-1">Integration:</h4>
+                          <p className="text-muted-foreground">
                             :SOCIAL_RELATIONSHIP edges store perceived quality, trust, commitment attributes.
                             PersonalityProfile (T) may hold AttachmentStyleIndicator. :PERCEIVES_ATTACHMENT edges model
                             ToM. Attribution Theory informs MHH Source inference in P Appraiser. SocialContext flags
@@ -538,9 +538,9 @@ export default function FrameworksTheoriesClientPage() {
                   </Card>
                 </div>
 
-                <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+                <div className="bg-card border border-border rounded-lg p-6">
                   <h3 className="text-xl font-bold mb-4">UIG Schema Visualization</h3>
-                  <div className="relative h-[300px] w-full bg-gray-800 rounded-lg flex items-center justify-center">
+                  <div className="relative h-[300px] w-full bg-muted rounded-lg flex items-center justify-center">
                     <Image
                       src="/system-connectivity-diagram.png"
                       alt="UIG Schema Visualization"
@@ -558,12 +558,12 @@ export default function FrameworksTheoriesClientPage() {
                     <Zap className="mr-2 h-6 w-6 text-primary" />
                     IV. Learning & Adaptation
                   </h2>
-                  <p className="text-gray-300 mb-6">
+                  <p className="text-muted-foreground mb-6">
                     The frameworks that enable Global Pulse to learn and adapt based on user feedback and interaction.
                   </p>
                 </div>
 
-                <Card className="bg-gray-900 border-gray-800">
+                <Card className="bg-card border-border">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Zap className="mr-2 h-5 w-5 text-primary" />
@@ -572,25 +572,25 @@ export default function FrameworksTheoriesClientPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-medium text-gray-200 mb-2">Role in Global Pulse:</h4>
-                      <p className="text-gray-300">
+                      <h4 className="font-medium text-foreground mb-2">Role in Global Pulse:</h4>
+                      <p className="text-muted-foreground">
                         Provides the mechanisms for the Learning Layer to adapt the UIG and potentially EWEF models
                         based on user feedback.
                       </p>
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-gray-200 mb-2">Integration:</h4>
-                      <p className="text-gray-300">
+                      <h4 className="font-medium text-foreground mb-2">Integration:</h4>
+                      <p className="text-muted-foreground">
                         Uses user feedback (:PredictionEvaluation) as reward/error signals. Updates UIG PL/V on
                         :HOLDS_ATTACHMENT edges (personalization) or potentially fine-tunes ModelParameterSet weights
                         using RL algorithms or supervised retraining techniques.
                       </p>
                     </div>
 
-                    <div className="bg-gray-800 p-4 rounded-lg mt-4">
-                      <h4 className="font-medium text-gray-200 mb-2">Learning Flow:</h4>
-                      <ol className="space-y-2 text-gray-300 list-decimal pl-5">
+                    <div className="bg-muted p-4 rounded-lg mt-4">
+                      <h4 className="font-medium text-foreground mb-2">Learning Flow:</h4>
+                      <ol className="space-y-2 text-muted-foreground list-decimal pl-5">
                         <li>User provides feedback on emotion prediction accuracy</li>
                         <li>Feedback stored as :PredictionEvaluation node</li>
                         <li>Learning Layer processes feedback batch</li>
@@ -608,9 +608,9 @@ export default function FrameworksTheoriesClientPage() {
                   </CardContent>
                 </Card>
 
-                <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+                <div className="bg-card border border-border rounded-lg p-6">
                   <h3 className="text-xl font-bold mb-4">UIG Activation Flow</h3>
-                  <div className="relative h-[300px] w-full bg-gray-800 rounded-lg flex items-center justify-center">
+                  <div className="relative h-[300px] w-full bg-muted rounded-lg flex items-center justify-center">
                     <Image
                       src="/uig-activation-flow.png"
                       alt="UIG Activation Flow"
