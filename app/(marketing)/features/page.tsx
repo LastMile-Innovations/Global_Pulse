@@ -1,231 +1,279 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Cpu, Sparkles, Zap, Globe, MessageSquareText, Lock, ArrowRight } from "lucide-react"
-// Dynamic imports for client components to enable code splitting
 import dynamic from "next/dynamic"
 
-// Import server component directly
-import FeatureShowcase from "@/components/features/feature-showcase";
-// ScrollToTop is already in the main layout
-
-// Dynamic imports with loading fallbacks for client components
+// Dynamic import for CTA button
 const AnimatedCTAButton = dynamic(() => import("@/components/marketing/animated-cta-button"), {
   loading: () => <Button size="lg" className="h-14 animate-pulse bg-primary/80">Loading...</Button>
-});
+})
 
-// No need for dynamic import of ArrowRight as it's already imported above
+// --- HERO SECTION ---
+function HeroSection() {
+  return (
+    <section className="relative py-32 md:py-44 lg:py-56 overflow-hidden bg-gradient-to-b from-background via-background to-muted text-foreground">
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="w-full h-full bg-gradient-to-tr from-primary/10 via-background/60 to-secondary/10 animate-gradient-x" />
+      </div>
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-[url('/grid-pattern-dark.svg')] opacity-[0.04] pointer-events-none z-0"></div>
+      {/* Glowing effect */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0">
+        <div className="w-[600px] h-[600px] bg-gradient-radial from-primary/20 via-transparent to-transparent rounded-standard-full animate-pulse-slow shadow-glow" />
+      </div>
+      <div className="container px-4 md:px-6 relative z-10">
+        <div className="max-w-3xl mx-auto text-center space-y-8">
+          <div className="inline-flex items-center rounded-standard-full border border-primary/30 px-4 py-1.5 text-sm font-semibold text-primary bg-primary/10 shadow-glow-sm">
+            <Sparkles className="mr-2 h-4 w-4 text-primary animate-bounce" /> Global Pulse: Insight, Safety, and Trust
+          </div>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-tight bg-gradient-to-r from-primary via-foreground to-muted text-transparent bg-clip-text drop-shadow-lg text-balance">
+            Know Yourself. Understand the World. Trust the Process.
+          </h1>
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium text-balance">
+            The world's first platform for deep personal insight and collective understanding—powered by empathetic AI, grounded in science, and built on radical privacy and ethical transparency. Your data, your control. Always.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+            <AnimatedCTAButton href="/signup" className="shadow-glow animate-float">Join Free—Privacy First</AnimatedCTAButton>
+            <Button variant="outline" size="lg" className="h-14 border-primary/30 text-foreground hover:bg-primary/10 shadow-glow animate-float" asChild>
+              <Link href="/explore">See Live, Anonymous Insights</Link>
+            </Button>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3 pt-4">
+            <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-3 py-1 rounded-standard-full font-semibold"><Lock className="h-4 w-4" /> Privacy by Design</span>
+            <span className="inline-flex items-center gap-1 text-xs bg-secondary text-secondary-foreground px-3 py-1 rounded-standard-full font-semibold"><Cpu className="h-4 w-4" /> Ethical AI</span>
+            <span className="inline-flex items-center gap-1 text-xs bg-muted text-foreground px-3 py-1 rounded-standard-full font-semibold">Open Source</span>
+            <span className="inline-flex items-center gap-1 text-xs bg-accent text-accent-foreground px-3 py-1 rounded-standard-full font-semibold">User-Owned Data</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
-// Define feature data outside component to prevent recreation on each render
-// This data is static and doesn't need to be recreated on each render
+// --- FEATURES SECTION ---
 const features = [
   {
-    title: "Talk It Out: Go Deeper Than the Data with Pulse AI",
-    description:
-      "Forget static polls. Engage in unscripted, natural dialogue with Pulse, our meticulously neutral AI. Pulse doesn't just ask what you think; it helps uncover why. It listens, clarifies, and contextually introduces seamless ways (like sliders or quick choices appearing mid-chat) to capture specific nuances, untangling complexity and adding rich, qualitative depth to the global picture.",
-    icon: <MessageSquareText className="h-8 w-8 text-teal-400" />,
-    colorClass: "teal",
-    image: "/placeholder.svg?height=300&width=400&text=AI+Chat+UI",
+    title: "Conversational AI, Built for You",
+    description: "Pulse is your private, empathetic AI companion. Explore your thoughts, feelings, and values in a safe, judgment-free space. Every conversation is powered by science and protected by design.",
+    icon: <MessageSquareText className="h-8 w-8 text-primary" />, 
+    colorClass: "primary",
     benefits: [
-      "Uncover the 'Why': Understand the reasoning, context, and emotion behind opinions, not just the numbers.",
-      "Context is King: Pulse asks relevant follow-up questions, adapting intelligently to your unique perspective.",
-      "Feels Like a Conversation, Not an Interrogation: Share your thoughts naturally and comfortably.",
-      "Seamless Data Capture: Provide structured input effortlessly without ever leaving the chat flow."
+      "Feel safe: Your responses are private and always anonymized.",
+      "Real understanding: Pulse helps you connect emotions to your core values.",
+      "Natural flow: No awkward forms—just a real conversation.",
+      "You're in control: Share as much or as little as you want."
     ],
-    buttonText: "Start Chatting with Pulse"
+    buttonText: "Chat with Pulse"
   },
   {
-    title: "Rapid Pulse Check: Your Opinion, Instantly Visualized",
-    description:
-      "Need speed? Dive into our streamlined Survey Feed. Answer focused questions one tap at a time, filtering by topics that ignite your interest. There's no waiting weeks for reports here. Experience the immediate gratification of seeing your individual input instantly merge into the live, evolving global consensus visualized on our Explore hub.",
-    icon: <Zap className="h-8 w-8 text-blue-400" />,
-    colorClass: "blue",
-    image: "/placeholder.svg?height=300&width=400&text=Survey+Feed+UI",
+    title: "Instant Surveys, Instant Impact",
+    description: "Answer quick, focused questions on topics you care about. See your input instantly reflected in live results. No waiting, no hidden agenda—just your honest opinion making a real difference.",
+    icon: <Zap className="h-8 w-8 text-secondary" />, 
+    colorClass: "secondary",
     benefits: [
-      "Effortless Input: Share your crucial perspective with a single tap or click.",
-      "Focus Your Feed: Zero in on the specific topics that matter most to you, ignoring the rest.",
-      "See the Impact Instantly: Watch global results shift the moment you contribute your voice.",
-      "Comprehensive Coverage: Efficiently contribute to a broad range of quantitative data points."
+      "One-tap answers: Share your view in seconds, anytime.",
+      "See results live: Watch the world's opinions update as you participate.",
+      "Choose your topics: Only answer what matters to you.",
+      "No pressure: Skip or stop anytime—your data, your choice."
     ],
     buttonText: "Take a Quick Survey"
   },
   {
-    title: "Witness the World Thinking: Your Real-Time Insight Hub",
-    description:
-      "This is where the magic happens. Step into the Explore hub—a living dashboard of global consciousness. Browse topics, search for specific questions, and dive deep into dynamic charts that update second-by-second as opinions flow in from across the planet. It's not static data; it's the world's perspective unfolding live before your eyes.",
-    icon: <Globe className="h-8 w-8 text-indigo-400" />,
-    colorClass: "indigo",
-    image: "/placeholder.svg?height=300&width=400&text=Explore+Hub+UI",
+    title: "Real-Time Global Insights, Always Anonymous",
+    description: "Explore a living dashboard of global opinions. Filter by topic, region, or time. Every insight is aggregated and anonymized, so you can discover trends without ever exposing individual voices.",
+    icon: <Globe className="h-8 w-8 text-accent" />, 
+    colorClass: "accent",
     benefits: [
-      "Dynamic Data, Dynamic Charts: Don't just see snapshots; watch global sentiment shift and evolve live.",
-      "Discover Trending Topics: Instantly identify what the world is talking about right now.",
-      "Slice & Dice the Data: Filter insights by demographics, region, topic, and time to uncover hidden patterns.",
-      "Intuitive Visualization: Understand complex data easily through clear, interactive charts and metrics."
+      "Live, evolving data: Watch global sentiment shift in real time.",
+      "Total anonymity: No individual responses are ever shown.",
+      "Powerful filters: Find insights that matter to you.",
+      "Clear visuals: Complex data made simple and accessible."
     ],
-    buttonText: "Explore Global Insights Now"
+    buttonText: "Explore Insights"
   },
   {
-    title: "AI-Powered Clarity: From Raw Data to Actionable Insights",
-    description:
-      "Raw data is just the beginning. Global Pulse leverages advanced AI directly within the Explore hub to help you make sense of it all. Generate concise, human-readable summaries that highlight key findings and dominant opinions. Soon, unlock dynamic, AI-curated dashboards that reveal compelling comparisons and insights you might otherwise miss, transforming complexity into clarity.",
-    icon: <Sparkles className="h-8 w-8 text-purple-400" />,
-    colorClass: "purple",
-    image: "/placeholder.svg?height=300&width=400&text=AI+Insights+UI",
+    title: "AI Insights You Can Trust",
+    description: "Let our AI turn raw data into clear, actionable insights. Get concise summaries and spot trends, all while knowing your privacy is protected at every step.",
+    icon: <Sparkles className="h-8 w-8 text-primary" />, 
+    colorClass: "primary",
     benefits: [
-      "Beyond the Numbers: Get concise, AI-written narratives that explain the trends and stories within the data.",
-      "Spot Emerging Shifts: Our AI helps identify subtle changes, correlations, and points of interest.",
-      "Effortless Understanding: Make sense of vast amounts of global opinion data quickly and easily.",
-      "Curated Views (Coming Soon): Access dynamically generated dashboards focused on key comparisons and insights."
+      "Human-readable summaries: Understand the big picture instantly.",
+      "Spot trends early: AI highlights what's changing, so you're always informed.",
+      "No compromise on privacy: Insights are always based on anonymized data.",
+      "Curated dashboards: See what matters most, with zero risk to your identity."
     ],
-    buttonText: "See AI Insights in Action"
+    buttonText: "See AI Insights"
   },
   {
-    title: "Engineered for Instantaneity: Feel the Difference",
-    description:
-      "Global Pulse isn't just powerful; it's fast. Meticulously built using Next.js 15, React 19, optimized Supabase interactions, and leveraging Upstash Redis for caching and speed, the entire platform is architected for an \"instant feel.\" Experience seamless navigation, immediate feedback, and real-time updates without the lag.",
-    icon: <Cpu className="h-8 w-8 text-rose-400" />,
-    colorClass: "rose",
-    image: "/placeholder.svg?height=300&width=400&text=Tech+Stack+Visual",
+    title: "Engineered for Trust—Fast, Secure, and Always in Your Control",
+    description: "Global Pulse is built for speed and security. Enjoy instant feedback and seamless navigation, knowing your data is protected by industry-leading technology and strict privacy standards.",
+    icon: <Cpu className="h-8 w-8 text-secondary" />, 
+    colorClass: "secondary",
     benefits: [
-      "Instant Loading & Interactions: No more waiting. Explore data and share opinions fluidly.",
-      "Truly Real-Time: Experience live data updates without frustrating delays or constant refreshing.",
-      "Responsive Everywhere: Enjoy a consistently fast experience, whether on desktop or mobile.",
-      "Built for Global Scale: Our architecture handles millions of voices effortlessly, maintaining performance."
+      "Lightning fast: No waiting, no lag—just instant results.",
+      "Secure by design: Your account and data are always protected.",
+      "Global scale: Trusted by users worldwide, built to handle millions safely.",
+      "You're in charge: Control your experience and your data, always."
     ],
-    buttonText: "Discover Our Tech Edge"
+    buttonText: "Discover Our Tech"
   },
   {
-    title: "Participate with Confidence: Security & Privacy First",
-    description:
-      "Your voice is valuable, and your trust is paramount. Global Pulse is built on a foundation of security and privacy. We utilize industry-standard secure authentication (via Supabase Auth). All publicly displayed insights and future marketplace data are rigorously anonymized. You remain in control, with clear options (coming soon) to manage how your anonymized contributions are used.",
-    icon: <Lock className="h-8 w-8 text-lime-400" />,
-    colorClass: "lime",
-    image: "/placeholder.svg?height=300&width=400&text=Privacy+Shield",
+    title: "Your Privacy, Our Promise—Participate with Total Confidence",
+    description: "Your trust is our top priority. We use secure authentication, rigorous anonymization, and give you clear control over your data. No personal information is ever sold or shared. You decide how your voice is used—always.",
+    icon: <Lock className="h-8 w-8 text-primary" />, 
+    colorClass: "primary",
     benefits: [
-      "Rock-Solid Security: Robust authentication and data handling practices protect your account and contributions.",
-      "Aggregated, Not Individual: Public insights always reflect the collective, never exposing individual responses.",
-      "Privacy by Design: Anonymization is baked into our aggregation processes.",
-      "You're In Control: Clear consent management for future features like the Insights Marketplace."
+      "Industry-leading security: Your account and responses are protected at every step.",
+      "Anonymized insights: Only collective trends are shown, never individual data.",
+      "Privacy by default: No tracking, no selling, no surprises.",
+      "Full control: Change your privacy settings or opt out anytime."
     ],
     buttonText: "Read Our Privacy Commitment"
   },
 ]
 
-// Preconnect to image domain to improve loading performance
-export const metadata = {
-  title: 'Global Pulse Features | Experience Real-Time Global Understanding',
-  description: 'Explore the unique features of Global Pulse. See how our AI chat, instant survey feed, real-time visualizations, and cutting-edge tech deliver unparalleled global insights.',
-  // Add link rel="preconnect" for any external domains used for images
-  links: [
-    { rel: 'preconnect', href: 'https://images.unsplash.com' },
-    { rel: 'dns-prefetch', href: 'https://images.unsplash.com' },
-  ],
+function FeatureList() {
+  return (
+    <section className="py-24 md:py-32 bg-muted dark:bg-background relative">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-24 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 blur-2xl opacity-40 pointer-events-none" />
+      <div className="container px-4 md:px-6 relative z-10">
+        <div className="space-y-24 md:space-y-32">
+          {features.map((feature, index) => (
+            <div
+              key={feature.title}
+              className={`transition-transform duration-300 hover:scale-[1.025] hover:shadow-2xl rounded-standard-xl bg-card p-2 md:p-0 ${index % 2 === 0 ? '' : 'md:flex-row-reverse'}`}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-12 lg:gap-16 group animate-fade-in-up">
+                {/* Text Content */}
+                <div className={`space-y-6 ${index % 2 === 0 ? "md:order-1" : "md:order-2"}`}>
+                  <div className={`inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-${feature.colorClass}/10`}>
+                    {feature.icon}
+                  </div>
+                  <h3 className={`text-3xl font-bold tracking-tight text-${feature.colorClass}`}>{feature.title}</h3>
+                  <p className="text-lg text-muted-foreground leading-relaxed">{feature.description}</p>
+                  <ul className="space-y-3">
+                    {feature.benefits.map((benefit, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <CheckCircle2 className={`h-5 w-5 text-${feature.colorClass}/80 mt-1 flex-shrink-0`} />
+                        <span>{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button variant="outline" className={`border-${feature.colorClass}/30 text-${feature.colorClass} hover:bg-${feature.colorClass}/10 hover:text-${feature.colorClass} group`} asChild>
+                    <Link href="/signup">
+                      {feature.buttonText} <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </div>
+                {/* Visual Representation Placeholder */}
+                <div className={`relative rounded-xl overflow-hidden border-2 border-muted/20 shadow-xl transition-all duration-500 group-hover:border-${feature.colorClass}/40 group-hover:shadow-${feature.colorClass}/10 group-hover:scale-[1.02] ${index % 2 === 0 ? "md:order-2" : "md:order-1"}`}>
+                  <div className={`absolute inset-0 bg-gradient-to-br from-${feature.colorClass}/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                  {/* Placeholder image or illustration */}
+                  <div className="flex items-center justify-center h-[300px] bg-muted/40 text-muted-foreground text-xl font-semibold">
+                    Feature Visual
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
 }
 
+// --- TRUST SECTION ---
+function TrustSection() {
+  return (
+    <section className="py-16 bg-gradient-to-br from-primary/10 via-background to-muted border-t">
+      <div className="container px-4 md:px-6">
+        <div className="max-w-2xl mx-auto text-center space-y-6">
+          <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 text-foreground">Why Trust Global Pulse?</h3>
+          <div className="flex flex-col gap-4 text-base text-muted-foreground">
+            <div className="flex items-center gap-2 justify-center"><Lock className="h-5 w-5 text-primary" /> <span>Privacy by Design: You control your data. Nothing is sold or shared without your explicit, granular consent.</span></div>
+            <div className="flex items-center gap-2 justify-center"><Cpu className="h-5 w-5 text-secondary" /> <span>Ethical AI: Every insight and interaction is governed by strict ethical guardrails and transparent algorithms.</span></div>
+            <div className="flex items-center gap-2 justify-center"><Sparkles className="h-5 w-5 text-accent" /> <span>Open Source: Our core technology is open for public scrutiny and collaboration.</span></div>
+            <div className="flex items-center gap-2 justify-center"><Globe className="h-5 w-5 text-muted-foreground" /> <span>Collective Good: Aggregate insights are only ever shared in anonymized, consented form to advance societal understanding—never for targeting or manipulation.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// --- TECH STACK SECTION ---
+function TechStackSection() {
+  const techs = [
+    { name: "Next.js 15", icon: <CheckCircle2 className="h-5 w-5 text-primary/70" /> },
+    { name: "React 19", icon: <CheckCircle2 className="h-5 w-5 text-primary/70" /> },
+    { name: "Vercel AI SDK", icon: <CheckCircle2 className="h-5 w-5 text-primary/70" /> },
+    { name: "Supabase", icon: <CheckCircle2 className="h-5 w-5 text-primary/70" /> },
+    { name: "Upstash Redis", icon: <CheckCircle2 className="h-5 w-5 text-primary/70" /> },
+    { name: "Tailwind CSS", icon: <CheckCircle2 className="h-5 w-5 text-primary/70" /> },
+    { name: "TypeScript", icon: <CheckCircle2 className="h-5 w-5 text-primary/70" /> },
+  ]
+  return (
+    <section className="py-20 md:py-28 bg-muted/30">
+      <div className="container px-4 md:px-6">
+        <div className="max-w-3xl mx-auto text-center mb-16">
+          <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold border-transparent bg-secondary text-secondary-foreground mb-4">
+            <Cpu className="mr-2 h-4 w-4" /> Powered By Innovation
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tighter mb-4">Built for Speed and Scale</h2>
+          <p className="text-lg text-muted-foreground">
+            Our modern tech stack ensures a blazing-fast, reliable, and scalable platform.
+          </p>
+        </div>
+        <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-6 max-w-4xl mx-auto">
+          {techs.map((tech) => (
+            <div key={tech.name} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              {tech.icon}
+              <span className="font-medium">{tech.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// --- FINAL CTA SECTION ---
+function FinalCTASection() {
+  return (
+    <section className="py-24 md:py-32 bg-gradient-to-t from-primary/5 via-background to-muted border-t">
+      <div className="container px-4 md:px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6 text-foreground">
+            Stop Guessing. Start Knowing. Feel the Global Pulse—Safely.
+          </h2>
+          <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+            The world is constantly speaking. Are you ready to listen? Global Pulse offers the most immediate, nuanced, and secure window into collective human perspective ever created. Sign up free today, lend your voice to the global conversation, and explore insights with total confidence.
+          </p>
+          <div className="text-base text-primary font-semibold mb-6">No personal data sold. No individual responses shown. You're always in control.</div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <AnimatedCTAButton href="/signup">Sign Up Free—Privacy Guaranteed</AnimatedCTAButton>
+            <Button size="lg" variant="outline" className="gap-2 h-14 text-base" asChild>
+              <Link href="/explore">
+                Explore Safely <ArrowRight className="h-4 w-4 ml-1" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// --- PAGE EXPORT ---
 export default function FeaturesPage() {
   return (
     <>
-      {/* Unique Hero Section */}
-      <section className="relative py-28 md:py-40 lg:py-48 overflow-hidden bg-gradient-to-b from-black via-gray-900 to-gray-800 text-white">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 bg-[url('/grid-pattern-dark.svg')] opacity-[0.03] pointer-events-none"></div>
-        {/* Glowing effect */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="w-[600px] h-[600px] bg-gradient-radial from-primary/10 via-transparent to-transparent rounded-full animate-pulse"></div>
-        </div>
-
-        <div className="container px-4 md:px-6 relative z-10">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <div className="inline-flex items-center rounded-full border border-primary/30 px-4 py-1.5 text-sm font-semibold text-primary bg-primary/10 shadow-sm">
-              <Sparkles className="mr-2 h-4 w-4 text-primary" /> The Global Pulse Engine
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-tight bg-gradient-to-r from-white via-gray-300 to-gray-500 text-transparent bg-clip-text">
-              Beyond the Buzz: Experience the Real Global Pulse.
-            </h1>
-            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
-              Stop navigating the noise. Discover how Global Pulse&apos;s unique fusion of intelligent AI conversation, lightning-fast data collection, and dynamic visualization transforms raw global opinions into living, breathing insights you can explore and understand—instantly.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <AnimatedCTAButton href="/signup">Get Started Free</AnimatedCTAButton>
-              <Button variant="outline" size="lg" className="h-14 border-white/20 text-white hover:bg-white/10" asChild>
-                <Link href="/explore">See Live Insights Now</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Showcase Section */}
-      <section className="py-24 md:py-32 bg-gray-50 dark:bg-gray-900">
-        <div className="container px-4 md:px-6">
-          <div className="space-y-24 md:space-y-32">
-            {/* Use a more efficient way to render the features */}
-            {features.map((feature, index) => (
-              <FeatureShowcase 
-                key={feature.title} 
-                feature={feature} 
-                index={index} 
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Technology Highlight Section */}
-      <section className="py-20 md:py-28 bg-muted/30">
-        <div className="container px-4 md:px-6">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold border-transparent bg-secondary text-secondary-foreground mb-4">
-              <Cpu className="mr-2 h-4 w-4" /> Powered By Innovation
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter mb-4">Built for Speed and Scale</h2>
-            <p className="text-lg text-muted-foreground">
-              Our modern tech stack ensures a blazing-fast, reliable, and scalable platform.
-            </p>
-          </div>
-          <div className="flex flex-wrap justify-center items-center gap-x-10 gap-y-6 max-w-4xl mx-auto">
-            {
-              [
-                "Next.js 15",
-                "React 19",
-                "Vercel AI SDK",
-                "Supabase",
-                "Upstash Redis",
-                "Tailwind CSS",
-                "TypeScript",
-              ].map((tech) => (
-                <div key={tech} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                  <CheckCircle2 className="h-5 w-5 text-primary/70" />
-                  <span className="font-medium">{tech}</span>
-                </div>
-              ))
-            }
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="py-24 md:py-32 bg-gradient-to-t from-primary/5 via-background to-background border-t">
-        <div className="container px-4 md:px-6">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">
-              Stop Guessing. Start Knowing. Feel the Global Pulse.
-            </h2>
-            <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-              The world is constantly speaking. Are you ready to listen? Global Pulse offers the most immediate, nuanced, and accessible window into collective human perspective ever created. Sign up free today, lend your voice to the global conversation, and start exploring insights that matter.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <AnimatedCTAButton href="/signup">Sign Up - It&apos;s Free</AnimatedCTAButton>
-              <Button size="lg" variant="outline" className="gap-2 h-14 text-base" asChild>
-                <Link href="/explore">
-                  Explore the Platform <ArrowRight className="h-4 w-4 ml-1" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ScrollToTop is already in the main layout */}
+      <HeroSection />
+      <FeatureList />
+      <TrustSection />
+      <TechStackSection />
+      <FinalCTASection />
     </>
   )
 }

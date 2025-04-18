@@ -7,6 +7,7 @@ import { z } from "zod"
 
 import { createClient } from "@/utils/supabase/server"
 import { updatePasswordSchema } from "@/components/auth/update-password-schema"
+import { createUser } from "@/lib/auth/supabase-auth"
 
 // --- Shared State Type for Auth Actions ---
 export type AuthActionState = {
@@ -117,23 +118,9 @@ export async function signup(
 
   const { email, password } = validatedFields.data
 
-  // 2. Attempt signup with Supabase
-  const supabase = await createClient()
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      // Link to send in the confirmation email
-      emailRedirectTo: `${origin}/auth/callback`,
-    },
-  })
-
-  if (error) {
-    console.error("Signup error:", error.message) // Log detailed error server-side
-    // Provide specific common errors, otherwise generic
-    if (error.message.includes("User already registered")) {
-      return { error: "An account with this email already exists. Try logging in." }
-    }
+  // 2. Create new user using createUser service
+  const user = await createUser(email, password)
+  if (!user) {
     return { error: "Could not create account. Please try again later." }
   }
 

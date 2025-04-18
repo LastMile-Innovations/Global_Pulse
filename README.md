@@ -1,5 +1,3 @@
-
-
 **Global Pulse is the definitive, instantaneous barometer of global human perspective.**
 
 It's a dynamic platform architected for extreme performance, designed to capture, analyze, and visualize authentic public opinion on any topic in real-time. By seamlessly blending sophisticated AI-driven conversations with streamlined direct polling, Global Pulse provides both nuanced qualitative understanding ("the why") and broad quantitative data ("the what"), making complex global sentiment accessible and explorable with an "instant feel" user experience.
@@ -111,7 +109,22 @@ Global Pulse leverages a server-centric architecture optimized for performance a
     ```
     This will apply all pending SQL migrations located in `db/migrations/` to your Supabase database.
 
-### Running Locally
+2.  **Initialize All Databases (Recommended for Production):**
+    To set up both PostgreSQL (Drizzle migrations) and Neo4j (UIG schema), run:
+    ```bash
+    pnpm exec tsx scripts/initialize-databases.ts
+    ```
+    This script will:
+    - Run all Drizzle migrations (PostgreSQL)
+    - Set up the Neo4j UIG schema (calls `scripts/setup-neo4j.ts` internally)
+
+3.  **(Optional) Manual Neo4j Schema Setup:**
+    If you only want to set up the Neo4j UIG schema, run:
+    ```bash
+    pnpm exec tsx scripts/setup-neo4j.ts
+    ```
+
+
 
 1.  **Start the development server:**
     ```bash
@@ -155,6 +168,9 @@ This project uses Drizzle Kit to manage database schema changes.
 *   `pnpm db:push`: Pushes schema changes directly to the database (for prototyping).
 *   `pnpm db:studio`: Launches Drizzle Studio GUI to browse/edit database data.
 *   `pnpm db:check`: Checks if the database schema is in sync with the Drizzle schema definition.
+*   `pnpm exec tsx scripts/initialize-databases.ts`: Runs all-in-one setup for PostgreSQL and Neo4j (recommended for production).
+*   `pnpm exec tsx scripts/setup-neo4j.ts`: Sets up only the Neo4j UIG schema.
+*   `pnpm exec tsx scripts/migrate-users-standalone.ts`: Backfills user records from Supabase Auth into local tables.
 
 ## Project Structure
 

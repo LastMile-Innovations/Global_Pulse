@@ -1,16 +1,13 @@
-import { OptimizedImage } from "@/components/ui/optimized-image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
   ArrowRight,
   Bolt,
-  Brain,
   Code,
   Flame,
   Globe,
   Rocket,
   Sparkles,
-  Zap,
   Trophy,
   Clock,
   CheckCircle2,
@@ -52,8 +49,7 @@ export default function AboutPage() {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-3xl">
-              Global Pulse is more than a platform—it&apos;s a revolution in how the world shares opinions. Built by three
-              passionate developers in just 10 days, we&apos;re here to make waves.
+              Global Pulse is more than a platform—it&apos;s a revolution in how the world shares opinions. Built in just 10 days for the Vercel Hackathon, we&apos;re here to make waves.
             </p>
             <div className="flex flex-wrap gap-4 items-center">
               <Button size="lg" className="gap-2 h-12 text-base group relative overflow-hidden" asChild>
@@ -92,7 +88,7 @@ export default function AboutPage() {
             &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span className="text-blue-400">Revolution</span>
             <br />
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-yellow-400">team</span>={"{"}
-            <span className="text-orange-400">&quot;Greyson&quot;, &quot;Niklas&quot;, &quot;Omar&quot;</span>
+            <span className="text-orange-400">&quot;Solo&quot;</span>
             {"}"}
             <br />
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-yellow-400">timeframe</span>={"{"}
@@ -118,8 +114,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             {[
               { value: "10", label: "Days to Build", icon: <Clock className="h-5 w-5 text-primary" /> },
-              { value: "3", label: "Developers", icon: <Code className="h-5 w-5 text-primary" /> },
-              { value: "3", label: "Continents", icon: <Globe className="h-5 w-5 text-primary" /> },
+              { value: "1", label: "Developer", icon: <Code className="h-5 w-5 text-primary" /> },
+              { value: "1", label: "Continent", icon: <Globe className="h-5 w-5 text-primary" /> },
               { value: "&quot;∞&quot;", label: "Potential", icon: <Sparkles className="h-5 w-5 text-primary" /> },
             ].map((stat, i) => (
               <div key={i} className="flex items-center gap-3">
@@ -147,18 +143,13 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-6 text-lg">
                 <p>
-                  When Greyson Paynter, founder of LastMile, had the vision for Global Pulse, he didn&apos;t wait around. He
-                  assembled an elite team through his network on X in{" "}
-                  <span className="font-bold">just a few hours</span>.
+                  Global Pulse was conceived and built in just 10 days for the Vercel Hackathon. The goal: create a revolutionary platform that changes how the world shares opinions.
                 </p>
                 <p>
-                  The mission? Build a revolutionary platform for the Vercel Hackathon that would change how the world
-                  shares opinions—and do it in just 10 days.
+                  The mission? Build a platform that would change how the world shares opinions—and do it in just 10 days.
                 </p>
                 <p>
-                  Greyson created the technical architecture and wireframed the initial app on day one, while Niklas and
-                  Omar built the backend, AI logic, and refined the wireframes. Throughout the project, everyone
-                  collaborated on all aspects, creating a truly integrated team.
+                  Every aspect of the technical architecture, wireframes, and implementation was completed in this short window, with base colors and logo contributed by others.
                 </p>
                 <div className="pt-4">
                   <div className="relative">
@@ -166,7 +157,6 @@ export default function AboutPage() {
                     <blockquote className="pl-6 italic text-muted-foreground">
                       &quot;We&apos;re not just participating in a hackathon. We&apos;re showing the world what&apos;s possible when you
                       combine vision, talent, and modern tech.&quot;
-                      <footer className="mt-2 text-primary font-bold not-italic">— Greyson Paynter, Team Lead</footer>
                     </blockquote>
                   </div>
                 </div>
@@ -175,23 +165,11 @@ export default function AboutPage() {
 
             <div className="relative">
               <div className="absolute -z-10 inset-0 bg-gradient-to-tr from-primary/30 to-blue-500/20 rounded-3xl transform rotate-3"></div>
-              <div className="relative rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl">
-                <OptimizedImage
-                  src="/placeholder.svg?height=600&width=800&text=The+Sprint"
-                  alt="The 10-Day Sprint"
-                  width={800}
-                  height={600}
-                  className="object-cover w-full"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                  <div className="p-6 text-white">
-                    <div className="flex items-center gap-2 mb-2 text-xs text-white/70">
-                      <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-                      <span className="text-sm font-medium">Live development</span>
-                    </div>
-                    <p className="text-lg font-bold">10 days. 3 developers. 1 vision.</p>
-                  </div>
+              <div className="relative rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl flex items-center justify-center min-h-[300px]">
+                {/* No image, just a simple text or icon */}
+                <div className="flex flex-col items-center justify-center w-full h-full p-8">
+                  <Rocket className="h-16 w-16 text-primary mb-4" />
+                  <div className="text-lg font-bold text-white">10 days. 1 developer. 1 vision.</div>
                 </div>
               </div>
 
@@ -218,7 +196,7 @@ export default function AboutPage() {
               <Clock className="mr-2 h-4 w-4" /> The Timeline
             </div>
             <h2 className="text-3xl md:text-4xl font-bold tracking-tighter mb-10">
-              How we built Global Pulse in 10 days
+              How Global Pulse was built in 10 days
             </h2>
 
             <div className="relative border-l-2 border-primary/30 pl-8 pb-8 space-y-10">
@@ -227,28 +205,28 @@ export default function AboutPage() {
                   day: "Day 1-2",
                   title: "Concept & Architecture",
                   description:
-                    "Greyson assembled the team, outlined the vision, and created the technical architecture with Next.js, Supabase, and Upstash Redis. He wireframed the initial app while Niklas and Omar began planning the AI implementation.",
+                    "The vision was outlined, technical architecture created with Next.js, Supabase, and Upstash Redis, and initial app wireframes built. Base colors and logo were contributed by others.",
                   icon: <Lightbulb className="h-6 w-6 text-primary" />,
                 },
                 {
                   day: "Day 3-4",
                   title: "Core Infrastructure",
                   description:
-                    "The team collaborated on building the foundation. Niklas and Omar focused on backend systems and AI logic while continuing to refine the wireframes and user experience.",
+                    "Backend systems were built, authentication set up, and the AI logic and user experience began to take shape.",
                   icon: <Cpu className="h-6 w-6 text-blue-500" />,
                 },
                 {
                   day: "Day 5-6",
                   title: "Feature Development",
                   description:
-                    "The team implemented the multi-agent multi-tool engine using Vercel AI SDK, along with real-time opinion tracking, global visualization, and user authentication systems.",
+                    "The multi-agent multi-tool engine was implemented using Vercel AI SDK, along with real-time opinion tracking, global visualization, and user authentication systems.",
                   icon: <Code className="h-6 w-6 text-teal-500" />,
                 },
                 {
                   day: "Day 7-8",
                   title: "Integration & Testing",
                   description:
-                    "All systems were connected and tested. The team fixed bugs and optimized performance across devices, with everyone contributing to all aspects of the platform.",
+                    "All systems were connected and tested. Bugs were fixed and performance optimized across devices.",
                   icon: <LineChart className="h-6 w-6 text-blue-500" />,
                 },
                 {
@@ -277,352 +255,19 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Meet the Dream Team - Bold, Personal */}
+      {/* Team Section - Less about me, no picture */}
       <section className="py-20 md:py-28">
         <div className="container px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-primary/20 text-primary">
-              <Sparkles className="mr-2 h-4 w-4" /> The Dream Team
+              <Sparkles className="mr-2 h-4 w-4" /> The Team
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">
-              Three developers. <span className="text-primary">Infinite potential.</span>
+              Small team. <span className="text-primary">Big ambition.</span>
             </h2>
             <p className="text-xl text-muted-foreground">
-              We crossed continents and time zones to build something extraordinary. Meet the minds behind Global Pulse.
+              Global Pulse was built in just 10 days, with all technical architecture, features, and user experience designed and implemented by a single developer. Base colors and logo were contributed by others.
             </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Greyson Card */}
-            <div className="group relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-500 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-300"></div>
-              <div className="relative bg-background rounded-xl p-6 border shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-                <div className="absolute -top-6 -right-6 bg-primary text-white p-3 rounded-full shadow-lg">
-                  <Brain className="h-6 w-6" />
-                </div>
-
-                <div className="relative w-full aspect-square mb-6 overflow-hidden rounded-lg bg-muted">
-                  <OptimizedImage
-                    src="/placeholder.svg?height=400&width=400&text=Greyson"
-                    alt="Greyson Paynter"
-                    width={400}
-                    height={400}
-                    className="object-cover w-full"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
-                    <div className="p-4 text-white">
-                      <p className="text-sm font-medium">&quot;Vision without execution is just hallucination.&quot;</p>
-                    </div>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-bold mb-1">Greyson Paynter</h3>
-                <p className="text-primary font-semibold mb-2">Visionary & Technical Architect</p>
-                <p className="text-muted-foreground mb-4 flex-grow">
-                  Founder and CEO of LastMile, Greyson assembled this dream team in hours and led the vision from
-                  concept to execution. He created the technical architecture and initial wireframes, setting the
-                  foundation for the entire project.
-                </p>
-
-                <div className="flex items-center justify-between mt-auto pt-4 border-t">
-                  <div className="inline-flex items-center text-sm">
-                    <Globe className="h-4 w-4 mr-1 text-primary" /> United States
-                  </div>
-                  <div className="flex gap-2">
-                    <Link
-                      href="https://twitter.com"
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                      aria-label="Twitter profile"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-twitter"
-                      >
-                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="https://github.com"
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                      aria-label="GitHub profile"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-github"
-                      >
-                        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-                        <path d="M9 18c-4.51 2-5-2-7-2" />
-                      </svg>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Niklas Card */}
-            <div className="group relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-teal-400 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-300"></div>
-              <div className="relative bg-background rounded-xl p-6 border shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-                <div className="absolute -top-6 -right-6 bg-blue-500 text-white p-3 rounded-full shadow-lg">
-                  <Code className="h-6 w-6" />
-                </div>
-
-                <div className="relative w-full aspect-square mb-6 overflow-hidden rounded-lg bg-muted">
-                  <OptimizedImage
-                    src="/placeholder.svg?height=400&width=400&text=Niklas"
-                    alt="Niklas Bognar"
-                    width={400}
-                    height={400}
-                    className="object-cover w-full"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
-                    <div className="p-4 text-white">
-                      <p className="text-sm font-medium">&quot;Code is poetry written for machines and humans alike.&quot;</p>
-                    </div>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-bold mb-1">Niklas Bognar</h3>
-                <p className="text-blue-500 font-semibold mb-2">Backend & AI Engineer</p>
-                <p className="text-muted-foreground mb-4 flex-grow">
-                  A highly skilled developer from the UK with expertise in building scalable web applications. Niklas
-                  focused on backend systems and AI logic, bringing deep knowledge of C++, TypeScript, and modern
-                  frontend technologies to create our intelligent multi-agent system.
-                </p>
-
-                <div className="flex items-center justify-between mt-auto pt-4 border-t">
-                  <div className="inline-flex items-center text-sm">
-                    <Globe className="h-4 w-4 mr-1 text-blue-500" /> Cornwall, UK
-                  </div>
-                  <div className="flex gap-2">
-                    <Link
-                      href="https://bognar.co.uk"
-                      className="text-muted-foreground hover:text-blue-500 transition-colors"
-                      aria-label="Personal website"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-globe"
-                      >
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                        <path d="M2 12h20" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="https://github.com/bognar-dev"
-                      className="text-muted-foreground hover:text-blue-500 transition-colors"
-                      aria-label="GitHub profile"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-github"
-                      >
-                        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-                        <path d="M9 18c-4.51 2-5-2-7-2" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="https://linkedin.com/in/niklas-bognar"
-                      className="text-muted-foreground hover:text-blue-500 transition-colors"
-                      aria-label="LinkedIn profile"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-linkedin"
-                      >
-                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                        <rect width="4" height="12" x="2" y="9" />
-                        <circle cx="4" cy="4" r="2" />
-                      </svg>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Omar Card */}
-            <div className="group relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-teal-400 to-primary rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-300"></div>
-              <div className="relative bg-background rounded-xl p-6 border shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-                <div className="absolute -top-6 -right-6 bg-teal-500 text-white p-3 rounded-full shadow-lg">
-                  <Zap className="h-6 w-6" />
-                </div>
-
-                <div className="relative w-full aspect-square mb-6 overflow-hidden rounded-lg bg-muted">
-                  <OptimizedImage
-                    src="/placeholder.svg?height=400&width=400&text=Omar"
-                    alt="Omar El hassani Alaoui"
-                    width={400}
-                    height={400}
-                    className="object-cover w-full"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
-                    <div className="p-4 text-white">
-                      <p className="text-sm font-medium">&quot;Design is not just what it looks like. Design is how it works.&quot;</p>
-                    </div>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-bold mb-1">Omar El hassani Alaoui</h3>
-                <p className="text-teal-500 font-semibold mb-2">AI Logic & Full-Stack Developer</p>
-                <p className="text-muted-foreground mb-4 flex-grow">
-                  A passionate solopreneur developer from Morocco with expertise in Flutter and Next.js. Omar worked on
-                  backend systems and AI logic while refining the user interface, bringing his full-stack development
-                  skills to create a seamless, intelligent experience.
-                </p>
-
-                <div className="flex items-center justify-between mt-auto pt-4 border-t">
-                  <div className="inline-flex items-center text-sm">
-                    <Globe className="h-4 w-4 mr-1 text-teal-500" /> Morocco
-                  </div>
-                  <div className="flex gap-2">
-                    <Link
-                      href="https://twitter.com/omarelhassani_"
-                      className="text-muted-foreground hover:text-teal-500 transition-colors"
-                      aria-label="Twitter profile"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-twitter"
-                      >
-                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="https://github.com/OmarElhassaniAlaoui"
-                      className="text-muted-foreground hover:text-teal-500 transition-colors"
-                      aria-label="GitHub profile"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-github"
-                      >
-                        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-                        <path d="M9 18c-4.51 2-5-2-7-2" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="https://linkedin.com/in/omar-el-hassani-alaoui-1662531a1"
-                      className="text-muted-foreground hover:text-teal-500 transition-colors"
-                      aria-label="LinkedIn profile"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-linkedin"
-                      >
-                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                        <rect width="4" height="12" x="2" y="9" />
-                        <circle cx="4" cy="4" r="2" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="https://omarelhassanialaoui.xyz"
-                      className="text-muted-foreground hover:text-teal-500 transition-colors"
-                      aria-label="Personal website"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-globe"
-                      >
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                        <path d="M2 12h20" />
-                      </svg>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -648,41 +293,32 @@ export default function AboutPage() {
               <Globe className="mr-2 h-4 w-4" /> Global Collaboration
             </div>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">
-              Three continents. <span className="text-primary">One vision.</span>
+              One continent. <span className="text-primary">One vision.</span>
             </h2>
             <p className="text-xl text-muted-foreground">
-              Our team spans the globe, bringing diverse perspectives and round-the-clock development to create
-              something truly extraordinary.
+              Global Pulse was built in the US, with base colors and logo contributed by others. A solo effort with a global mindset.
             </p>
           </div>
 
           <div className="relative">
             <div className="bg-background rounded-2xl border shadow-lg p-8">
-              <div className="grid md:grid-cols-2 gap-10 items-center">
+              <div className="grid md:grid-cols-1 gap-10 items-center">
                 <div>
-                  <h3 className="text-2xl font-bold mb-4">The power of global collaboration</h3>
+                  <h3 className="text-2xl font-bold mb-4">The power of focused execution</h3>
                   <div className="space-y-4">
                     <p>
-                      When your team spans three continents, you gain a unique advantage: the sun never sets on your
-                      development cycle. As one developer ended their day, another was just beginning, creating a
-                      continuous flow of progress.
+                      With a single developer, decisions were made quickly and the vision was executed without compromise. The result: a cohesive, high-quality platform built in record time.
                     </p>
                     <p>
-                      But the benefits went beyond the practical. Our diverse backgrounds and perspectives brought
-                      richness to every decision, from technical architecture to user experience design.
-                    </p>
-                    <p>
-                      Greyson&apos;s architectural vision from the US, Niklas&apos;s AI and backend expertise from the UK, and
-                      Omar&apos;s full-stack versatility from Morocco combined to create something none of us could have
-                      built alone. Everyone contributed to all aspects of the project, creating a truly integrated team.
+                      While the base colors and logo were contributed by others, every aspect of the technical architecture, user experience, and feature set was designed and implemented in-house.
                     </p>
                   </div>
 
                   <div className="mt-6 grid grid-cols-3 gap-4">
                     {[
-                      { label: "Time Zones", value: "8 hours", icon: <Clock className="h-5 w-5 text-primary" /> },
-                      { label: "Languages", value: "4", icon: <Globe className="h-5 w-5 text-primary" /> },
-                      { label: "Cultures", value: "3", icon: <Users className="h-5 w-5 text-primary" /> },
+                      { label: "Time Zones", value: "1", icon: <Clock className="h-5 w-5 text-primary" /> },
+                      { label: "Languages", value: "1", icon: <Globe className="h-5 w-5 text-primary" /> },
+                      { label: "Cultures", value: "1", icon: <Users className="h-5 w-5 text-primary" /> },
                     ].map((stat, i) => (
                       <div key={i} className="bg-muted/50 rounded-lg p-3 text-center">
                         <div className="flex justify-center mb-2">{stat.icon}</div>
@@ -695,25 +331,14 @@ export default function AboutPage() {
 
                 <div className="relative">
                   <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-2xl blur-md"></div>
-                  <div className="relative rounded-xl overflow-hidden border">
-                    <OptimizedImage
-                      src="/placeholder.svg?height=500&width=600&text=Global+Team"
-                      alt="Global Team Collaboration"
-                      width={600}
-                      height={500}
-                      className="object-cover w-full"
-                    />
+                  <div className="relative rounded-xl overflow-hidden border flex items-center justify-center min-h-[200px]">
+                    {/* No team image */}
+                    <Globe className="h-20 w-20 text-primary" />
                   </div>
 
                   {/* Connection lines */}
                   <div className="absolute top-1/4 -left-4 w-8 h-8 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-xs font-bold">
                     US
-                  </div>
-                  <div className="absolute top-1/2 -right-4 w-8 h-8 rounded-full bg-blue-500/20 border-2 border-blue-500 flex items-center justify-center text-xs font-bold">
-                    UK
-                  </div>
-                  <div className="absolute bottom-1/4 left-1/2 w-8 h-8 rounded-full bg-teal-500/20 border-2 border-teal-500 flex items-center justify-center text-xs font-bold">
-                    MA
                   </div>
                 </div>
               </div>
@@ -979,40 +604,28 @@ export default function AboutPage() {
                   "I&apos;ve never seen opinion data visualized this beautifully. The real-time updates are mesmerizing to watch.",
                 name: "Sarah K.",
                 role: "Data Scientist",
-                image: "/placeholder.svg?height=100&width=100&text=SK",
               },
               {
                 quote: "The speed is what impressed me most. Everything feels instant, even on my older phone.",
                 name: "Michael T.",
                 role: "UX Researcher",
-                image: "/placeholder.svg?height=100&width=100&text=MT",
               },
               {
                 quote:
                   "As someone who works with global teams, I can see this becoming an essential tool for understanding diverse perspectives.",
                 name: "Priya M.",
                 role: "Project Manager",
-                image: "/placeholder.svg?height=100&width=100&text=PM",
               },
               {
                 quote:
                   "Hard to believe this was built in just 10 days. It feels more polished than products I&apos;ve used that took years to develop.",
                 name: "David L.",
                 role: "Software Engineer",
-                image: "/placeholder.svg?height=100&width=100&text=DL",
               },
             ].map((testimonial, index) => (
               <div key={index} className="bg-background rounded-xl p-6 border hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4">
-                  <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
-                    <OptimizedImage
-                      src={testimonial.image || ""}
-                      alt={testimonial.name}
-                      width={100}
-                      height={100}
-                      className="object-cover"
-                    />
-                  </div>
+                  {/* No user image */}
                   <div>
                     <p className="italic text-muted-foreground mb-4">{testimonial.quote}</p>
                     <div>
