@@ -2,18 +2,6 @@ import type { NextRequest } from "next/server"
 import { NextResponse } from "next/server"
 import { updateSession } from "@/utils/supabase/middleware"
 
-/**
- * IMPORTANT: Rate limiting has been moved to individual API routes
- * 
- * This significantly reduces middleware bundle size and improves TTFB.
- * Rate limiting is now applied in each API route handler using:
- * 
- * import { rateLimit } from "@/lib/redis/rate-limit"
- * 
- * // In your API route handler:
- * const rateLimitResult = await rateLimit(request, { limit: 20, window: 60 })
- * if (rateLimitResult instanceof NextResponse) return rateLimitResult
- */
 
 /**
  * High-performance Edge Runtime middleware
