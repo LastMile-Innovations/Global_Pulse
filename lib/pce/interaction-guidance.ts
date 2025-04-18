@@ -191,3 +191,5 @@ function getFocusSuggestions(category: string, ruleVariables?: RuleVariables): s
 
   return suggestions
 }
+
+export type { InteractionGuidance }

@@ -1,4 +1,4 @@
-import { stopword } from "stopword"
+import { removeStopwords } from "stopword"
 import { logger } from "../utils/logger"
 import type { KeywordExtractionOptions } from "../types/nlp-types"
 
@@ -30,7 +30,7 @@ export function extractKeywords(text: string, options?: KeywordExtractionOptions
     const tokens = normalizedText.split(" ")
 
     // 3. Filter stopwords using the stopword library
-    const withoutStopwords = stopword.removeStopwords(tokens)
+    const withoutStopwords = removeStopwords(tokens)
 
     // 4. Apply custom stopwords if provided
     const filteredTokens =

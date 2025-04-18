@@ -8,11 +8,11 @@ export interface VADOutput {
   valence: number
   arousal: number
   dominance: number
-  confidence: number
+  confidence?: number // confidence is optional for MVP
 }
 
 // Constants for distance calculation and mapping
-export const MAX_VAD_DISTANCE = 1.732 // Maximum possible distance in 3D VAD space (sqrt(3))
+export const MAX_VAD_DISTANCE = Math.sqrt(3) // Maximum possible distance in 3D VAD space (sqrt(3))
 export const CONSISTENCY_THRESHOLD_HIGH = 0.2 // Distance below which consistency is high
 export const CONSISTENCY_THRESHOLD_MEDIUM = 0.5 // Distance below which consistency is medium
 export const CONSISTENCY_THRESHOLD_LOW = 0.8 // Distance below which consistency is low
@@ -24,19 +24,18 @@ export const CONSISTENCY_THRESHOLD_LOW = 0.8 // Distance below which consistency
  * @param vad2 The second VAD profile
  * @returns The Euclidean distance between the two profiles
  */
-export function calculateVADDistance(vad1: VADOutput | VADProfile, vad2: VADProfile): number {
-  const valDiff = vad1.valence - vad2.valence
-  const aroDiff = vad1.arousal - vad2.arousal
-  const domDiff = vad1.dominance - vad2.dominance
+export function calculateVADDistance(
+  vad1: VADOutput | VADProfile,
+  vad2: VADProfile
+): number {
+  const valDiff = (vad1.valence ?? 0) - (vad2.valence ?? 0)
+  const aroDiff = (vad1.arousal ?? 0) - (vad2.arousal ?? 0)
+  const domDiff = (vad1.dominance ?? 0) - (vad2.dominance ?? 0)
 
   // Calculate Euclidean distance in 3D space
   const distance = Math.sqrt(valDiff * valDiff + aroDiff * aroDiff + domDiff * domDiff)
 
-  logger.debug("VAD distance calculation", {
-    vad1,
-    vad2,
-    distance,
-  })
+  logger.debug(`[DEBUG] VAD distance calculation: distance=${distance}`)
 
   return distance
 }
@@ -56,10 +55,7 @@ export function mapDistanceToConsistency(distance: number): number {
   // Ensure consistency is between 0 and 1
   consistency = Math.max(0, Math.min(1, consistency))
 
-  logger.debug("Distance to consistency mapping", {
-    distance,
-    consistency,
-  })
+  logger.debug(`[DEBUG] Distance to consistency mapping: distance=${distance}, consistency=${consistency}`)
 
   return consistency
 }
@@ -94,10 +90,7 @@ export function mapDistanceToConsistencyLinear(distance: number): number {
   // Ensure consistency is between 0 and 1
   consistency = Math.max(0, Math.min(1, consistency))
 
-  logger.debug("Distance to consistency linear mapping", {
-    distance,
-    consistency,
-  })
+  logger.debug(`[DEBUG] Distance to consistency linear mapping: distance=${distance}, consistency=${consistency}`)
 
   return consistency
 }
@@ -113,12 +106,7 @@ export function checkVADConsistency(predictedVAD: VADOutput, typicalVAD: VADProf
   const distance = calculateVADDistance(predictedVAD, typicalVAD)
   const consistency = mapDistanceToConsistency(distance)
 
-  logger.debug("VAD consistency check", {
-    predictedVAD,
-    typicalVAD,
-    distance,
-    consistency,
-  })
+  logger.debug(`[DEBUG] VAD consistency check: distance=${distance}, consistency=${consistency}`)
 
   return consistency
 }

@@ -40,3 +40,6 @@ export type { WaitlistUser, NewWaitlistUser } from "./waitlist"
 
 // Re-export profiles table and userRoleEnum if needed individually elsewhere
 export { profiles, userRoleEnum } from "./users"
+
+export { coherenceFeedback } from "./feedback"
+export { dataAccessRequests } from "./dataAccessRequests"

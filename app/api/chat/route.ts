@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth-utils";
 import { logger } from "@/lib/utils/logger";
 import { processPceMvpRequest } from "@/lib/pce/pce-service";
-import { redisPrimary, redisReplica } from "@/lib/redis/client";
+import { getRedisClient } from "@/lib/db/redis/redis-client";
 import { v4 as uuidv4 } from "uuid";
 import { detectUncertainty } from "@/lib/nlp/uncertainty-detection";
 import { GuardrailsService } from "@/lib/guardrails/guardrails-service";
@@ -15,20 +15,13 @@ import {
 import { ChatPayloadSchema } from "@/lib/schemas/api";
 import { rateLimit } from "@/lib/redis/rate-limit";
 import * as sessionState from "@/lib/session/session-state";
-
 import {
   isAwaitingSomaticResponse,
   generateSomaticAcknowledgment,
 } from "@/lib/somatic/somatic-service";
-import {
-  shouldTriggerDistressCheckin,
-  generateDistressCheckin,
-} from "@/lib/distress/distress-detection";
+import { RateLimitAlgorithm } from "@/lib/redis/rate-limit";
 
-// NOTE: The following imports are commented out because of lint errors in the context
-// import { StreamingTextResponse, StreamData } from "ai" // Update import to include StreamData
-
-// Instead, we define a fallback StreamingTextResponse and StreamData for debugging
+// Fallback StreamData and StreamingTextResponse for MVP
 class StreamData {
   private _data: any[] = [];
   private _closed = false;
@@ -49,7 +42,6 @@ class StreamingTextResponse extends Response {
     init: ResponseInit = {},
     _data?: StreamData
   ) {
-    // Optionally attach metadata for debugging
     super(stream, init);
     if (_data) {
       // @ts-ignore
@@ -58,22 +50,16 @@ class StreamingTextResponse extends Response {
   }
 }
 
-// Redis key prefix for last assistant interaction ID
 const REDIS_KEY_LAST_ASSISTANT_ID_PREFIX = "last_assistant_interaction_id:";
+const SESSION_TTL = 86400; // 24 hours
 
-// Session TTL in seconds (24 hours)
-const SESSION_TTL = 86400;
-
-/**
- * Check if we should trigger a coherence check-in
- */
 async function shouldTriggerCoherenceCheckin(
   userId: string,
   sessionId: string,
   currentTurn: number
 ): Promise<boolean> {
   try {
-    const redisRead = redisReplica;
+    const redisRead = getRedisClient();
     const mode = await getEngagementMode(userId, sessionId);
 
     if (mode !== "insight") {
@@ -111,39 +97,27 @@ async function shouldTriggerCoherenceCheckin(
   }
 }
 
-/**
- * Check if we should trigger bootstrapping
- * TODO: Implement real logic for bootstrapping trigger.
- */
 async function shouldTriggerBootstrapping(
   userId: string,
   sessionId: string,
   currentTurn: number
 ): Promise<boolean> {
-  // Placeholder: always false for now
-  logger.debug(
-    `[shouldTriggerBootstrapping] Not implemented, always returns false`
-  );
+  // MVP: Simple logic - trigger on first turn
+  if (currentTurn === 1) {
+    logger.info(`[shouldTriggerBootstrapping] Triggering on first turn for user ${userId}, session ${sessionId}`);
+    return true;
+  }
   return false;
 }
 
-/**
- * Generate bootstrapping prompt
- * TODO: Implement real bootstrapping prompt logic.
- */
 async function generateBootstrappingPrompt(
   userId: string,
   sessionId: string
 ): Promise<string> {
-  logger.debug(
-    `[generateBootstrappingPrompt] Not implemented, returning default message`
-  );
-  return "I'd like to learn more about you to provide better assistance.";
+  // MVP: Simple prompt
+  return "To help me get to know you, could you tell me a bit about yourself or what brings you here today?";
 }
 
-/**
- * Create a simple text stream from a string
- */
 function createTextStream(text: string): ReadableStream<Uint8Array> {
   return new ReadableStream({
     start(controller) {
@@ -154,7 +128,7 @@ function createTextStream(text: string): ReadableStream<Uint8Array> {
 }
 
 export async function POST(request: NextRequest) {
-  // Enhanced rate limiting with IP fallback and token bucket algorithm
+  // Rate limiting
   let rateLimitResult: any;
   try {
     rateLimitResult = await rateLimit(request, {
@@ -164,8 +138,7 @@ export async function POST(request: NextRequest) {
         limit: Number(process.env.PULSE_CHAT_IP_RATE_LIMIT_MAX || 30),
         window: Number(process.env.PULSE_CHAT_IP_RATE_WINDOW_S || 60),
       },
-      // @ts-ignore - allow string for debugging, but should be type-safe in prod
-      algorithm: "token-bucket",
+      algorithm: RateLimitAlgorithm.TOKEN_BUCKET,
       tokenBucket: {
         bucketSize: Number(process.env.PULSE_CHAT_BUCKET_SIZE || 10),
         refillRate: Number(process.env.PULSE_CHAT_REFILL_RATE || 1),
@@ -178,21 +151,20 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-
   if (rateLimitResult instanceof NextResponse) {
     logger.warn("Rate limit exceeded or error, returning early");
     return rateLimitResult;
   }
 
   try {
-    // Authenticate the request
+    // Auth
     const userId = await auth(request as unknown as NextRequest);
     if (!userId) {
       logger.warn("Unauthorized: No userId from auth");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Parse and validate the request body
+    // Parse and validate
     let body: any;
     try {
       body = await request.json();
@@ -203,10 +175,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
     const validationResult = ChatPayloadSchema.safeParse(body);
     if (!validationResult.success) {
-      // Combine message and details into one string for logger.warn
       const errorDetails = JSON.stringify(validationResult.error.format());
       logger.warn(
         `Validation failed for chat payload: ${errorDetails}`
@@ -219,17 +189,16 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
     const { message, sessionId } = validationResult.data;
 
-    // Generate a unique interaction ID for this request
+    // Generate interaction ID
     const interactionId = uuidv4();
 
-    // Get Redis client instances
-    const redisRead = redisReplica;
-    const redisWrite = redisPrimary;
+    // Redis clients
+    const redisRead = getRedisClient();
+    const redisWrite = getRedisClient();
 
-    // Retrieve the last assistant interaction ID from Redis
+    // Last assistant interaction ID
     const redisKey = `${REDIS_KEY_LAST_ASSISTANT_ID_PREFIX}${sessionId}`;
     let reviewInteractionId: string | null = null;
     try {
@@ -249,7 +218,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the current turn count
+    // Turn count
     let currentTurn = 1;
     try {
       const turnCountStr = await redisRead.get(`session:turn_count:${sessionId}`);
@@ -260,19 +229,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get KgService instance
+    // KG and Guardrails
     const kgService = getKgService();
-
-    // Instantiate GuardrailsService
     const guardrailsService = new GuardrailsService(kgService);
 
-    // Log the basic interaction (always done regardless of consent or mode)
+    // Log interaction (user input, empty agent response for now)
     try {
       await kgService.logInteraction({
         userID: userId,
         sessionID: sessionId,
         userInput: message,
-        agentResponse: "", // Will be filled in later
+        agentResponse: "",
         interactionType: "chat",
       });
     } catch (err) {
@@ -281,7 +248,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the current engagement mode
+    // Engagement mode
     let currentMode: string | null = null;
     try {
       currentMode = await getEngagementMode(userId, sessionId);
@@ -291,7 +258,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if we're awaiting a response to a special prompt
+    // Somatic response
     let awaitingSomaticResponse = false;
     try {
       awaitingSomaticResponse = await isAwaitingSomaticResponse(
@@ -334,7 +301,7 @@ export async function POST(request: NextRequest) {
       return new StreamingTextResponse(textStream);
     }
 
-    // Check if we're awaiting a response to a distress check-in
+    // Distress check-in
     let awaitingDistressResponse = false;
     try {
       awaitingDistressResponse = await sessionState.isAwaitingDistressCheckResponse(
@@ -351,11 +318,9 @@ export async function POST(request: NextRequest) {
       );
       let acknowledgment = "";
       try {
-        // Since the handler doesn't exist, clear the flag and provide a generic response
         await sessionState.setAwaitingDistressCheckResponse(sessionId, false);
         acknowledgment = "Thank you for sharing. Let's continue.";
         logger.info(`Cleared awaiting distress response flag for session ${sessionId}`)
-
       } catch (err) {
         logger.error(
           `Failed to handle distress check-in response: ${err}, returning fallback`
@@ -380,7 +345,7 @@ export async function POST(request: NextRequest) {
       return new StreamingTextResponse(textStream);
     }
 
-    // Check if we should trigger bootstrapping
+    // Bootstrapping (MVP: on first turn)
     let triggerBootstrap = false;
     try {
       triggerBootstrap = await shouldTriggerBootstrapping(
@@ -421,7 +386,7 @@ export async function POST(request: NextRequest) {
       return new StreamingTextResponse(textStream);
     }
 
-    // Check if we should trigger a coherence check-in
+    // Coherence check-in
     let shouldTriggerCheckin = false;
     try {
       shouldTriggerCheckin = await shouldTriggerCoherenceCheckin(
@@ -454,7 +419,6 @@ export async function POST(request: NextRequest) {
           `Failed to store coherence check-in prompt in KG: ${err}`
         );
       }
-      // Create a StreamData instance for the metadata
       const data = new StreamData();
       const dataPayload = { isCheckIn: true, reviewInteractionId };
       data.append(dataPayload);
@@ -487,7 +451,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Perform regular PCE processing
+    // PCE processing
     let pceResult: any;
     try {
       pceResult = await processPceMvpRequest(
@@ -498,7 +462,6 @@ export async function POST(request: NextRequest) {
         },
         {
           useLlmAssistance: true,
-          currentTurn,
         }
       );
     } catch (err) {
@@ -511,13 +474,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // STEP 7: Emotion Categorization (Integration Point)
+    // Uncertainty detection
     let uncertaintyResult: any = null;
     try {
-      // Use pceResult.nlpFeatures (assuming structure) AND the original message text
-      const nlpFeatures = pceResult?.nlpFeatures; // Adjust if the property name is different
+      const nlpFeatures = pceResult?.nlpFeatures;
       if (nlpFeatures) {
-        uncertaintyResult = await detectUncertainty(message, nlpFeatures); // Pass both message and features
+        uncertaintyResult = await detectUncertainty(message, nlpFeatures);
       } else {
         logger.warn(`Skipping uncertainty detection: No NLP features found in PCE result for session ${sessionId}`);
       }
@@ -527,28 +489,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the EWEF analysis from the PCE result
+    // EWEF analysis
     const ewefAnalysis = pceResult?.ewefAnalysis || {};
 
-    // Apply Guardrails
-    let finalResponse: string = "I'm sorry, I encountered an issue processing your request."; // Default fallback
-    const candidateResponse = pceResult?.response || ""; // Get candidate response from PCE
+    // Guardrails
+    let finalResponse: string = "I'm sorry, I encountered an issue processing your request.";
+    const candidateResponse = pceResult?.response || "";
 
     if (candidateResponse) {
       try {
-        // Placeholder mapping for mood/stress - refine this based on actual data structure
-        const moodEstimate = ewefAnalysis.vad?.valence ? (ewefAnalysis.vad.valence + 1) / 2 : 0.5; // Normalize valence to 0-1
-        const stressEstimate = ewefAnalysis.vad?.arousal || 0.5; // Use arousal directly (0-1)
+        const moodEstimate = ewefAnalysis.vad?.valence !== undefined
+          ? (ewefAnalysis.vad.valence + 1) / 2
+          : 0.5;
+        const stressEstimate = ewefAnalysis.vad?.arousal !== undefined
+          ? ewefAnalysis.vad.arousal
+          : 0.5;
 
         const guardrailContext = {
           userID: userId,
           sessionID: sessionId,
           interactionID: interactionId,
-          moodEstimate: moodEstimate,
-          stressEstimate: stressEstimate,
+          moodEstimate,
+          stressEstimate,
         };
 
-        // Call the instance method
         const guardrailResult = await guardrailsService.applyGuardrails(
           candidateResponse,
           guardrailContext
@@ -557,24 +521,19 @@ export async function POST(request: NextRequest) {
         finalResponse = guardrailResult.finalResponseText;
 
         if (!guardrailResult.passed && guardrailResult.alertData) {
-           // Combine message and details into one string for logger.warn
-           const alertDetails = JSON.stringify({ alert: guardrailResult.alertData, userId, sessionId });
-           logger.warn(`Guardrail triggered: ${alertDetails}`);
-           // Optionally log the alert to KG or another monitoring system
+          const alertDetails = JSON.stringify({ alert: guardrailResult.alertData, userId, sessionId });
+          logger.warn(`Guardrail triggered: ${alertDetails}`);
         }
-
       } catch (err) {
         logger.error(
           `Error in applyGuardrails for user ${userId}, session ${sessionId}: ${err}`
         );
-        // Keep the default fallback response (already set)
       }
     } else {
-       logger.error(`No candidate response from PCE for user ${userId}, session ${sessionId}`);
-       // Keep the default fallback response (already set)
+      logger.error(`No candidate response from PCE for user ${userId}, session ${sessionId}`);
     }
 
-    // Store response type and agent response in Neo4j
+    // Store response in KG
     try {
       await kgService.setInteractionResponseType(interactionId, "Response");
       await kgService.setInteractionAgentResponse(interactionId, finalResponse);
@@ -584,7 +543,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Store the current interaction ID as the last assistant interaction ID in Redis
+    // Store last assistant interaction ID
     try {
       await redisWrite.set(redisKey, interactionId, { ex: SESSION_TTL });
       logger.debug(
@@ -596,7 +555,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create a text stream for the final response
+    // Stream response
     const textStream = createTextStream(finalResponse);
     return new StreamingTextResponse(textStream);
   } catch (error) {

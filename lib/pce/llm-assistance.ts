@@ -25,14 +25,14 @@ export async function getLlmVariableInference(text: string): Promise<RuleVariabl
     })
 
     // If the LLM call fails, return null
-    if (!result || !result.data) {
+    if (!result) {
       logger.warn("LLM failed to return a valid response for variable inference")
       return null
     }
 
     // Return the parsed output
     logger.info("Successfully obtained LLM-assisted MHH variable inference")
-    return result.data
+    return result
   } catch (error) {
     logger.error(`Error in LLM variable inference: ${error}`)
     return null
@@ -82,14 +82,14 @@ export async function getLlmPerceptionAppraisal(
     })
 
     // If the LLM call fails, return null
-    if (!result || !result.data) {
+    if (!result) {
       logger.warn("LLM failed to return a valid response for perception appraisal")
       return null
     }
 
     // Return the parsed output
     logger.info("Successfully obtained LLM-assisted perception appraisal")
-    return result.data
+    return result
   } catch (error) {
     logger.error(`Error in LLM perception appraisal: ${error}`)
     return null

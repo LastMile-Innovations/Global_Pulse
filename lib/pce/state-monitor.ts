@@ -7,7 +7,62 @@ import {
   STRESS_DECAY_FACTOR,
   VALENCE_INERTIA_WEIGHT,
   AROUSAL_INERTIA_WEIGHT,
+  RECENT_ER_TIME_WINDOW_MINUTES,
+  RECENT_ER_LIMIT,
 } from "./temporal-config"
+
+// --- MVP: In-memory ER store for recent events per user/session (replace with KG/DB in production) ---
+type MinimalER = {
+  timestamp: number
+  vadV: number
+  vadA: number
+}
+const inMemoryERStore: Map<string, MinimalER[]> = new Map()
+
+/**
+ * Add a new ER to the in-memory store for a user/session.
+ * Keeps only the most recent RECENT_ER_LIMIT events within the time window.
+ */
+function addRecentER(userId: string, sessionID: string, vadOutput: VADOutput) {
+  const key = `${userId}:${sessionID}`
+  const now = Date.now()
+  // Defensive: support both vadV/vadA and valence/arousal property names
+  const vadV = (vadOutput as any).vadV ?? (vadOutput as any).valence
+  const vadA = (vadOutput as any).vadA ?? (vadOutput as any).arousal
+  if (typeof vadV !== "number" || typeof vadA !== "number") {
+    logger.error(
+      `addRecentER: Invalid vadOutput, missing vadV/vadA or valence/arousal: ${JSON.stringify(vadOutput)}`
+    )
+    return
+  }
+  const er: MinimalER = {
+    timestamp: now,
+    vadV,
+    vadA,
+  }
+  let arr = inMemoryERStore.get(key) ?? []
+  // Remove ERs outside the time window
+  const windowMs = RECENT_ER_TIME_WINDOW_MINUTES * 60 * 1000
+  arr = arr.filter(er => now - er.timestamp <= windowMs)
+  arr.push(er)
+  // Keep only the most recent RECENT_ER_LIMIT
+  if (arr.length > RECENT_ER_LIMIT) {
+    arr = arr.slice(arr.length - RECENT_ER_LIMIT)
+  }
+  inMemoryERStore.set(key, arr)
+}
+
+/**
+ * Get recent ERs for a user/session from the in-memory store.
+ */
+function getRecentERs(userId: string, sessionID: string): MinimalER[] {
+  const key = `${userId}:${sessionID}`
+  const arr = inMemoryERStore.get(key) ?? []
+  const now = Date.now()
+  const windowMs = RECENT_ER_TIME_WINDOW_MINUTES * 60 * 1000
+  // Only return ERs within the time window
+  return arr.filter(er => now - er.timestamp <= windowMs)
+}
 
 /**
  * Calculates weighted inertia based on recent ERs and a decay rate
@@ -46,17 +101,26 @@ export async function updateMinimalState(
   previousState: MinimalStateS,
 ): Promise<MinimalStateS> {
   try {
-    const redis = getRedisClient()
-    const stateKey = `state:${userId}:${sessionID}`
+    // Defensive: support both vadV/vadA and valence/arousal property names
+    const vadV = (vadOutput as any).vadV ?? (vadOutput as any).valence
+    const vadA = (vadOutput as any).vadA ?? (vadOutput as any).arousal
+    if (typeof vadV !== "number" || typeof vadA !== "number") {
+      logger.error(
+        `updateMinimalState: Invalid vadOutput, missing vadV/vadA or valence/arousal: ${JSON.stringify(vadOutput)}`
+      )
+      // Return default values on error
+      return {
+        timestamp: Date.now(),
+        moodEstimate: 0.0,
+        stressEstimate: 0.1,
+      }
+    }
 
-    // Fetch recent ERs from the KG
-    // const recentERs = await kgService.getRecentUserERs(
-    //   userId,
-    //   RECENT_ER_TIME_WINDOW_MINUTES,
-    //   RECENT_ER_LIMIT
-    // );
+    // Add the new ER to the in-memory store (MVP)
+    addRecentER(userId, sessionID, { valence: vadV, arousal: vadA, dominance: 0, confidence: 0 })
 
-    const recentERs = []
+    // Get recent ERs for inertia calculation
+    const recentERs = getRecentERs(userId, sessionID)
 
     const now = Date.now()
 
@@ -73,16 +137,25 @@ export async function updateMinimalState(
       now,
     )
 
-    // Calculate mood and stress incorporating inertia
-    const moodEstimate = previousState.moodEstimate * MOOD_DECAY_FACTOR + recentValenceInertia * VALENCE_INERTIA_WEIGHT
-    const stressEstimate =
-      previousState.stressEstimate * STRESS_DECAY_FACTOR + recentArousalInertia * AROUSAL_INERTIA_WEIGHT
+    // Calculate mood and stress incorporating inertia and current VAD
+    // MVP: Blend previous state, inertia, and current VAD
+    const moodEstimate =
+      previousState.moodEstimate * MOOD_DECAY_FACTOR +
+      recentValenceInertia * VALENCE_INERTIA_WEIGHT +
+      vadV * (1 - MOOD_DECAY_FACTOR - VALENCE_INERTIA_WEIGHT)
 
-    // Create the minimal state object
+    const stressEstimate =
+      previousState.stressEstimate * STRESS_DECAY_FACTOR +
+      recentArousalInertia * AROUSAL_INERTIA_WEIGHT +
+      vadA * (1 - STRESS_DECAY_FACTOR - AROUSAL_INERTIA_WEIGHT)
+
+    // Clamp values to [0, 1] for safety
+    const clamp01 = (x: number) => Math.max(0, Math.min(1, x))
+
     const minimalState: MinimalStateS = {
       timestamp: now,
-      moodEstimate: moodEstimate,
-      stressEstimate: stressEstimate,
+      moodEstimate: clamp01(moodEstimate),
+      stressEstimate: clamp01(stressEstimate),
     }
 
     // Store the state in Redis for immediate use by other components
@@ -134,6 +207,12 @@ export async function getMinimalState(userID: string, sessionID: string): Promis
     const stateJson = await redis.get(key)
 
     if (!stateJson) {
+      return null
+    }
+
+    // Defensive: ensure stateJson is a string
+    if (typeof stateJson !== "string") {
+      logger.error(`State JSON from Redis is not a string: ${typeof stateJson}`)
       return null
     }
 

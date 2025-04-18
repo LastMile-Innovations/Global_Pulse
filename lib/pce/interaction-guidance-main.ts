@@ -1,9 +1,6 @@
-import type { VADOutput } from "./vad"
-import type { EmotionCategorization } from "./emotion-categorization"
-import type { PInstanceData } from "./p-instance-data"
-import type { RuleVariables } from "./rule-variables"
-import type { InteractionGuidance } from "./interaction-guidance-interface"
-import { logger } from "./logger"
+import type { VADOutput, PInstanceData, RuleVariables, InteractionGuidance } from "../types/pce-types"
+import type { EmotionCategorizationOutput } from "./emotion-categorization"
+import { logger } from "../utils/logger"
 
 /**
  * Generates interaction guidance based on the user's emotional state
@@ -15,7 +12,7 @@ import { logger } from "./logger"
  */
 export function generateInteractionGuidance(
   vad: VADOutput,
-  emotionCategorization?: EmotionCategorization,
+  emotionCategorization?: EmotionCategorizationOutput,
   pInstance?: PInstanceData,
   ruleVariables?: RuleVariables,
 ): InteractionGuidance {
@@ -34,7 +31,7 @@ export function generateInteractionGuidance(
     if (emotionCategorization) {
       // Get primary emotion category and its probability
       const primaryCategory = emotionCategorization.primaryLabel
-      const primaryCategoryProb = emotionCategorization.categoryDistribution[primaryCategory] || 0
+      const primaryCategoryProb = emotionCategorization.categoryDistribution.find((cat: { label: string; probability: number }) => cat.label === primaryCategory)?.probability || 0
       const emotionGroup = emotionCategorization.emotionGroup
 
       // Add emotion categorization to parameters

@@ -5,22 +5,21 @@ import type {
   BootstrappedEP,
   VADOutput,
   WeightedEngineInputFeatures,
-  LinearModelWeights,
 } from "../../types/pce-types"
-
-// Import profile types
 import type { KgCulturalContextProfile, KgPersonalityProfile } from "../../types/kg-types"
-
-// Default weights for the linear model
-import { defaultWeights } from "./default-weights"
+import { defaultWeights, type LinearModelWeights } from "../core-engine/default-weights"
 
 /**
- * Calculates VAD using a linear model with the provided inputs
+ * Calculates VAD using a linear model with the provided inputs.
+ * This function is robust, extensible, and logs errors gracefully.
  *
  * @param pInstanceData Perception instance data from appraisal
  * @param ruleVariables Inferred MHH variables
  * @param activeBootstrappedEPs Active bootstrapped emotional patterns
  * @param sentimentScore Sentiment score from NLP analysis
+ * @param state Optional state features (moodEstimate, stressEstimate)
+ * @param culturalContext Optional cultural context profile
+ * @param personality Optional personality profile
  * @param weights Optional custom weights for the linear model
  * @returns VADOutput containing valence, arousal, dominance, and confidence
  */
@@ -46,17 +45,13 @@ export function calculateLinearVad(
       personality,
     )
 
-    // Calculate valence
+    // Calculate valence, arousal, dominance
     const valence = calculateValence(features, weights)
-
-    // Calculate arousal
     const arousal = calculateArousal(features, weights)
-
-    // Calculate dominance
     const dominance = calculateDominance(features, weights)
 
     // Calculate confidence based on pAppraisalConfidence and MHH variable confidences
-    const confidence = calculateConfidence(pInstanceData.pAppraisalConfidence, ruleVariables)
+    const confidence = calculateConfidence(pInstanceData.pAppraisalConfidence, ruleVariables, features)
 
     return {
       valence,
@@ -65,7 +60,7 @@ export function calculateLinearVad(
       confidence,
     }
   } catch (error) {
-    logger.error(`Error calculating linear VAD: ${error}`)
+    logger.error(`Error calculating linear VAD: ${error instanceof Error ? error.stack || error.message : error}`)
 
     // Return default values on error
     return {
@@ -78,7 +73,8 @@ export function calculateLinearVad(
 }
 
 /**
- * Prepares input features for the linear model
+ * Prepares input features for the linear model.
+ * This function is extensible and can be expanded with new features as needed.
  */
 function prepareFeatures(
   pInstanceData: PInstanceData,
@@ -89,8 +85,8 @@ function prepareFeatures(
   culturalContext?: KgCulturalContextProfile,
   personality?: KgPersonalityProfile,
 ): WeightedEngineInputFeatures {
-  // Convert sentiment score from 0-1 to -1 to 1 range if needed
-  const normalizedSentimentScore = sentimentScore > 0.5 ? (sentimentScore - 0.5) * 2 : (sentimentScore - 0.5) * 2
+  // Normalize sentiment score from 0-1 to -1 to 1
+  const normalizedSentimentScore = (sentimentScore - 0.5) * 2
 
   // Count active EPs by type
   const activeValueCount = activeBootstrappedEPs.filter((ep) => ep.type === "VALUE").length
@@ -116,6 +112,27 @@ function prepareFeatures(
     pInstanceData.mhhAcceptanceState === "resisted" ? ruleVariables.acceptanceState.confidence : 0.0
   const isAcceptanceUncertain =
     pInstanceData.mhhAcceptanceState === "uncertain" ? ruleVariables.acceptanceState.confidence : 0.0
+
+  // Additional extensible features (future-proofing)
+  // Placeholders for future context, network, or modulation features
+  const networkContextInfluence = 0.0
+  const profileModulation = 0.0
+
+  // State features
+  const s_MoodEstimate = state?.moodEstimate ?? 0.0
+  const s_StressEstimate = state?.stressEstimate ?? 0.0
+
+  // Cultural features
+  const c_IndividualismScore = culturalContext?.individualismScore ?? 0.5
+  const c_PowerDistanceScore = culturalContext?.powerDistanceScore ?? 0.5
+  const c_UncertaintyAvoidanceScore = culturalContext?.uncertaintyAvoidanceScore ?? 0.5
+
+  // Personality features
+  const t_OCEAN_O = personality?.OCEAN_O ?? 0.5
+  const t_OCEAN_C = personality?.OCEAN_C ?? 0.5
+  const t_OCEAN_E = personality?.OCEAN_E ?? 0.5
+  const t_OCEAN_A = personality?.OCEAN_A ?? 0.5
+  const t_OCEAN_N = personality?.OCEAN_N ?? 0.5
 
   return {
     // Core features from P-Instance
@@ -147,38 +164,40 @@ function prepareFeatures(
     // Sentiment features
     sentimentScore: normalizedSentimentScore,
 
-    // Default placeholder for MVP (these would be populated in future versions)
-    networkContextInfluence: 0.0,
-    profileModulation: 0.0,
+    // Placeholders for future features
+    networkContextInfluence,
+    profileModulation,
 
     // State features
-    s_MoodEstimate: state?.moodEstimate || 0.0,
-    s_StressEstimate: state?.stressEstimate || 0.0,
+    s_MoodEstimate,
+    s_StressEstimate,
 
     // Cultural features
-    c_IndividualismScore: culturalContext?.individualismScore || 0.5,
-    c_PowerDistanceScore: culturalContext?.powerDistanceScore || 0.5,
-    c_UncertaintyAvoidanceScore: culturalContext?.uncertaintyAvoidanceScore || 0.5,
+    c_IndividualismScore,
+    c_PowerDistanceScore,
+    c_UncertaintyAvoidanceScore,
 
     // Personality features
-    t_OCEAN_O: personality?.OCEAN_O || 0.5,
-    t_OCEAN_C: personality?.OCEAN_C || 0.5,
-    t_OCEAN_E: personality?.OCEAN_E || 0.5,
-    t_OCEAN_A: personality?.OCEAN_A || 0.5,
-    t_OCEAN_N: personality?.OCEAN_N || 0.5,
+    t_OCEAN_O,
+    t_OCEAN_C,
+    t_OCEAN_E,
+    t_OCEAN_A,
+    t_OCEAN_N,
   }
 }
 
 /**
- * Calculates valence using the linear model
+ * Calculates valence using the linear model.
+ * All relevant features and weights are included for extensibility.
  */
 function calculateValence(features: WeightedEngineInputFeatures, weights: LinearModelWeights): number {
   let valence = weights.valence_bias
 
-  // Apply weights to features
+  // Core features
   valence += features.pValuationShift * weights.valence_pValuationShift
   valence += features.pPowerLevel * weights.valence_pPowerLevel
 
+  // MHH variables
   valence += features.isSourceInternal * weights.valence_isSourceInternal
   valence += features.isSourceExternal * weights.valence_isSourceExternal
   valence += features.isSourceValueSelf * weights.valence_isSourceValueSelf
@@ -195,35 +214,41 @@ function calculateValence(features: WeightedEngineInputFeatures, weights: Linear
   valence += features.isAcceptanceResisted * weights.valence_isAcceptanceResisted
   valence += features.isAcceptanceUncertain * weights.valence_isAcceptanceUncertain
 
+  // EP activation
   valence += features.activeValueCount * weights.valence_activeValueCount
   valence += features.activeGoalCount * weights.valence_activeGoalCount
   valence += features.activeNeedCount * weights.valence_activeNeedCount
 
+  // Sentiment
   valence += features.sentimentScore * weights.valence_sentimentScore
 
-  // Add state features
+  // State
   valence += features.s_MoodEstimate * weights.valence_s_MoodEstimate
 
-  // Add cultural features
+  // Cultural
   valence += features.c_IndividualismScore * weights.valence_c_IndividualismScore
 
-  // Add personality features
+  // Personality
   valence += features.t_OCEAN_O * weights.valence_t_OCEAN_O
 
-  // Ensure the result is within -1.0 to 1.0 range
+  // Future extensibility: add more features as weights are defined
+
+  // Clamp to -1.0 to 1.0
   return Math.max(-1.0, Math.min(1.0, valence))
 }
 
 /**
- * Calculates arousal using the linear model
+ * Calculates arousal using the linear model.
+ * All relevant features and weights are included for extensibility.
  */
 function calculateArousal(features: WeightedEngineInputFeatures, weights: LinearModelWeights): number {
   let arousal = weights.arousal_bias
 
-  // Apply weights to features
+  // Core features
   arousal += Math.abs(features.pValuationShift) * weights.arousal_pValuationShift
   arousal += features.pPowerLevel * weights.arousal_pPowerLevel
 
+  // MHH variables
   arousal += features.isSourceInternal * weights.arousal_isSourceInternal
   arousal += features.isSourceExternal * weights.arousal_isSourceExternal
   arousal += features.isSourceValueSelf * weights.arousal_isSourceValueSelf
@@ -240,35 +265,41 @@ function calculateArousal(features: WeightedEngineInputFeatures, weights: Linear
   arousal += features.isAcceptanceResisted * weights.arousal_isAcceptanceResisted
   arousal += features.isAcceptanceUncertain * weights.arousal_isAcceptanceUncertain
 
+  // EP activation
   arousal += features.activeValueCount * weights.arousal_activeValueCount
   arousal += features.activeGoalCount * weights.arousal_activeGoalCount
   arousal += features.activeNeedCount * weights.arousal_activeNeedCount
 
+  // Sentiment
   arousal += Math.abs(features.sentimentScore) * weights.arousal_sentimentScore
 
-  // Add state features
+  // State
   arousal += features.s_StressEstimate * weights.arousal_s_StressEstimate
 
-  // Add cultural features
+  // Cultural
   arousal += features.c_PowerDistanceScore * weights.arousal_c_PowerDistanceScore
 
-  // Add personality features
+  // Personality
   arousal += features.t_OCEAN_C * weights.arousal_t_OCEAN_C
 
-  // Ensure the result is within 0.0 to 1.0 range
+  // Future extensibility: add more features as weights are defined
+
+  // Clamp to 0.0 to 1.0
   return Math.max(0.0, Math.min(1.0, arousal))
 }
 
 /**
- * Calculates dominance using the linear model
+ * Calculates dominance using the linear model.
+ * All relevant features and weights are included for extensibility.
  */
 function calculateDominance(features: WeightedEngineInputFeatures, weights: LinearModelWeights): number {
   let dominance = weights.dominance_bias
 
-  // Apply weights to features
+  // Core features
   dominance += features.pValuationShift * weights.dominance_pValuationShift
   dominance += features.pPowerLevel * weights.dominance_pPowerLevel
 
+  // MHH variables
   dominance += features.isSourceInternal * weights.dominance_isSourceInternal
   dominance += features.isSourceExternal * weights.dominance_isSourceExternal
   dominance += features.isSourceValueSelf * weights.dominance_isSourceValueSelf
@@ -285,32 +316,38 @@ function calculateDominance(features: WeightedEngineInputFeatures, weights: Line
   dominance += features.isAcceptanceResisted * weights.dominance_isAcceptanceResisted
   dominance += features.isAcceptanceUncertain * weights.dominance_isAcceptanceUncertain
 
+  // EP activation
   dominance += features.activeValueCount * weights.dominance_activeValueCount
   dominance += features.activeGoalCount * weights.dominance_activeGoalCount
-
-  dominance += features.activeGoalCount * weights.dominance_activeGoalCount
-
   dominance += features.activeNeedCount * weights.dominance_activeNeedCount
 
+  // Sentiment
   dominance += features.sentimentScore * weights.dominance_sentimentScore
 
-  // Add state features
+  // State
   dominance += features.s_MoodEstimate * weights.dominance_s_MoodEstimate
 
-  // Add cultural features
+  // Cultural
   dominance += features.c_UncertaintyAvoidanceScore * weights.dominance_c_UncertaintyAvoidanceScore
 
-  // Add personality features
+  // Personality
   dominance += features.t_OCEAN_E * weights.dominance_t_OCEAN_E
 
-  // Ensure the result is within 0.0 to 1.0 range
+  // Future extensibility: add more features as weights are defined
+
+  // Clamp to 0.0 to 1.0
   return Math.max(0.0, Math.min(1.0, dominance))
 }
 
 /**
- * Calculates the initial confidence based on input confidences
+ * Calculates the initial confidence based on input confidences and features.
+ * This function can be extended to include more sophisticated confidence estimation.
  */
-function calculateConfidence(appraisalConfidence: number, ruleVariables: RuleVariables): number {
+function calculateConfidence(
+  appraisalConfidence: number,
+  ruleVariables: RuleVariables,
+  features?: WeightedEngineInputFeatures
+): number {
   // For V1, a simple average of appraisal confidence and MHH variable confidences
   const avgRuleConfidence =
     (ruleVariables.source.confidence +
@@ -319,9 +356,11 @@ function calculateConfidence(appraisalConfidence: number, ruleVariables: RuleVar
       ruleVariables.acceptanceState.confidence) /
     4.0
 
+  // Optionally, future: include more sources of confidence (e.g., sentiment, state, etc.)
+
   // Weighted average (60% appraisal, 40% MHH)
   const confidence = appraisalConfidence * 0.6 + avgRuleConfidence * 0.4
 
-  // Ensure the result is within 0.0 to 1.0 range
+  // Clamp to 0.0 to 1.0
   return Math.max(0.0, Math.min(1.0, confidence))
 }
