@@ -6,6 +6,7 @@ import * as analytics from "./analytics"
 import * as buyerIntentDeclarations from "./buyerIntentDeclarations"
 import * as dataAccessRequests from "./dataAccessRequests"
 import * as externalConnections from "./externalConnections"
+import * as contactMessages from "./contactMessages"
 
 // Import newly created schema files
 import * as chats from "./chats"
@@ -25,6 +26,7 @@ export const schema = {
   ...buyerIntentDeclarations,
   ...dataAccessRequests,
   ...externalConnections,
+  ...contactMessages,
 
   // Tables and relations from new files
   ...chats,
@@ -43,3 +45,4 @@ export { profiles, userRoleEnum } from "./users"
 
 export { coherenceFeedback } from "./feedback"
 export { dataAccessRequests } from "./dataAccessRequests"
+export { contactMessages, contactCategoryEnum, contactStatusEnum } from "./contactMessages"

@@ -33,7 +33,6 @@ Global Pulse is built around two key innovations:
 - **Unified Identity Graph (UIG):** A private, evolving map of your identity—values, goals, needs, and more. (Structure defined)
 - **Enhanced Webb Emotional Framework (EWEF):** An analysis engine designed to interpret interactions through the lens of your UIG and psychological principles. (Core logic V1 implemented)
 
-➡️ **See [How It Works](/how-it-works) for a conceptual overview.**
 
 ## Hackathon Prototype: What’s Built
 
@@ -64,11 +63,8 @@ This prototype demonstrates the core building blocks achieved in our sprint:
 
 ## Demo: What You Can Try
 
-- **Live Demo:** [https://globalpulse.app](https://globalpulse.app) (Replace with actual Vercel URL)
+- **Live Demo:** https://globalpulse-production.up.railway.app/
 - **Interactive:** Sign up/log in, view the Dashboard (sample data), manage Consent Settings.
 - **Simulated Chat:** The chat interface **does not connect to a live AI agent yet.** Instead, you can view a pre-scripted example of the intended interaction style:
-    ➡️ **[Simulated Chat Demo](https://globalpulse.app/#chat-demo)** *(This is a vision preview, not current capability. The site clarifies this.)*
 
 ## Architecture Overview
-
-A high-level look at the system (see [How It Works](/how-it-works) for more):

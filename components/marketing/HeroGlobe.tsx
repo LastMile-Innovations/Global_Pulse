@@ -111,7 +111,7 @@ export default function HeroGlobe({
         "relative",
         "rounded-lg",
         "overflow-hidden",
-        "animate-float",
+        // Removed "animate-float" to eliminate the pulse effect
         className,
       ].join(" ")}
       style={{

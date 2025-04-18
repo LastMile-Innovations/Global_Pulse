@@ -2,9 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Use system font stack for better performance and consistency */
+/* Use a refined, high-contrast system font stack for performance and clarity */
 body {
-  font-family: Poppins, Arial, Helvetica, sans-serif;
+  font-family: Poppins, Arial, Helvetica, "Segoe UI", "Liberation Sans", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 @layer utilities {
@@ -12,68 +16,86 @@ body {
     text-wrap: balance;
   }
 
-  /* Animation utilities */
+  /* Animation utilities - refined for smoother, more distinct effects */
   .animate-gradient-x {
     background-size: 200% 200%;
-    animation: gradient-x 3s ease infinite;
+    animation: gradient-x 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
 
   .animate-float {
-    animation: float 3s ease-in-out infinite;
+    animation: float 2.5s ease-in-out infinite;
   }
 
   .animate-pulse-slow {
-    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: pulse 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   .animate-pulse-subtle {
-    animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: pulse 5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   .animate-orbit {
-    animation: orbit 15s linear infinite;
+    animation: orbit 12s linear infinite;
   }
 
   .animate-ping-slow {
-    animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+    animation: ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
 
   .animate-spin-slow {
-    animation: spin 20s linear infinite;
+    animation: spin 16s linear infinite;
   }
 
-  /* Shadow effects */
+  /* Shadow effects - increased contrast for clarity */
   .shadow-glow {
-    box-shadow: 0 0 16px 0 rgba(var(--primary), 0.45);
+    box-shadow: 0 0 20px 0 rgba(var(--primary), 0.55), 0 2px 8px 0 rgba(0,0,0,0.08);
   }
 
   .shadow-glow-sm {
-    box-shadow: 0 0 8px 0 rgba(var(--primary), 0.28);
+    box-shadow: 0 0 10px 0 rgba(var(--primary), 0.35), 0 1px 4px 0 rgba(0,0,0,0.06);
   }
 
   /* Enhanced rounded corners */
   .rounded-standard {
     @apply rounded-2xl;
+    border-radius: 1.25rem;
   }
   .rounded-standard-xl {
     @apply rounded-3xl;
+    border-radius: 1.5rem;
   }
   .rounded-standard-full {
     @apply rounded-full;
   }
 
-  /* Card color utility classes */
+  /* Card color utility classes - increased contrast between bg and fg */
   .card-blue {
     @apply bg-[hsl(var(--card-blue-bg))] text-[hsl(var(--card-blue-fg))];
+    border: 1.5px solid hsl(var(--primary));
   }
   .card-green {
     @apply bg-[hsl(var(--card-green-bg))] text-[hsl(var(--card-green-fg))];
+    border: 1.5px solid hsl(var(--secondary));
   }
   .card-pink {
     @apply bg-[hsl(var(--card-pink-bg))] text-[hsl(var(--card-pink-fg))];
+    border: 1.5px solid hsl(var(--accent));
   }
   .card-yellow {
     @apply bg-[hsl(var(--card-yellow-bg))] text-[hsl(var(--card-yellow-fg))];
+    border: 1.5px solid hsl(var(--card-yellow-fg));
+  }
+  .card-orange {
+    @apply bg-[hsl(var(--card-orange-bg))] text-[hsl(var(--card-orange-fg))];
+    border: 1.5px solid hsl(var(--accent-orange));
+  }
+  .accent-orange {
+    color: hsl(var(--accent-orange));
+    font-weight: 600;
+  }
+  .bg-accent-orange {
+    background-color: hsl(var(--accent-orange));
+    color: hsl(var(--accent-orange-foreground));
   }
 }
 
@@ -91,157 +113,165 @@ body {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-14px);
   }
 }
 
 @keyframes orbit {
   from {
-    transform: rotate(0deg) translateX(100px) rotate(0deg);
+    transform: rotate(0deg) translateX(110px) rotate(0deg);
   }
   to {
-    transform: rotate(360deg) translateX(100px) rotate(-360deg);
+    transform: rotate(360deg) translateX(110px) rotate(-360deg);
   }
 }
 
 @keyframes ping {
   75%, 100% {
-    transform: scale(1.5);
+    transform: scale(1.7);
     opacity: 0;
   }
 }
 
 @layer base {
   :root {
-    /* Core Colors - Light Theme (Cyan Primary) */
-    --background: 210 40% 98%;             /* #F8FAFC - Off-White/Light Gray */
-    --foreground: 215 38% 17%;             /* #1E293B - Dark Gray/Off-Black */
-    --card: 0 0% 100%;                   /* #FFFFFF - White */
-    --card-foreground: 215 38% 17%;       /* #1E293B - Dark Gray/Off-Black */
-    --popover: 0 0% 100%;                /* #FFFFFF - White */
-    --popover-foreground: 215 38% 17%;    /* #1E293B - Dark Gray/Off-Black */
-    --primary: 193 93% 37%;               /* cyan-600 */
-    --primary-foreground: 0 0% 100%;        /* White */
-    --secondary: 173 65% 50%;             /* Soft Teal (Keeping separate for now) */
-    --secondary-foreground: 215 38% 17%;    /* #1E293B - Dark Gray/Off-Black */
-    --muted: 215 20% 94%;                 /* Light version of Mid-Gray */
-    --muted-foreground: 215 19% 47%;       /* #64748B - Mid-Tone Gray */
-    --accent: 28 96% 61%;                 /* Gentle Coral (Keeping separate for now) */
-    --accent-foreground: 215 38% 17%;       /* #1E293B - Dark Gray/Off-Black */
-    --destructive: 0 70% 60%;             /* Soft Red - Keeping for now */
-    --destructive-foreground: 0 0% 100%;    /* White */
-    --border: 215 20% 90%;                 /* Light Gray Border */
+    /* Core Colors - Light Theme (Refined, High Contrast) */
+    --background: 0 0% 100%;               /* Pure White */
+    --foreground: 220 15% 10%;             /* #1A202C - Deep Gray */
+    --card: 0 0% 100%;                     /* White */
+    --card-foreground: 220 15% 10%;        /* Deep Gray */
+    --popover: 0 0% 100%;                  /* White */
+    --popover-foreground: 220 15% 10%;     /* Deep Gray */
+    --primary: 193 100% 38%;               /* More saturated cyan */
+    --primary-foreground: 0 0% 100%;       /* White */
+    --secondary: 173 80% 40%;              /* Stronger Teal */
+    --secondary-foreground: 0 0% 100%;     /* White */
+    --muted: 215 20% 94%;                  /* Light Gray */
+    --muted-foreground: 220 10% 40%;       /* Muted Gray */
+    --accent: 28 100% 55%;                 /* Strong Coral */
+    --accent-foreground: 0 0% 100%;        /* White */
+    --accent-orange: 24 100% 50%;          /* Vivid Orange */
+    --accent-orange-foreground: 0 0% 100%; /* White */
+    --destructive: 0 80% 60%;              /* Strong Red */
+    --destructive-foreground: 0 0% 100%;   /* White */
+    --border: 220 15% 80%;                 /* More visible border */
     --input: 215 20% 90%;                  /* Light Gray Input */
-    --ring: 193 93% 37%;                   /* cyan-600 for focus */
+    --ring: 193 100% 38%;                  /* Cyan for focus */
 
-    /* Chart Colors (Keeping previous, review later if needed) */
+    /* Chart Colors (Refined, High Contrast) */
     --chart-1: 200 100% 50%;
-    --chart-2: 162 73% 46%;
-    --chart-3: 291 64% 60%;
-    --chart-4: 43 100% 66%;
-    --chart-5: 27 98% 54%;
+    --chart-2: 162 90% 40%;
+    --chart-3: 291 80% 60%;
+    --chart-4: 43 100% 50%;
+    --chart-5: 24 100% 50%;
 
-    /* Sidebar Colors - Light Theme (Cyan Primary) */
-    --sidebar: 210 20% 96%;               /* Slightly darker than background */
-    --sidebar-foreground: 215 38% 17%;    /* Dark Gray/Off-Black */
-    --sidebar-primary: 193 93% 37%;       /* cyan-600 */
-    --sidebar-primary-foreground: 0 0% 100%; /* White */
-    --sidebar-accent: 28 96% 61%;         /* Gentle Coral */
-    --sidebar-accent-foreground: 215 38% 17%; /* Dark Gray/Off-Black */
-    --sidebar-border: 215 20% 90%;         /* Light Gray Border */
-    --sidebar-ring: 193 93% 37%;           /* cyan-600 for focus */
+    /* Sidebar Colors - Light Theme (Refined, High Contrast) */
+    --sidebar: 210 20% 96%;
+    --sidebar-foreground: 220 15% 20%;
+    --sidebar-primary: 193 100% 38%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 24 100% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 220 15% 80%;
+    --sidebar-ring: 193 100% 38%;
 
     /* Base Font & Radius */
-    --font-sans: Poppins, Arial, Helvetica, sans-serif;
+    --font-sans: Poppins, Arial, Helvetica, "Segoe UI", "Liberation Sans", sans-serif;
     --font-serif: Merriweather, serif;
     --font-mono: Geist Mono, monospace;
     --radius: 0.5rem;
 
-    /* Shadows (Keeping previous) */
-    --shadow-2xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.03);
-    --shadow-xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.03);
-    --shadow-sm: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
-    --shadow: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
-    --shadow-md: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 2px 4px -1px hsl(0 0% 0% / 0.05);
-    --shadow-lg: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 4px 6px -1px hsl(0 0% 0% / 0.05);
-    --shadow-xl: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 8px 10px -1px hsl(0 0% 0% / 0.05);
-    --shadow-2xl: 0px 0px 3px 0px hsl(0 0% 0% / 0.13);
+    /* Shadows (Refined, High Contrast) */
+    --shadow-2xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.06);
+    --shadow-xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.08);
+    --shadow-sm: 0px 1px 2px 0px hsl(220 15% 10% / 0.10);
+    --shadow: 0px 2px 4px 0px hsl(220 15% 10% / 0.12);
+    --shadow-md: 0px 4px 8px 0px hsl(220 15% 10% / 0.16);
+    --shadow-lg: 0px 8px 16px 0px hsl(220 15% 10% / 0.18);
+    --shadow-xl: 0px 16px 24px 0px hsl(220 15% 10% / 0.20);
+    --shadow-2xl: 0px 24px 32px 0px hsl(220 15% 10% / 0.22);
 
-    /* Card Color Variables - Light Theme (Cyan Primary) */
-    --card-blue-bg: 193 80% 94%;           /* Light cyan-600 */
-    --card-blue-fg: 193 93% 30%;           /* Dark cyan-600 */
-    --card-green-bg: 173 65% 94%;          /* Light Secondary Teal */
-    --card-green-fg: 173 80% 25%;          /* Dark Secondary Teal */
-    --card-pink-bg: 28 96% 95%;            /* Light Accent Coral */
-    --card-pink-fg: 28 90% 50%;            /* Dark Accent Coral */
-    --card-yellow-bg: 28 96% 95%;           /* Light Accent Coral */
-    --card-yellow-fg: 28 90% 50%;          /* Dark Accent Coral */
+    /* Card Color Variables - Light Theme (Refined, High Contrast) */
+    --card-blue-bg: 193 100% 97%;
+    --card-blue-fg: 193 100% 28%;
+    --card-green-bg: 173 80% 96%;
+    --card-green-fg: 173 100% 22%;
+    --card-pink-bg: 28 100% 97%;
+    --card-pink-fg: 28 100% 40%;
+    --card-yellow-bg: 48 100% 97%;
+    --card-yellow-fg: 48 100% 40%;
+    --card-orange-bg: 24 100% 97%;
+    --card-orange-fg: 24 100% 50%;
   }
 
   .dark {
-    /* Core Colors - Dark Theme (VS Code Inspired Base, Cyan Primary) */
-    --background: 0 0% 12%;                 /* #1e1e1e */
-    --foreground: 0 0% 95%;                 /* Near White for contrast */
-    --card: 0 0% 15%;                   /* #252526 */
-    --card-foreground: 0 0% 95%;           /* Near White */
-    --popover: 0 0% 18%;                /* #2d2d30 */
-    --popover-foreground: 0 0% 95%;        /* Near White */
-    --primary: 191 95% 43%;               /* cyan-500 */
-    --primary-foreground: 191 100% 5%;      /* Very dark cyan */
-    --secondary: 173 55% 60%;             /* Muted Teal (Keeping from previous) */
-    --secondary-foreground: 173 100% 5%;   /* Very dark teal */
-    --muted: 0 0% 25%;                   /* #3e3e42 */
-    --muted-foreground: 0 0% 65%;           /* Lighter gray for muted text */
-    --accent: 28 80% 70%;                 /* Muted Coral (Keeping from previous) */
-    --accent-foreground: 28 100% 10%;      /* Dark coral */
-    --destructive: 0 65% 65%;             /* Muted Red (Keeping from previous) */
-    --destructive-foreground: 0 100% 5%;   /* Dark red */
-    --border: 0 0% 25%;                 /* #3e3e42 */
-    --input: 0 0% 18%;                  /* #2d2d30 */
-    --ring: 191 95% 43%;                   /* cyan-500 for focus */
+    /* Core Colors - Dark Theme (Refined, High Contrast) */
+    --background: 220 15% 8%;                /* Deeper dark */
+    --foreground: 0 0% 100%;                 /* White */
+    --card: 220 15% 13%;
+    --card-foreground: 0 0% 100%;
+    --popover: 220 15% 15%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 191 100% 50%;                 /* Brighter cyan */
+    --primary-foreground: 191 100% 5%;
+    --secondary: 173 80% 50%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 220 10% 20%;
+    --muted-foreground: 0 0% 90%;
+    --accent: 28 100% 70%;
+    --accent-foreground: 28 100% 10%;
+    --accent-orange: 24 100% 60%;
+    --accent-orange-foreground: 0 0% 0%;
+    --destructive: 0 80% 70%;
+    --destructive-foreground: 0 100% 5%;
+    --border: 220 10% 30%;
+    --input: 220 10% 18%;
+    --ring: 191 100% 50%;
 
-    /* Chart Colors (Keeping previous, review later if needed) */
-    --chart-1: 200 100% 60%;
-    --chart-2: 162 73% 60%;
-    --chart-3: 291 64% 70%;
-    --chart-4: 43 100% 66%;
-    --chart-5: 27 98% 60%;
+    /* Chart Colors (Refined, High Contrast) */
+    --chart-1: 200 100% 70%;
+    --chart-2: 162 90% 60%;
+    --chart-3: 291 80% 80%;
+    --chart-4: 43 100% 70%;
+    --chart-5: 24 100% 70%;
 
-    /* Sidebar Colors - Dark Theme (Cyan Primary) */
-    --sidebar: 0 0% 15%;                   /* #252526 */
-    --sidebar-foreground: 0 0% 95%;        /* Near White */
-    --sidebar-primary: 191 95% 43%;       /* cyan-500 */
-    --sidebar-primary-foreground: 191 100% 5%; /* Very dark cyan */
-    --sidebar-accent: 28 80% 70%;         /* Muted Coral */
-    --sidebar-accent-foreground: 28 100% 10%; /* Dark coral */
-    --sidebar-border: 0 0% 25%;         /* #3e3e42 */
-    --sidebar-ring: 191 95% 43%;           /* cyan-500 for focus */
+    /* Sidebar Colors - Dark Theme (Refined, High Contrast) */
+    --sidebar: 220 15% 13%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 191 100% 50%;
+    --sidebar-primary-foreground: 191 100% 5%;
+    --sidebar-accent: 24 100% 60%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 220 10% 30%;
+    --sidebar-ring: 191 100% 50%;
 
     /* Base Font & Radius */
-    --font-sans: Poppins, Arial, Helvetica, sans-serif;
+    --font-sans: Poppins, Arial, Helvetica, "Segoe UI", "Liberation Sans", sans-serif;
     --font-serif: Merriweather, serif;
     --font-mono: Geist Mono, monospace;
     --radius: 0.5rem;
 
-    /* Shadows (Keeping previous) */
-    --shadow-2xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.03);
-    --shadow-xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.03);
-    --shadow-sm: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
-    --shadow: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
-    --shadow-md: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 2px 4px -1px hsl(0 0% 0% / 0.05);
-    --shadow-lg: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 4px 6px -1px hsl(0 0% 0% / 0.05);
-    --shadow-xl: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 8px 10px -1px hsl(0 0% 0% / 0.05);
-    --shadow-2xl: 0px 0px 3px 0px hsl(0 0% 0% / 0.13);
+    /* Shadows (Refined, High Contrast) */
+    --shadow-2xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.10);
+    --shadow-xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.12);
+    --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.16);
+    --shadow: 0px 2px 4px 0px hsl(0 0% 0% / 0.18);
+    --shadow-md: 0px 4px 8px 0px hsl(0 0% 0% / 0.22);
+    --shadow-lg: 0px 8px 16px 0px hsl(0 0% 0% / 0.24);
+    --shadow-xl: 0px 16px 24px 0px hsl(0 0% 0% / 0.26);
+    --shadow-2xl: 0px 24px 32px 0px hsl(0 0% 0% / 0.28);
 
-    /* Card Color Variables - Dark Theme (Cyan Primary) */
-    --card-blue-bg: 193 30% 20%;           /* Dark muted Cyan */
-    --card-blue-fg: 191 80% 75%;           /* Light Cyan text */
-    --card-green-bg: 173 20% 20%;          /* Dark muted Teal */
-    --card-green-fg: 173 60% 70%;          /* Light Teal text */
-    --card-pink-bg: 28 30% 20%;            /* Dark muted Coral */
-    --card-pink-fg: 28 85% 75%;            /* Light Coral text */
-    --card-yellow-bg: 28 30% 20%;           /* Dark muted Coral */
-    --card-yellow-fg: 28 85% 75%;          /* Light Coral text */
+    /* Card Color Variables - Dark Theme (Refined, High Contrast) */
+    --card-blue-bg: 193 100% 14%;
+    --card-blue-fg: 191 100% 80%;
+    --card-green-bg: 173 80% 14%;
+    --card-green-fg: 173 100% 80%;
+    --card-pink-bg: 28 100% 14%;
+    --card-pink-fg: 28 100% 80%;
+    --card-yellow-bg: 48 100% 14%;
+    --card-yellow-fg: 48 100% 80%;
+    --card-orange-bg: 24 100% 14%;
+    --card-orange-fg: 24 100% 70%;
   }
 }
 
@@ -251,6 +281,10 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 1.6;
   }
   h1,
   h2,
@@ -259,20 +293,37 @@ body {
   h5,
   h6 {
     @apply font-bold tracking-tight;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
   }
   h1 {
     @apply text-4xl sm:text-5xl md:text-6xl;
+    color: hsl(var(--accent-orange));
+    text-shadow: 0 2px 8px hsl(var(--accent-orange) / 0.18);
+    border-bottom: 2px solid hsl(var(--accent-orange));
+    margin-bottom: 0.5em;
   }
   h2 {
     @apply text-3xl sm:text-4xl md:text-5xl;
+    color: hsl(var(--primary));
+    text-shadow: 0 1px 4px hsl(var(--primary) / 0.14);
+    border-bottom: 1.5px solid hsl(var(--primary));
+    margin-bottom: 0.4em;
   }
   h3 {
     @apply text-2xl sm:text-3xl md:text-4xl;
+    color: hsl(var(--foreground));
+    border-bottom: 1px solid hsl(var(--border));
+    margin-bottom: 0.3em;
   }
   h4 {
     @apply text-xl sm:text-2xl md:text-3xl;
+    color: hsl(var(--foreground));
+    margin-bottom: 0.2em;
   }
   p, li, span, div {
     @apply text-base md:text-lg;
+    color: hsl(var(--foreground));
+    line-height: 1.7;
   }
 }

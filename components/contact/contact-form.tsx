@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,51 +10,56 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react"
-
-// Form validation schema
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Name is required" }),
-  email: z.string().email({ message: "Valid email is required" }),
-  subject: z.string().min(2, { message: "Subject is required" }),
-  category: z.enum(["general", "support", "feedback", "privacy", "security", "ethics", "other"], {
-    required_error: "Please select a category",
-  }),
-  message: z.string().min(10, { message: "Message is required (min 10 characters)" }),
-})
-
-type FormValues = z.infer<typeof formSchema>
+import { submitContactForm } from "@/app/actions/contact"
+import { contactFormSchema, type ContactFormValues } from "@/lib/validations/contact"
+import { contactCategoryEnum } from "@/lib/db/schema/contactMessages"
+import { useToast } from "@/components/ui/use-toast"
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
+  const { toast } = useToast()
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
     defaultValues: {
       name: "",
       email: "",
       subject: "",
       message: "",
+      category: "general",
     },
   })
 
-  async function onSubmit(data: FormValues) {
+  async function onSubmit(data: ContactFormValues) {
     setIsSubmitting(true)
     setSubmitStatus("idle")
     setErrorMessage("")
 
     try {
-      // In a real implementation, this would send the data to an API endpoint
-      // For now, we'll simulate a successful submission after a delay
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Simulate successful submission
-      setSubmitStatus("success")
-      form.reset()
+      const result = await submitContactForm(data)
+      
+      if (result.success) {
+        setSubmitStatus("success")
+        toast({
+          title: "Message sent",
+          description: "Thank you for reaching out. We'll get back to you soon.",
+          variant: "default",
+        })
+        form.reset()
+      } else {
+        throw new Error(result.error || "Failed to submit. Please try again.")
+      }
     } catch (error) {
       setSubmitStatus("error")
-      setErrorMessage("An unexpected error occurred. Please try again later.")
+      const errorMsg = error instanceof Error ? error.message : "An unexpected error occurred"
+      setErrorMessage(errorMsg)
+      toast({
+        title: "Error",
+        description: errorMsg,
+        variant: "destructive",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -93,7 +97,7 @@ export function ContactForm() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your name" {...field} className="bg-gray-800 border-gray-700" />
+                    <Input placeholder="Your name" {...field} className="bg-background/50 border-input" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -107,7 +111,7 @@ export function ContactForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="Your email" {...field} className="bg-gray-800 border-gray-700" />
+                    <Input type="email" placeholder="Your email" {...field} className="bg-background/50 border-input" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -122,7 +126,7 @@ export function ContactForm() {
               <FormItem>
                 <FormLabel>Subject</FormLabel>
                 <FormControl>
-                  <Input placeholder="Message subject" {...field} className="bg-gray-800 border-gray-700" />
+                  <Input placeholder="Message subject" {...field} className="bg-background/50 border-input" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -137,21 +141,19 @@ export function ContactForm() {
                 <FormLabel>Category</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-gray-800 border-gray-700">
+                    <SelectTrigger className="bg-background/50 border-input">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-gray-800 border-gray-700">
-                    <SelectItem value="general">General Inquiry</SelectItem>
-                    <SelectItem value="support">Technical Support</SelectItem>
-                    <SelectItem value="feedback">Feedback</SelectItem>
-                    <SelectItem value="privacy">Privacy Concern</SelectItem>
-                    <SelectItem value="security">Security Issue</SelectItem>
-                    <SelectItem value="ethics">Ethics Question</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                  <SelectContent>
+                    {Object.values(contactCategoryEnum.enumValues).map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {getCategoryLabel(category)}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-                <FormDescription className="text-gray-400">
+                <FormDescription>
                   Select the category that best matches your inquiry
                 </FormDescription>
                 <FormMessage />
@@ -168,7 +170,7 @@ export function ContactForm() {
                 <FormControl>
                   <Textarea
                     placeholder="Your message"
-                    className="min-h-[150px] bg-gray-800 border-gray-700"
+                    className="min-h-[150px] bg-background/50 border-input"
                     {...field}
                   />
                 </FormControl>
@@ -177,7 +179,11 @@ export function ContactForm() {
             )}
           />
 
-          <Button type="submit" disabled={isSubmitting} className="w-full bg-primary hover:bg-primary/90">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting} 
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -191,4 +197,20 @@ export function ContactForm() {
       </Form>
     </div>
   )
+}
+
+// Helper to convert enum values to readable labels
+function getCategoryLabel(category: string): string {
+  const labels: Record<string, string> = {
+    general: "General Inquiry",
+    support: "Technical Support",
+    feedback: "Feedback",
+    privacy: "Privacy Concern",
+    security: "Security Issue",
+    ethics: "Ethics Question",
+    feature_request: "Feature Request",
+    bug_report: "Bug Report",
+    other: "Other",
+  }
+  return labels[category] || category.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())
 }

@@ -5,11 +5,15 @@ import {
   AlertCircle,
   BookOpen,
   Code,
+  Database,
   ExternalLink,
   Github,
+  HardHat,
   Lock,
   MessageSquare,
   Shield,
+  UserCircle,
+  Users,
 } from "lucide-react";
 import FaqSection from "@/components/ui/faq-section";
 
@@ -22,104 +26,68 @@ export const metadata: Metadata = {
 export default function FAQPage() {
   return (
     <div className="container max-w-3xl mx-auto px-4 py-10 md:py-16">
-      <header className="text-center mb-14">
+      <header className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          Your Questions Answered <span className="inline-block animate-bounce">?</span>
+          Global Pulse: FAQ <span className="inline-block animate-bounce">?</span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Welcome! We just wrapped an intense 10-day build sprint for the Vercel AI Hackathon, turning an idea into the
-          first functioning core of Global Pulse. It's raw, it's early, and honestly, we're running on fumes and
-          excitement. We know you have questions about what we've built so far and where this journey is headed.
+          Built in 10 days during the Vercel AI Hackathon. It's early, it's real, and we're just getting started.
+          Here's where we are and where we're going.
         </p>
       </header>
 
       <main>
-        <div className="grid gap-10">
+        <div className="grid gap-8">
           <FaqSection
-            title="About Global Pulse & How It Works"
+            title="What's Global Pulse?"
             icon={<BookOpen className="h-6 w-6 text-primary" />}
             questions={[
               {
-                question: "What IS Global Pulse right now? Can I chat with Pulse?",
+                question: "So, what is Global Pulse, really?",
                 answer: (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <p>
-                      <strong>Let's be clear:</strong> Global Pulse is currently a <em>demo</em> and an{" "}
-                      <em>open-source codebase</em>, not a live, interactive chat experience. You can't directly "talk" to
-                      Pulse yet.
+                      Right now? A working prototype. Built in 10 days during a hackathon. A foundation, not a product. 
+                      It shows our intent: an AI companion built to reflect, not extract. It's early. But real.
                     </p>
                     <p>
-                      What we built in our 10-day hackathon sprint is the foundation. We've created:
+                      What we built in our 10-day sprint:
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
-                        <strong>A Demo:</strong> Showcasing how the EWEF and UIG are designed to work together to analyze
-                        emotional experiences.
+                        <strong>A Demo:</strong> Showcasing how the EWEF and UIG frameworks analyze emotional experiences.
                       </li>
                       <li>
-                        <strong>The Core Code:</strong> The open-source implementation of our Enhanced Webb Emotional
-                        Framework (EWEF) and Unified Identity Graph (UIG) systems.
+                        <strong>Core Code:</strong> Open-source implementation of our Enhanced Webb Emotional Framework (EWEF) and Unified Identity Graph (UIG).
                       </li>
                       <li>
-                        <strong>The Vision:</strong> Documentation explaining where we're headed with this technology.
+                        <strong>The Vision:</strong> Documentation of where we're headed with this technology.
                       </li>
                     </ul>
-                    <p>
-                      Think of it as the blueprints and foundation of a house – you can see the plans and the basement, but you can't move in yet!
-                    </p>
                   </div>
                 ),
               },
               {
-                question: "What's the EWEF and UIG? Sounds complicated.",
+                question: "What does the demo actually do?",
                 answer: (
-                  <div className="space-y-3">
-                    <p>We try to simplify!</p>
+                  <div className="space-y-2">
                     <p>
-                      <strong>UIG (Unified Identity Graph):</strong> Think of it as a private, secure, dynamic map of your
-                      unique identity – the things you care about (Attachments), their importance (PL), your
-                      positive/negative feelings towards them (V), and how they connect. It evolves as you interact.
+                      You can sign up, explore a basic dashboard (sample data), and set data consent preferences. The chat is simulated—meant to show how Pulse might feel, not what it can do yet.
                     </p>
                     <p>
-                      <strong>EWEF (Enhanced Webb Emotional Framework):</strong> This is the analysis engine. It takes
-                      what's happening (Perception P) and compares it to what matters to you (Expectation EP, derived from
-                      your active UIG attachments). It then figures out the likely core feeling (VAD:
-                      Valence-Arousal-Dominance) and the most probable emotion category (like Anger, Joy, Confusion) based
-                      on established psychological principles (like Webb's MHH variables: Source, Perspective, Time,
-                      Acceptance) and your overall context (State, Culture, Personality).
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                question: "What does the demo actually show?",
-                answer: (
-                  <div className="space-y-3">
-                    <p>
-                      Our demo is a static representation of how the Global Pulse system is designed to work. It
-                      showcases:
+                      It showcases:
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
-                        <strong>The Core Concept:</strong> How the EWEF analyzes interactions to understand the "why"
-                        behind emotions.
+                        <strong>The Core Concept:</strong> How the EWEF analyzes interactions to understand the "why" behind emotions.
                       </li>
                       <li>
-                        <strong>UIG Visualization:</strong> How your identity graph would map your{" "}
-                        <code>{"{Attachments}"}</code> (Values, Goals, Beliefs, etc.).
+                        <strong>UIG Visualization:</strong> How your identity graph maps what matters to you.
                       </li>
                       <li>
-                        <strong>Analysis Flow:</strong> The process of taking perceptions (P), comparing them to
-                        expectations (EP), and generating emotional responses (ER).
-                      </li>
-                      <li>
-                        <strong>Key Components:</strong> The various modules that make up the system architecture.
+                        <strong>Analysis Flow:</strong> The process of comparing perceptions to expectations and generating emotional responses.
                       </li>
                     </ul>
-                    <p>
-                      Think of it as an interactive museum exhibit about the technology, rather than the technology itself
-                      in action.
-                    </p>
                     <div className="mt-3">
                       <Link href="/how-it-works" legacyBehavior>
                         <Button variant="outline" className="group transition hover:scale-105">
@@ -132,35 +100,266 @@ export default function FAQPage() {
                 ),
               },
               {
-                question: "How can I engage with the code?",
+                question: "Where can I try the real AI?",
                 answer: (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <p>
-                      The core of Global Pulse – the EWEF pipeline logic, UIG utilities, and related components – is
-                      available as open-source code. Here's how you can engage:
+                      You can't. Not yet. The live chat isn't functional. We're working on it, carefully. You can watch a demo conversation on our site to get a sense of the interaction we're building toward.
+                    </p>
+                    <p>
+                      Our roadmap includes:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Fixing the XAI "Why?" explanation backend</li>
+                      <li>Building out real-time chat, safely</li>
+                      <li>Improving the dashboard with user-validated insights</li>
+                      <li>Gradually expanding access to ensure quality</li>
+                    </ul>
+                    <p>
+                      <Link href="/#waitlist" className="underline text-primary">
+                        Join our waitlist
+                      </Link>{" "}
+                      to be notified when interactive features become available.
+                    </p>
+                  </div>
+                ),
+              },
+            ]}
+          />
+
+          <FaqSection
+            title="What's Under the Hood?"
+            icon={<HardHat className="h-6 w-6 text-primary" />}
+            questions={[
+              {
+                question: "What's this EWEF and UIG stuff?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>
+                      <strong>UIG (Unified Identity Graph):</strong> Your private, secure map—your values, goals, and needs in relationship. The things you care about (Attachments), their importance (PL), your feelings towards them (V), and how they connect.
+                    </p>
+                    <p>
+                      <strong>EWEF (Enhanced Webb Emotional Framework):</strong> The analysis engine. It compares what's happening (Perception P) to what matters to you (Expectation EP from your UIG). It calculates your likely core feeling (VAD: Valence-Arousal-Dominance) and probable emotion based on psychological principles.
+                    </p>
+                    <p>
+                      These are still becoming real in the code—but the structure is there.
+                    </p>
+                  </div>
+                ),
+              },
+              {
+                question: "What tech are you using?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>Our tech stack includes:</p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Next.js, React, TypeScript for the frontend</li>
+                      <li>Supabase for authentication and data storage</li>
+                      <li>Neo4j for the graph database (UIG)</li>
+                      <li>Redis for caching and real-time features</li>
+                      <li>Vercel AI SDK for model integration</li>
+                    </ul>
+                    <p>And a lot of careful thinking between the code.</p>
+                  </div>
+                ),
+              },
+              {
+                question: "How is this different from standard sentiment analysis?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>
+                      Sentiment analysis typically gives a simple positive/negative score. Global Pulse goes deeper:
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
-                        <strong>Explore:</strong> Browse the repository to understand how we've implemented the
-                        psychological frameworks.
+                        <strong>VAD:</strong> We calculate Valence (pleasant/unpleasant), Arousal (energy level), and Dominance (feeling in control).
                       </li>
                       <li>
-                        <strong>Report Issues:</strong> Found a bug or have a suggestion? Open an issue on GitHub.
+                        <strong>Categorization:</strong> We predict probabilities across multiple specific emotions (Anger, Joy, Fear, etc.).
                       </li>
                       <li>
-                        <strong>Contribute:</strong> Submit pull requests with improvements or extensions.
-                      </li>
-                      <li>
-                        <strong>Discuss:</strong> Join conversations about the architecture and implementation.
-                      </li>
-                      <li>
-                        <strong>Fork:</strong> Create your own version or experiment with the code.
+                        <strong>The "Why":</strong> We link emotions to the drivers behind them—the interaction between what you value and what you perceive.
                       </li>
                     </ul>
+                  </div>
+                ),
+              },
+            ]}
+          />
+
+          <FaqSection
+            title="What About My Data?"
+            icon={<Shield className="h-6 w-6 text-primary" />}
+            questions={[
+              {
+                question: "Do you collect my data?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>Only with your consent. And only what's needed to reflect something useful back to you. No selling. No ads. No hidden use. Your privacy settings give you control.</p>
+                    <p>Currently, data collection is minimal:</p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Email address (if you join the waitlist)</li>
+                      <li>Basic anonymous analytics</li>
+                      <li>Any feedback you provide explicitly</li>
+                    </ul>
                     <p>
-                      Even if you're not a developer, exploring the code can give you insights into how we're approaching
-                      emotional intelligence modeling.
+                      <strong>We are NOT currently:</strong>
                     </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Collecting chat data (since there's no live chat yet)</li>
+                      <li>Building your UIG (this happens when interactive features launch)</li>
+                      <li>Connecting to external data sources</li>
+                    </ul>
+                  </div>
+                ),
+              },
+              {
+                question: "How is it protected?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>
+                      Our privacy foundations were baked in from line one. Protection includes:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>
+                        <strong>Secure Infrastructure:</strong> Supabase and Redis with permission checks
+                      </li>
+                      <li>
+                        <strong>Encryption:</strong> For sensitive data both in transit and at rest
+                      </li>
+                      <li>
+                        <strong>Consent Flags:</strong> Baked into every feature
+                      </li>
+                      <li>
+                        <strong>Privacy-First Design:</strong> From the start
+                      </li>
+                    </ul>
+                    <Link href="/privacy" legacyBehavior>
+                      <Button variant="outline" size="sm" className="group transition hover:scale-105 mt-2">
+                        <Lock className="mr-2 h-4 w-4 group-hover:text-primary" />
+                        Privacy Policy
+                      </Button>
+                    </Link>
+                  </div>
+                ),
+              },
+              {
+                question: "What are these 'guardrails' I keep hearing about?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>
+                      They're safety systems built into the backend. Even though we don't have live chat yet, we've implemented the foundation of the Ethical Guardrail Layer:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>
+                        <strong>Consent Enforcement:</strong> Code that checks user permissions before processing
+                      </li>
+                      <li>
+                        <strong>Well-being Priority:</strong> VAD impact simulation to catch potentially harmful responses
+                      </li>
+                      <li>
+                        <strong>Distress Protocol:</strong> Trigger detection and resource linking
+                      </li>
+                      <li>
+                        <strong>Bias Checking:</strong> Basic keyword checks (to be expanded)
+                      </li>
+                    </ul>
+                    <Link href="/ethics" legacyBehavior>
+                      <Button variant="outline" size="sm" className="group transition hover:scale-105 mt-2">
+                        <Shield className="mr-2 h-4 w-4 group-hover:text-primary" />
+                        Safety & Ethics
+                      </Button>
+                    </Link>
+                  </div>
+                ),
+              },
+            ]}
+          />
+
+          <FaqSection
+            title="Where Is This Going?"
+            icon={<ExternalLink className="h-6 w-6 text-primary" />}
+            questions={[
+              {
+                question: "What's next for Global Pulse?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>
+                      Our immediate roadmap:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Fixing the XAI "Why?" explanation backend</li>
+                      <li>Building out real-time chat, safely</li>
+                      <li>Improving the dashboard with user-validated insights</li>
+                      <li>Rolling out opt-in structured prompts (with user permission only)</li>
+                      <li>Preparing for anonymized, privacy-safe public insights—only when ready and ethically sound</li>
+                    </ul>
+                    <p>
+                      We're avoiding specific timelines because quality and safety come first.
+                    </p>
+                  </div>
+                ),
+              },
+              {
+                question: "What about the Marketplace thing?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>
+                      It's an idea. Not a launch. And it comes with strict conditions:
+                    </p>
+                    <ol className="list-decimal pl-6 space-y-1">
+                      <li>Community governance first</li>
+                      <li>Shared value (primarily for users)</li>
+                      <li>Explicit re-consent needed</li>
+                      <li>Validated privacy tech (like Differential Privacy) proven first</li>
+                    </ol>
+                    <p>
+                      If it doesn't meet those? We don't build it.
+                    </p>
+                  </div>
+                ),
+              },
+              {
+                question: "When will interactive features be available?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>
+                      Honestly? We just finished a 10-day code whirlwind! The hackathon marks the start, not the finish line.
+                    </p>
+                    <p>We need to:</p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Stabilize the core EWEF and UIG implementations</li>
+                      <li>Build the conversational interface</li>
+                      <li>Implement robust security and privacy controls</li>
+                      <li>Test extensively for quality and safety</li>
+                    </ul>
+                    <p>
+                      This is a marathon, not just a sprint (though the start felt like one!).
+                    </p>
+                  </div>
+                ),
+              },
+            ]}
+          />
+
+          <FaqSection
+            title="Can I Help?"
+            icon={<Users className="h-6 w-6 text-primary" />}
+            questions={[
+              {
+                question: "I'm a developer/researcher/designer—can I get involved?",
+                answer: (
+                  <div className="space-y-2">
+                    <p>
+                      Yes. Open-source is the start. We welcome contributions, critiques, refinements. You can:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Review the code and provide feedback</li>
+                      <li>Open issues for bugs or suggestions</li>
+                      <li>Submit pull requests with improvements</li>
+                      <li>Help with documentation</li>
+                      <li>Spread the word about the project</li>
+                    </ul>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <a
                         href="@https://github.com/LastMile-Innovations/Global_Pulse.git"
@@ -187,53 +386,50 @@ export default function FAQPage() {
                 ),
               },
               {
-                question: "When will I be able to actually chat with Pulse?",
+                question: "What about using Global Pulse data in research?",
                 answer: (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <p>
-                      We're working on it! Building a fully functional, responsible AI companion with the depth we're
-                      aiming for isn't a weekend project (though we did cram an impressive amount into our 10-day
-                      hackathon sprint!).
+                      There's no user data to share yet. But we're designing toward safe, consented, ethically usable aggregate datasets—eventually.
                     </p>
-                    <p>Our roadmap includes:</p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>
-                        <strong>Stabilizing the Core:</strong> Refining the EWEF and UIG implementations based on feedback.
-                      </li>
-                      <li>
-                        <strong>Building the Chat Interface:</strong> Creating the conversational layer that will become
-                        Pulse.
-                      </li>
-                      <li>
-                        <strong>Integrating Safeguards:</strong> Ensuring the system operates ethically and responsibly.
-                      </li>
-                      <li>
-                        <strong>Testing & Iteration:</strong> Gradually expanding access to ensure quality.
-                      </li>
-                    </ul>
                     <p>
-                      We're avoiding specific timelines because we want to get this right, not rush it.{" "}
-                      <Link href="/#waitlist" className="underline text-primary">
-                        Join our waitlist
-                      </Link>{" "}
-                      to be notified when interactive features become available.
+                      If you want to talk, visit our researchers page or contact us directly.
                     </p>
+                    <Link href="/for-researchers" legacyBehavior>
+                      <Button variant="outline" size="sm" className="group transition hover:scale-105 mt-2">
+                        <Database className="mr-2 h-4 w-4 group-hover:text-primary" />
+                        For Researchers
+                      </Button>
+                    </Link>
                   </div>
                 ),
               },
               {
-                question: "Is this therapy? Can Pulse diagnose me?",
+                question: "Who's building this?",
                 answer: (
-                  <div className="space-y-3">
-                    <p className="font-bold text-destructive">Absolutely NOT.</p>
+                  <div className="space-y-2">
                     <p>
-                      Global Pulse is a tool for self-awareness and exploration, not a replacement for professional
-                      therapy or medical advice. Pulse cannot and will not provide diagnoses or treatment plans.
+                      A small human team. Greyson Paynter is leading architecture/dev. Debra Lundquist is holding the ethical pulse and product vision. We collaborated with AI partners (GPT-4o, Gemini 2.5, Claude, etc.) during the build.
+                    </p>
+                    <Link href="/about" legacyBehavior>
+                      <Button variant="outline" size="sm" className="group transition hover:scale-105 mt-2">
+                        <UserCircle className="mr-2 h-4 w-4 group-hover:text-primary" />
+                        About Us
+                      </Button>
+                    </Link>
+                  </div>
+                ),
+              },
+              {
+                question: "Is this therapy?",
+                answer: (
+                  <div className="space-y-2">
+                    <p className="font-bold text-destructive">No. Not even close.</p>
+                    <p>
+                      Pulse is a space for reflection, not diagnosis or treatment. We're strict about that boundary.
                     </p>
                     <p>
-                      If you are experiencing significant distress or mental health concerns, please consult a qualified
-                      healthcare professional. We provide crisis resources in emergencies, but that is the extent of our
-                      direct mental health intervention.
+                      If you are experiencing significant distress or mental health concerns, please consult a qualified healthcare professional. We provide crisis resources in emergencies, but that is the extent of our mental health intervention.
                     </p>
                     <Link href="/demo/crisis-resources" legacyBehavior>
                       <Button variant="outline" className="mt-2 group transition hover:scale-105">
@@ -244,344 +440,73 @@ export default function FAQPage() {
                   </div>
                 ),
               },
-              {
-                question: "How is this different from standard sentiment analysis?",
-                answer: (
-                  <div className="space-y-3">
-                    <p>
-                      Sentiment analysis typically gives a simple positive/negative/neutral score. Global Pulse aims much
-                      deeper:
-                    </p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>
-                        <strong>VAD:</strong> We calculate Valence (pleasant/unpleasant), Arousal (energy level), and
-                        Dominance (feeling in control).
-                      </li>
-                      <li>
-                        <strong>Categorization:</strong> We predict probabilities across multiple specific emotion labels
-                        (Anger, Joy, Fear, Guilt, Confusion, etc.).
-                      </li>
-                      <li>
-                        <strong>The "Why":</strong> We link the predicted emotion back to the interaction between your UIG
-                        Attachments (EP) and your cognitive Appraisal (P, including MHH variables), providing insight into
-                        the drivers of the feeling.
-                      </li>
-                    </ul>
-                  </div>
-                ),
-              },
             ]}
           />
 
           <FaqSection
-            title="Privacy, Security & Data"
-            icon={<Shield className="h-6 w-6 text-primary" />}
-            questions={[
-              {
-                question: "What data do you collect in the current demo?",
-                answer: (
-                  <div className="space-y-3">
-                    <p>Since we're not yet offering a live chat experience, our current data collection is minimal:</p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>Your email address if you join the waitlist</li>
-                      <li>Basic anonymous analytics about site usage</li>
-                      <li>Any feedback you explicitly provide through our contact forms</li>
-                    </ul>
-                    <p>
-                      <strong>We are NOT currently:</strong>
-                    </p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>Collecting chat data (since there's no live chat yet)</li>
-                      <li>Building your UIG (this will happen when the interactive features launch)</li>
-                      <li>Connecting to external data sources</li>
-                    </ul>
-                    <p>
-                      Our privacy foundations are already in place, so when we do launch interactive features,
-                      your data will be protected from day one.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                question: "How will my data be protected when the chat launches?",
-                answer: (
-                  <div className="space-y-3">
-                    <p>
-                      Our commitment to privacy was baked in from line one, even during the hackathon sprint. When we
-                      launch interactive features, we'll employ multiple layers of security:
-                    </p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>
-                        <strong>Encryption:</strong> Data will be encrypted both in transit (TLS/SSL) and at rest (in our
-                        databases and storage).
-                      </li>
-                      <li>
-                        <strong>Access Controls:</strong> Strict technical and organizational controls will limit access
-                        to your specific identifiable data.
-                      </li>
-                      <li>
-                        <strong>No Sale of Individual Data:</strong> We will never sell or share your identifiable
-                        interaction data or UIG profile.
-                      </li>
-                      <li>
-                        <strong>Consent-First:</strong> You'll have clear controls over what data is collected and how
-                        it's used.
-                      </li>
-                    </ul>
-                    <Link href="/privacy" legacyBehavior>
-                      <Button variant="outline" size="sm" className="group transition hover:scale-105 mt-2">
-                        <Lock className="mr-2 h-4 w-4 group-hover:text-primary" />
-                        Privacy Policy
-                      </Button>
-                    </Link>
-                  </div>
-                ),
-              },
-              {
-                question: "What about future 'aggregate data' and 'revenue sharing'?",
-                answer: (
-                  <div className="space-y-3">
-                    <p>
-                      In the future, once we have a significant user base and interactive features, we plan to offer:
-                    </p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>
-                        <strong>Aggregate Insights:</strong> Anonymous, collective trends about emotional responses to
-                        public events or topics.
-                      </li>
-                      <li>
-                        <strong>Revenue Sharing:</strong> A model where users who consent to having their anonymized data
-                        contribute to commercial aggregate insights will share in the revenue generated.
-                      </li>
-                    </ul>
-                    <p>
-                      But let's be real – we're nowhere near that stage yet! We need to build the actual product first.
-                      These are future plans that will require explicit consent when the time comes.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                question: "Are the Ethical Guardrails implemented in the code?",
-                answer: (
-                  <div className="space-y-3">
-                    <p>
-                      Yes! Even though we don't have a live chat experience yet, we've implemented the foundations of the
-                      Ethical Guardrail Layer in our code:
-                    </p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>
-                        <strong>Consent Enforcement:</strong> Code that actively checks user permissions before processing.
-                      </li>
-                      <li>
-                        <strong>Well-being Priority:</strong> VAD impact simulation designed to catch potentially harmful
-                        responses.
-                      </li>
-                      <li>
-                        <strong>Distress Protocol:</strong> Trigger detection and resource linking functionality.
-                      </li>
-                      <li>
-                        <strong>Bias Checking:</strong> Basic keyword checks (to be expanded).
-                      </li>
-                    </ul>
-                    <p>
-                      You can review these implementations in our open-source code. They'll continue to be refined as we
-                      develop the platform.
-                    </p>
-                    <Link href="/ethics" legacyBehavior>
-                      <Button variant="outline" size="sm" className="group transition hover:scale-105 mt-2">
-                        <Shield className="mr-2 h-4 w-4 group-hover:text-primary" />
-                        Safety & Ethics
-                      </Button>
-                    </Link>
-                  </div>
-                ),
-              },
-            ]}
-          />
-
-          <FaqSection
-            title="Waitlist & Future Access"
+            title="Final Words"
             icon={<MessageSquare className="h-6 w-6 text-primary" />}
             questions={[
               {
                 question: "What does joining the waitlist get me?",
                 answer: (
-                  <div className="space-y-3">
-                    <p>Joining the waitlist gets you:</p>
+                  <div className="space-y-2">
+                    <p>Joining our waitlist provides:</p>
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
-                        <strong>Early Notification:</strong> You'll be among the first to know when we launch interactive
-                        features.
+                        <strong>Early Notification:</strong> First to know when we launch interactive features
                       </li>
                       <li>
-                        <strong>Development Updates:</strong> Occasional emails about our progress building the platform.
+                        <strong>Development Updates:</strong> Progress reports on our build
                       </li>
                       <li>
-                        <strong>Opportunity for Input:</strong> Chances to provide feedback that shapes the direction of
-                        Global Pulse.
+                        <strong>Input Opportunities:</strong> Chances to provide feedback
                       </li>
                       <li>
-                        <strong>Priority Access:</strong> When we do start rolling out interactive features, waitlist
-                        members will get priority.
+                        <strong>Priority Access:</strong> When we begin rolling out features
                       </li>
                     </ul>
-                    <p>
-                      Think of it as reserving your spot in line for when we open the doors, plus getting the inside scoop
-                      on development.
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                question: "When will interactive features be available?",
-                answer: (
-                  <div className="space-y-3">
-                    <p>
-                      Honestly? We just finished a 10-day code whirlwind! The hackathon marks the start, not the finish
-                      line.
-                    </p>
-                    <p>We need to:</p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>Stabilize and refine the core EWEF and UIG implementations</li>
-                      <li>Build the conversational interface</li>
-                      <li>Implement robust security and privacy controls</li>
-                      <li>Test extensively to ensure quality and safety</li>
-                    </ul>
-                    <p>
-                      We're avoiding specific timelines because quality and safety come first. This is a marathon, not
-                      just a sprint (though the start felt like one!).
-                    </p>
-                  </div>
-                ),
-              },
-              {
-                question: "Is there a cost to join the waitlist or use the future platform?",
-                answer: (
-                  <div className="space-y-3">
-                    <p>
-                      Joining the waitlist is free. Our current plan is for the initial versions of Global Pulse
-                      (including core chat and basic insights) to be free to use when they launch.
-                    </p>
-                    <p>
-                      We are exploring sustainable models for the long term, potentially involving premium features or the
-                      ethical aggregate insight products (with revenue sharing for consenting users).
-                    </p>
-                    <p>
-                      But first things first – we need to build something worth paying for! Our focus now is on creating
-                      value, not extracting it.
-                    </p>
-                  </div>
-                ),
-              },
-            ]}
-          />
-
-          <FaqSection
-            title="Open Source"
-            icon={<Github className="h-6 w-6 text-primary" />}
-            questions={[
-              {
-                question: "You open-sourced the code already? Isn't it incomplete?",
-                answer: (
-                  <div className="space-y-3">
-                    <p>
-                      Yes! And yes! We launched the core framework code as it stands at the end of the hackathon. It's
-                      definitely not complete or fully polished. That's the point!
-                    </p>
-                    <p>
-                      We believe in building openly. You can see exactly what we built in 10 days, find bugs, critique the
-                      V1 EWEF logic, suggest improvements, or even contribute code as we flesh it out. This transparency
-                      is part of the deal.
-                    </p>
-                    <p>
-                      The code represents our current implementation of the EWEF and UIG concepts, along with the
-                      supporting infrastructure. It's a foundation to build upon, not a finished product.
-                    </p>
-                    <a
-                      href="@https://github.com/LastMile-Innovations/Global_Pulse.git"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button variant="outline" className="mt-2 group transition hover:scale-105">
-                        <Github className="mr-2 h-4 w-4 group-hover:text-secondary" />
-                        View GitHub Repository
+                    <Link href="/#waitlist" legacyBehavior>
+                      <Button variant="outline" className="group transition hover:scale-105 mt-2">
+                        <ExternalLink className="mr-2 h-4 w-4 group-hover:text-secondary" />
+                        Join the Waitlist
                       </Button>
-                    </a>
+                    </Link>
                   </div>
                 ),
               },
               {
-                question: "Why open source so early? How can I contribute?",
+                question: "Is there a cost to using Global Pulse?",
                 answer: (
-                  <div className="space-y-3">
-                    <p>We open-sourced early for several reasons:</p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>
-                        <strong>Transparency:</strong> When dealing with emotional data, we believe users deserve to see
-                        exactly how their information is processed.
-                      </li>
-                      <li>
-                        <strong>Trust:</strong> Open code means accountability – we can't hide problematic practices.
-                      </li>
-                      <li>
-                        <strong>Collaboration:</strong> We genuinely believe community input will make this better.
-                      </li>
-                      <li>
-                        <strong>Learning:</strong> Others can learn from our approach (and we can learn from feedback).
-                      </li>
-                    </ul>
-                    <p>You can contribute by:</p>
-                    <ul className="list-disc pl-6 space-y-1">
-                      <li>Reviewing the code and providing feedback</li>
-                      <li>Opening issues for bugs or suggestions</li>
-                      <li>Submitting pull requests with improvements</li>
-                      <li>Helping with documentation</li>
-                      <li>Spreading the word about the project</li>
-                    </ul>
+                  <div className="space-y-2">
                     <p>
-                      Even if you're not a developer, your perspective on the approach and concepts is valuable. Check out
-                      our <code>CONTRIBUTING.md</code> (coming soon!) for more details.
+                      Joining the waitlist is free. Our current plan is for the initial versions of Global Pulse (including core chat and basic insights) to be free to use when they launch.
                     </p>
-                    <a
-                      href="@https://github.com/LastMile-Innovations/Global_Pulse.git"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button variant="outline" className="mt-2 group transition hover:scale-105">
-                        <Github className="mr-2 h-4 w-4 group-hover:text-secondary" />
-                        View GitHub Repository
-                      </Button>
-                    </a>
+                    <p>
+                      We're exploring sustainable models for the long term, potentially involving premium features or ethical aggregate insight products (with revenue sharing for consenting users).
+                    </p>
+                    <p>
+                      But first—we need to build something worth paying for. Our focus now is on creating value, not extracting it.
+                    </p>
                   </div>
                 ),
               },
               {
-                question: "If the code is open source, how will Global Pulse make money?",
+                question: "Why should I care about this project?",
                 answer: (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <p>
-                      Our primary focus now is building great tech ethically. Future potential business models include:
+                      We're not here to dazzle. We're here to build something trustworthy. Something slow, intentional, and clear. If that matters to you, welcome.
+                    </p>
+                    <p>
+                      Global Pulse aims to be:
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
-                      <li>
-                        <strong>Hosted Service:</strong> Offering a reliable, scalable hosted version of the platform.
-                      </li>
-                      <li>
-                        <strong>Premium Features:</strong> Advanced capabilities for individual users or teams.
-                      </li>
-                      <li>
-                        <strong>Aggregate Insights:</strong> Selling strictly anonymized, aggregate insight products
-                        derived from users who have explicitly consented (with revenue sharing).
-                      </li>
-                      <li>
-                        <strong>Enterprise Solutions:</strong> Customized implementations for specific use cases.
-                      </li>
+                      <li>An AI that reflects rather than extracts</li>
+                      <li>Open-source and community-accountable</li>
+                      <li>Designed for user dignity and agency</li>
+                      <li>A viable model for ethical AI development</li>
                     </ul>
-                    <p>
-                      Think of it like Linux or other open-source projects – the core is free and open, but there are
-                      sustainable business models built around it.
-                    </p>
                   </div>
                 ),
               },
@@ -590,9 +515,9 @@ export default function FAQPage() {
         </div>
       </main>
 
-      <footer className="mt-20 text-center">
+      <footer className="mt-16 text-center">
         <h2 className="text-2xl md:text-3xl font-bold mb-4">
-          Still got questions after wading through our post-hackathon reality check?
+          Still have questions?
         </h2>
         <div className="flex flex-wrap justify-center gap-4">
           <Link href="/contact" legacyBehavior>
@@ -619,3 +544,4 @@ export default function FAQPage() {
     </div>
   );
 }
+

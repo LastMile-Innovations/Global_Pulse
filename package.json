@@ -127,7 +127,8 @@
   "pnpm": {
     "overrides": {
       "@types/react": "19.1.0",
-      "@types/react-dom": "19.1.2"
+      "@types/react-dom": "19.1.2",
+      "d3-color": "^3.1.0"
     }
   }
 }
