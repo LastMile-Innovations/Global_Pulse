@@ -576,7 +576,7 @@ export default function EthicsPage() {
                   <Link href="/privacy">Review Our Privacy Policy</Link>
                 </Button>
                 <Button asChild variant="outline" className="border-gray-700 hover:bg-gray-800">
-                  <Link href="https://github.com/globalpulse">
+                  <Link href="@https://github.com/LastMile-Innovations/Global_Pulse.git">
                     <Github className="mr-2 h-4 w-4" />
                     Explore the Open Source Code
                   </Link>

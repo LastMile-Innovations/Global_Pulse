@@ -34,7 +34,7 @@ export default function FrameworksTheoriesClientPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button asChild className="bg-primary hover:bg-primary/90">
-                <Link href="https://github.com/globalpulse" target="_blank">
+                <Link href="@https://github.com/LastMile-Innovations/Global_Pulse.git" target="_blank">
                   <Github className="mr-2 h-4 w-4" />
                   Open Source Repository
                 </Link>

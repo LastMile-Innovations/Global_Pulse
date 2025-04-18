@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server"
 import { streamObject } from "ai"
-import { getLanguageModelInstance } from "@/lib/ai-sdk/providers"
-import { UIComponentSchema } from "@/lib/ai-sdk/schemas/ui_components"
+import { getLanguageModelInstance } from "@/ai-sdk/providers"
+import { UIComponentSchema } from "@/ai-sdk/schemas/ui_components"
 import { logger } from "@/lib/utils/logger"
 import { z } from "zod"
 

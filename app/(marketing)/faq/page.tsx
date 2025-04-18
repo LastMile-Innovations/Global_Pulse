@@ -163,7 +163,7 @@ export default function FAQPage() {
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <a
-                        href="https://github.com/globalpulse-ai/globalpulse"
+                        href="@https://github.com/LastMile-Innovations/Global_Pulse.git"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -173,7 +173,7 @@ export default function FAQPage() {
                         </Button>
                       </a>
                       <a
-                        href="https://github.com/globalpulse-ai/globalpulse#readme"
+                        href="@https://github.com/LastMile-Innovations/Global_Pulse.git#readme"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -499,7 +499,7 @@ export default function FAQPage() {
                       supporting infrastructure. It's a foundation to build upon, not a finished product.
                     </p>
                     <a
-                      href="https://github.com/globalpulse-ai/globalpulse"
+                      href="@https://github.com/LastMile-Innovations/Global_Pulse.git"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -544,7 +544,7 @@ export default function FAQPage() {
                       our <code>CONTRIBUTING.md</code> (coming soon!) for more details.
                     </p>
                     <a
-                      href="https://github.com/globalpulse-ai/globalpulse"
+                      href="@https://github.com/LastMile-Innovations/Global_Pulse.git"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -599,7 +599,7 @@ export default function FAQPage() {
             <Button className="transition hover:scale-105">Contact Us</Button>
           </Link>
           <a
-            href="https://github.com/globalpulse-ai/globalpulse"
+            href="@https://github.com/LastMile-Innovations/Global_Pulse.git"
             target="_blank"
             rel="noopener noreferrer"
           >

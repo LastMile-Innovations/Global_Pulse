@@ -192,7 +192,7 @@ Looking further ahead, we're exploring features designed to deepen the value for
 Global Pulse is being built *with* the community, not just *for* it. Your feedback is essential, especially regarding ethical considerations and feature development.
 
 *   **Share Your Thoughts:** Use our [Contact Form](/contact) or join future community forums.
-*   **Explore the Code:** Our commitment to transparency means our core engine's logic will be available on [GitHub](https://github.com/globalpulse-ai/globalpulse - Link placeholder).
+*   **Explore the Code:** Our commitment to transparency means our core engine's logic will be available on [GitHub](@https://github.com/LastMile-Innovations/Global_Pulse.git).
 *   **Join the Waitlist:** Be among the first to experience new features and provide early feedback.
 
 This is a journey of cautious optimism and ethical responsibility. We're excited to build Global Pulse openly and collaboratively. Thank you for being a part of it.

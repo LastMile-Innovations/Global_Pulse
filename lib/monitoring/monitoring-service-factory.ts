@@ -1,5 +1,5 @@
 import { KgService } from "../db/graph/kg-service"
-import { NerService } from "../ai-sdk/ner-service"
+import { NerService } from "../../ai-sdk/ner-service"
 import { RelevanceFilter } from "./relevance-filter"
 import { NewsApiClient } from "./news-api-client"
 import { MonitoringService } from "./monitoring-service"

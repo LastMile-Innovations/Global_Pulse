@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { FormInputComponent as FormInputComponentType } from "@/lib/ai-sdk/schemas/ui_components"
+import type { FormInputComponent as FormInputComponentType } from "@/ai-sdk/schemas/ui_components"
 
 interface FormInputComponentProps extends FormInputComponentType {
   onSubmit: (data: any) => void

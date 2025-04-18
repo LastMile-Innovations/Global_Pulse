@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
-import type { InfoCardComponent as InfoCardComponentType } from "@/lib/ai-sdk/schemas/ui_components"
+import type { InfoCardComponent as InfoCardComponentType } from "@/ai-sdk/schemas/ui_components"
 
 interface InfoCardComponentProps extends InfoCardComponentType {}
 

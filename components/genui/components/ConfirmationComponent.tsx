@@ -3,7 +3,7 @@
 import React from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import type { ConfirmationComponent as ConfirmationComponentType } from "@/lib/ai-sdk/schemas/ui_components"
+import type { ConfirmationComponent as ConfirmationComponentType } from "@/ai-sdk/schemas/ui_components"
 import { cn } from "@/lib/utils"
 
 interface ConfirmationComponentProps extends ConfirmationComponentType {

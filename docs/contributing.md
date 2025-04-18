@@ -16,7 +16,7 @@ If you have questions about setup or contribution process, feel free to ask in t
 
 ## Finding Issues to Work On
 
-*   **GitHub Issues:** The primary place to find tasks is the [GitHub Issues tab](https://github.com/your-org/global-pulse/issues) (**TODO:** Update URL).
+*   **GitHub Issues:** The primary place to find tasks is the [GitHub Issues tab](@https://github.com/LastMile-Innovations/Global_Pulse.git/issues) (**TODO:** Update URL).
 *   **Labels:** Look for issues tagged with:
     *   `good first issue`: Ideal for newcomers.
     *   `help wanted`: Tasks the core team would appreciate help with.

@@ -335,7 +335,7 @@ export default function MissionPage() {
                   <p className="text-base">
                     This tech is too important to hide. The <strong>entire core engine (EWEF/UIG logic) is AGPLv3 Open Source NOW</strong>. Tear it apart. Scrutinize it. Help us build it better, safer. We believe transparency is the only path forward.
                   </p>
-                  <Link href="https://github.com/lastmile-ai/GlobalPulse" className="mt-4 text-purple-400 hover:text-purple-300 inline-flex items-center">
+                  <Link href="@https://github.com/LastMile-Innovations/Global_Pulse.git" className="mt-4 text-purple-400 hover:text-purple-300 inline-flex items-center">
                     <span>View Our GitHub Repository</span>
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
@@ -391,7 +391,7 @@ export default function MissionPage() {
               {/* Additional CTAs from internal page */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl mx-auto mb-8">
                 <Button variant="outline" size="lg" className="h-auto py-6 border-2 border-white/70 hover:bg-white/10 flex flex-col items-center gap-3" asChild>
-                  <Link href="https://github.com/lastmile-ai/GlobalPulse">
+                  <Link href="@https://github.com/LastMile-Innovations/Global_Pulse.git">
                     <Github className="w-6 h-6" />
                     <span className="text-lg">Explore the Open Source Core Engine</span>
                   </Link>

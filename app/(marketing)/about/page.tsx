@@ -624,7 +624,7 @@ export default function AboutPage() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="gap-2 h-12 text-base" asChild>
-                <Link href="https://github.com">
+                <Link href="@https://github.com/LastMile-Innovations/Global_Pulse.git">
                   Star on GitHub{" "}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
