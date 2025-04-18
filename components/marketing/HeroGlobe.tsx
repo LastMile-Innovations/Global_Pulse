@@ -42,6 +42,11 @@ export default function HeroGlobe({
   const [globeReady, setGlobeReady] = useState(false)
   const [arcsData, setArcsData] = useState<{ startLat: number; startLng: number; endLat: number; endLng: number }[]>([])
 
+  // Define theme colors with opacity for arcs
+  // Assumes --primary and --accent are defined in HSL format like "H S% L%"
+  const primaryColor = `hsla(var(--primary), 0.6)`
+  const accentColor = `hsla(var(--accent), 0.6)`
+
   // Update globe controls for smooth animation and UX
   const updateControls = useCallback(() => {
     if (!globeRef.current) return
@@ -104,8 +109,7 @@ export default function HeroGlobe({
     <div
       className={[
         "relative",
-        "rounded-standard-xl",
-        "shadow-glow",
+        "rounded-lg",
         "overflow-hidden",
         "animate-float",
         className,
@@ -129,7 +133,7 @@ export default function HeroGlobe({
         bumpImageUrl={BUMP_IMG}
         backgroundImageUrl={NIGHT_IMG}
         arcsData={arcsData}
-        arcColor={() => ['rgba(255,99,71,0.6)', 'rgba(30,144,255,0.6)']}
+        arcColor={() => [accentColor, primaryColor]}
         arcAltitude={0.2}
         arcStroke={1.5}
         arcDashLength={0.4}
@@ -145,7 +149,7 @@ export default function HeroGlobe({
       />
       {/* Subtle overlay for accessibility/contrast */}
       <div
-        className="pointer-events-none absolute inset-0 rounded-standard-xl"
+        className="pointer-events-none absolute inset-0 rounded-lg"
         aria-hidden="true"
         style={{
           background:

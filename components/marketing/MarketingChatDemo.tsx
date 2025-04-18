@@ -217,9 +217,9 @@ const DemoMultipleChoice = ({
   onSelect: (optionId: string, optionText: string) => void
   disabled: boolean
 }) => (
-  <Card className="bg-gradient-to-br from-muted/60 to-muted/30 border-0 shadow-none my-2">
+  <Card className="bg-card border-border shadow-none my-2">
     <CardHeader className="pb-2 pt-4">
-      <CardTitle className="text-base font-semibold text-primary">{question}</CardTitle>
+      <CardTitle className="text-base font-semibold text-foreground">{question}</CardTitle>
     </CardHeader>
     <CardContent className="space-y-2 pb-4">
       {options.map((option) => (
@@ -253,9 +253,9 @@ const DemoButtons = ({
   onSelect: (optionId: string, optionText: string) => void
   disabled: boolean
 }) => (
-  <Card className="bg-gradient-to-br from-muted/60 to-muted/30 border-0 shadow-none my-2">
+  <Card className="bg-card border-border shadow-none my-2">
     <CardHeader className="pb-2 pt-4">
-      <CardTitle className="text-base font-semibold text-primary">{question}</CardTitle>
+      <CardTitle className="text-base font-semibold text-foreground">{question}</CardTitle>
     </CardHeader>
     <CardContent className="flex flex-wrap gap-2 pb-4">
       {options.map((option) => (
@@ -264,10 +264,10 @@ const DemoButtons = ({
           variant="outline"
           size="sm"
           className={cn(
-            "rounded-full px-4 py-2 border-2 transition-all duration-150",
+            "rounded-full border-2 transition-all duration-150",
             disabled
               ? "opacity-60 cursor-not-allowed border-muted"
-              : "hover:bg-primary/10 hover:border-primary/60 border-border"
+              : "hover:bg-primary/10 hover:border-primary/60 hover:text-primary border-border"
           )}
           onClick={() => !disabled && onSelect(option.id, option.text)}
           disabled={disabled}
@@ -299,36 +299,32 @@ const DemoSlider = ({
   const [value, setValue] = useState(Math.floor((min + max) / 2))
 
   return (
-    <Card className="bg-gradient-to-br from-muted/60 to-muted/30 border-0 shadow-none my-2">
+    <Card className="bg-card border-border shadow-none my-2">
       <CardHeader className="pb-2 pt-4">
-        <CardTitle className="text-base font-semibold text-primary">{question}</CardTitle>
+        <CardTitle className="text-base font-semibold text-foreground">{question}</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3 pb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground w-16 text-left">{minLabel || min}</span>
+      <CardContent className="px-4 pb-4">
+        <div className="relative flex flex-col items-center">
           <input
             type="range"
             min={min}
             max={max}
             value={value}
+            onChange={(e) => setValue(parseInt(e.target.value, 10))}
+            onMouseUp={() => !disabled && onSelect(value)}
+            onTouchEnd={() => !disabled && onSelect(value)}
             disabled={disabled}
-            onChange={e => setValue(Number(e.target.value))}
-            className="flex-1 accent-primary h-2 rounded-lg bg-muted/80"
-            style={{ minWidth: 0 }}
+            className={cn(
+              "w-full h-2 rounded-lg appearance-none cursor-pointer bg-muted",
+              "[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary",
+              "[&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary",
+              disabled && "opacity-60 cursor-not-allowed"
+            )}
           />
-          <span className="text-xs text-muted-foreground w-16 text-right">{maxLabel || max}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Value: <span className="font-semibold text-primary">{value}</span></span>
-          <Button
-            size="sm"
-            variant="outline"
-            className="ml-2 rounded-full px-4 py-1 border-2 transition-all duration-150"
-            disabled={disabled}
-            onClick={() => !disabled && onSelect(value)}
-          >
-            Submit
-          </Button>
+          <div className="flex justify-between w-full mt-2 text-xs text-muted-foreground">
+            <span>{minLabel ?? min}</span>
+            <span>{maxLabel ?? max}</span>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -597,7 +593,7 @@ export default function MarketingChatDemo() {
   }
 
   return (
-    <Card className="rounded-3xl overflow-hidden bg-gradient-to-br from-background via-muted/60 to-background shadow-2xl flex flex-col h-[600px] max-w-lg mx-auto border-0 ring-1 ring-primary/10">
+    <Card className="rounded-lg overflow-hidden bg-gradient-to-br from-background via-muted/60 to-background shadow-2xl flex flex-col h-[600px] max-w-lg mx-auto border-0 ring-1 ring-primary/10">
       {/* Header */}
       <CardHeader className="bg-gradient-to-r from-primary/10 to-muted/30 p-4 border-b-0 flex-row items-center justify-between space-y-0 shadow-sm">
         <div className="flex items-center gap-3">
@@ -648,7 +644,7 @@ export default function MarketingChatDemo() {
             {/* Message Bubble */}
             <div
               className={cn(
-                "rounded-2xl px-5 py-3 max-w-[80%] shadow-md transition-all duration-150",
+                "rounded-lg px-5 py-3 max-w-[80%] shadow-md transition-all duration-150",
                 message.role === "user"
                   ? "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground border-2 border-primary/30 ml-2"
                   : message.role === "ui_response"
@@ -731,7 +727,7 @@ export default function MarketingChatDemo() {
             <div className="flex-shrink-0 bg-primary/10 text-primary h-9 w-9 rounded-full flex items-center justify-center border-2 border-primary/20 shadow">
               <Bot className="h-5 w-5" />
             </div>
-            <div className="rounded-2xl px-5 py-3 max-w-[80%] bg-card/90 border-2 border-border shadow-md">
+            <div className="rounded-lg px-5 py-3 max-w-[80%] bg-card/90 border-2 border-border shadow-md">
               <p className="text-base whitespace-pre-wrap leading-relaxed">
                 {displayedContent}
                 <span className="animate-pulse text-primary ml-1">▋</span>

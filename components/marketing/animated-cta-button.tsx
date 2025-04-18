@@ -33,7 +33,7 @@ export default function AnimatedCTAButton({
   "aria-label": ariaLabel,
 }: AnimatedCTAButtonProps) {
   const [isAnimating, setIsAnimating] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
+  const [isHoveredOrFocused, setIsHoveredOrFocused] = useState(false)
   const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -42,7 +42,7 @@ export default function AnimatedCTAButton({
     // Start initial animation after 2s
     animationTimeoutRef.current = setTimeout(() => {
       setIsAnimating(true)
-      animationTimeoutRef.current = setTimeout(() => setIsAnimating(false), 1000)
+      animationTimeoutRef.current = setTimeout(() => setIsAnimating(false), 1000) // Pulse duration
     }, 2000)
 
     // Repeat animation every 8s
@@ -59,31 +59,24 @@ export default function AnimatedCTAButton({
 
   // Compose class names for the button
   const buttonClasses = [
-    "gap-2 h-14 text-base group relative overflow-hidden rounded-full font-semibold transition-shadow focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-    isAnimating ? "animate-pulse-slow shadow-glow" : "",
-    className,
+    // Use standard button primary styles (defined in globals/ui/button)
+    "gap-2 h-14 text-base group relative overflow-hidden rounded-full font-semibold transition-all",
+    // Add focus styles
+    "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    // Apply subtle scaling animation for pulse
+    isAnimating ? "scale-[1.03] animate-in fade-in duration-300" : "scale-100 animate-out fade-out duration-300",
+    className, // Allow parent override
     disabled ? "opacity-60 pointer-events-none" : "",
   ]
     .filter(Boolean)
     .join(" ")
 
-  // Compose class names for the highlight effect
-  const highlightClasses = [
-    "absolute inset-0 bg-white/20 skew-x-[-20deg] pointer-events-none",
-    isAnimating || isHovered ? "animate-gradient-x" : "transition-none",
-    isAnimating || isHovered ? "opacity-60" : "opacity-0",
-    "duration-700"
-  ].join(" ")
-
-  // Compose class names for the background gradient on hover
-  const bgGradientClasses =
-    "absolute inset-0 bg-gradient-to-r from-primary to-blue-200/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-
   // Compose class names for the arrow icon
   const arrowClasses = [
     "h-5 w-5 ml-1 transition-transform duration-300",
-    isAnimating || isHovered ? "translate-x-1" : "",
-    !isAnimating && !isHovered ? "group-hover:translate-x-1" : "",
+    // Move arrow on hover/focus or during pulse animation
+    isAnimating || isHoveredOrFocused ? "translate-x-1" : "",
+    !isAnimating && !isHoveredOrFocused ? "group-hover:translate-x-1 group-focus:translate-x-1" : "",
   ]
     .filter(Boolean)
     .join(" ")
@@ -103,26 +96,23 @@ export default function AnimatedCTAButton({
       disabled={disabled}
       tabIndex={tabIndex}
       aria-disabled={disabled}
+      onMouseEnter={() => setIsHoveredOrFocused(true)} // Track hover/focus together
+      onMouseLeave={() => setIsHoveredOrFocused(false)}
+      onFocus={() => setIsHoveredOrFocused(true)}
+      onBlur={() => setIsHoveredOrFocused(false)}
     >
       <Link
         href={href}
         prefetch={prefetch}
         aria-label={computedAriaLabel}
-        tabIndex={disabled ? -1 : tabIndex}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onFocus={() => setIsHovered(true)}
-        onBlur={() => setIsHovered(false)}
+        tabIndex={disabled ? -1 : tabIndex} // Manage tabIndex based on disabled state
         draggable={false}
       >
         <span className="relative z-10 flex items-center">
           {children}
           <ArrowRight className={arrowClasses} />
         </span>
-        {/* Hover background gradient */}
-        <span className={bgGradientClasses} aria-hidden="true"></span>
-        {/* Animated highlight effect */}
-        <span className={highlightClasses} aria-hidden="true"></span>
+        {/* Removed background gradient and highlight spans */}
       </Link>
     </Button>
   )

@@ -61,6 +61,20 @@ body {
   .rounded-standard-full {
     @apply rounded-full;
   }
+
+  /* Card color utility classes */
+  .card-blue {
+    @apply bg-[hsl(var(--card-blue-bg))] text-[hsl(var(--card-blue-fg))];
+  }
+  .card-green {
+    @apply bg-[hsl(var(--card-green-bg))] text-[hsl(var(--card-green-fg))];
+  }
+  .card-pink {
+    @apply bg-[hsl(var(--card-pink-bg))] text-[hsl(var(--card-pink-fg))];
+  }
+  .card-yellow {
+    @apply bg-[hsl(var(--card-yellow-bg))] text-[hsl(var(--card-yellow-fg))];
+  }
 }
 
 @keyframes gradient-x {
@@ -99,42 +113,51 @@ body {
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
-    --card: 220 60% 96%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 221 83% 53%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 162 73% 46%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 210 16% 93%;
-    --muted-foreground: 222 20% 50%;
-    --accent: 291 64% 60%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 221 83% 53%;
+    /* Core Colors - Light Theme (Cyan Primary) */
+    --background: 210 40% 98%;             /* #F8FAFC - Off-White/Light Gray */
+    --foreground: 215 38% 17%;             /* #1E293B - Dark Gray/Off-Black */
+    --card: 0 0% 100%;                   /* #FFFFFF - White */
+    --card-foreground: 215 38% 17%;       /* #1E293B - Dark Gray/Off-Black */
+    --popover: 0 0% 100%;                /* #FFFFFF - White */
+    --popover-foreground: 215 38% 17%;    /* #1E293B - Dark Gray/Off-Black */
+    --primary: 193 93% 37%;               /* cyan-600 */
+    --primary-foreground: 0 0% 100%;        /* White */
+    --secondary: 173 65% 50%;             /* Soft Teal (Keeping separate for now) */
+    --secondary-foreground: 215 38% 17%;    /* #1E293B - Dark Gray/Off-Black */
+    --muted: 215 20% 94%;                 /* Light version of Mid-Gray */
+    --muted-foreground: 215 19% 47%;       /* #64748B - Mid-Tone Gray */
+    --accent: 28 96% 61%;                 /* Gentle Coral (Keeping separate for now) */
+    --accent-foreground: 215 38% 17%;       /* #1E293B - Dark Gray/Off-Black */
+    --destructive: 0 70% 60%;             /* Soft Red - Keeping for now */
+    --destructive-foreground: 0 0% 100%;    /* White */
+    --border: 215 20% 90%;                 /* Light Gray Border */
+    --input: 215 20% 90%;                  /* Light Gray Input */
+    --ring: 193 93% 37%;                   /* cyan-600 for focus */
+
+    /* Chart Colors (Keeping previous, review later if needed) */
     --chart-1: 200 100% 50%;
     --chart-2: 162 73% 46%;
     --chart-3: 291 64% 60%;
     --chart-4: 43 100% 66%;
     --chart-5: 27 98% 54%;
-    --sidebar: 221 83% 97%;
-    --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 221 83% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 291 64% 60%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 221 83% 53%;
+
+    /* Sidebar Colors - Light Theme (Cyan Primary) */
+    --sidebar: 210 20% 96%;               /* Slightly darker than background */
+    --sidebar-foreground: 215 38% 17%;    /* Dark Gray/Off-Black */
+    --sidebar-primary: 193 93% 37%;       /* cyan-600 */
+    --sidebar-primary-foreground: 0 0% 100%; /* White */
+    --sidebar-accent: 28 96% 61%;         /* Gentle Coral */
+    --sidebar-accent-foreground: 215 38% 17%; /* Dark Gray/Off-Black */
+    --sidebar-border: 215 20% 90%;         /* Light Gray Border */
+    --sidebar-ring: 193 93% 37%;           /* cyan-600 for focus */
+
+    /* Base Font & Radius */
     --font-sans: Poppins, Arial, Helvetica, sans-serif;
     --font-serif: Merriweather, serif;
     --font-mono: Geist Mono, monospace;
-    --radius: 0.1rem;
+    --radius: 0.5rem;
+
+    /* Shadows (Keeping previous) */
     --shadow-2xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.03);
     --shadow-xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.03);
     --shadow-sm: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
@@ -143,45 +166,64 @@ body {
     --shadow-lg: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 4px 6px -1px hsl(0 0% 0% / 0.05);
     --shadow-xl: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 8px 10px -1px hsl(0 0% 0% / 0.05);
     --shadow-2xl: 0px 0px 3px 0px hsl(0 0% 0% / 0.13);
+
+    /* Card Color Variables - Light Theme (Cyan Primary) */
+    --card-blue-bg: 193 80% 94%;           /* Light cyan-600 */
+    --card-blue-fg: 193 93% 30%;           /* Dark cyan-600 */
+    --card-green-bg: 173 65% 94%;          /* Light Secondary Teal */
+    --card-green-fg: 173 80% 25%;          /* Dark Secondary Teal */
+    --card-pink-bg: 28 96% 95%;            /* Light Accent Coral */
+    --card-pink-fg: 28 90% 50%;            /* Dark Accent Coral */
+    --card-yellow-bg: 28 96% 95%;           /* Light Accent Coral */
+    --card-yellow-fg: 28 90% 50%;          /* Dark Accent Coral */
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 15%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 221 83% 66%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 162 73% 46%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 222 20% 20%;
-    --muted-foreground: 210 16% 70%;
-    --accent: 291 64% 60%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62% 40%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 222 20% 20%;
-    --input: 222 20% 20%;
-    --ring: 221 83% 66%;
+    /* Core Colors - Dark Theme (VS Code Inspired Base, Cyan Primary) */
+    --background: 0 0% 12%;                 /* #1e1e1e */
+    --foreground: 0 0% 95%;                 /* Near White for contrast */
+    --card: 0 0% 15%;                   /* #252526 */
+    --card-foreground: 0 0% 95%;           /* Near White */
+    --popover: 0 0% 18%;                /* #2d2d30 */
+    --popover-foreground: 0 0% 95%;        /* Near White */
+    --primary: 191 95% 43%;               /* cyan-500 */
+    --primary-foreground: 191 100% 5%;      /* Very dark cyan */
+    --secondary: 173 55% 60%;             /* Muted Teal (Keeping from previous) */
+    --secondary-foreground: 173 100% 5%;   /* Very dark teal */
+    --muted: 0 0% 25%;                   /* #3e3e42 */
+    --muted-foreground: 0 0% 65%;           /* Lighter gray for muted text */
+    --accent: 28 80% 70%;                 /* Muted Coral (Keeping from previous) */
+    --accent-foreground: 28 100% 10%;      /* Dark coral */
+    --destructive: 0 65% 65%;             /* Muted Red (Keeping from previous) */
+    --destructive-foreground: 0 100% 5%;   /* Dark red */
+    --border: 0 0% 25%;                 /* #3e3e42 */
+    --input: 0 0% 18%;                  /* #2d2d30 */
+    --ring: 191 95% 43%;                   /* cyan-500 for focus */
+
+    /* Chart Colors (Keeping previous, review later if needed) */
     --chart-1: 200 100% 60%;
     --chart-2: 162 73% 60%;
     --chart-3: 291 64% 70%;
     --chart-4: 43 100% 66%;
     --chart-5: 27 98% 60%;
-    --sidebar: 222 47% 13%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 221 83% 66%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 291 64% 60%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 222 20% 20%;
-    --sidebar-ring: 221 83% 66%;
+
+    /* Sidebar Colors - Dark Theme (Cyan Primary) */
+    --sidebar: 0 0% 15%;                   /* #252526 */
+    --sidebar-foreground: 0 0% 95%;        /* Near White */
+    --sidebar-primary: 191 95% 43%;       /* cyan-500 */
+    --sidebar-primary-foreground: 191 100% 5%; /* Very dark cyan */
+    --sidebar-accent: 28 80% 70%;         /* Muted Coral */
+    --sidebar-accent-foreground: 28 100% 10%; /* Dark coral */
+    --sidebar-border: 0 0% 25%;         /* #3e3e42 */
+    --sidebar-ring: 191 95% 43%;           /* cyan-500 for focus */
+
+    /* Base Font & Radius */
     --font-sans: Poppins, Arial, Helvetica, sans-serif;
     --font-serif: Merriweather, serif;
     --font-mono: Geist Mono, monospace;
-    --radius: 0.1rem;
+    --radius: 0.5rem;
+
+    /* Shadows (Keeping previous) */
     --shadow-2xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.03);
     --shadow-xs: 0px 0px 3px 0px hsl(0 0% 0% / 0.03);
     --shadow-sm: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
@@ -190,6 +232,16 @@ body {
     --shadow-lg: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 4px 6px -1px hsl(0 0% 0% / 0.05);
     --shadow-xl: 0px 0px 3px 0px hsl(0 0% 0% / 0.05), 0px 8px 10px -1px hsl(0 0% 0% / 0.05);
     --shadow-2xl: 0px 0px 3px 0px hsl(0 0% 0% / 0.13);
+
+    /* Card Color Variables - Dark Theme (Cyan Primary) */
+    --card-blue-bg: 193 30% 20%;           /* Dark muted Cyan */
+    --card-blue-fg: 191 80% 75%;           /* Light Cyan text */
+    --card-green-bg: 173 20% 20%;          /* Dark muted Teal */
+    --card-green-fg: 173 60% 70%;          /* Light Teal text */
+    --card-pink-bg: 28 30% 20%;            /* Dark muted Coral */
+    --card-pink-fg: 28 85% 75%;            /* Light Coral text */
+    --card-yellow-bg: 28 30% 20%;           /* Dark muted Coral */
+    --card-yellow-fg: 28 85% 75%;          /* Light Coral text */
   }
 }
 
@@ -209,26 +261,18 @@ body {
     @apply font-bold tracking-tight;
   }
   h1 {
-    @apply text-5xl md:text-6xl;
+    @apply text-4xl sm:text-5xl md:text-6xl;
   }
   h2 {
-    @apply text-3xl md:text-4xl;
+    @apply text-3xl sm:text-4xl md:text-5xl;
   }
   h3 {
-    @apply text-2xl md:text-3xl;
+    @apply text-2xl sm:text-3xl md:text-4xl;
   }
-}
-
-/* Card color utility classes with improved palette for vibrancy and accessibility */
-.card-blue {
-  @apply bg-blue-500 text-white;
-}
-.card-green {
-  @apply bg-emerald-500 text-white;
-}
-.card-pink {
-  @apply bg-pink-500 text-white;
-}
-.card-yellow {
-  @apply bg-yellow-400 text-black;
+  h4 {
+    @apply text-xl sm:text-2xl md:text-3xl;
+  }
+  p, li, span, div {
+    @apply text-base md:text-lg;
+  }
 }

@@ -81,7 +81,7 @@ export function NavLinks({ pathname, className, onClick }: NavLinksProps) {
 export function Header({ pathname = "/" }: { pathname?: string }) {
   return (
     <header
-      className="sticky top-0 z-50 w-full border-b border-transparent bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/50 shadow-sm before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/10 before:via-transparent before:to-secondary/10"
+      className="sticky top-0 z-50 w-full border-b bg-muted shadow-sm"
       role="banner"
     >
       <div className="container flex h-30 items-center justify-between">
