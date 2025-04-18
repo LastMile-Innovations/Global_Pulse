@@ -23,19 +23,61 @@ import { Header } from "./header"
 
 // ThemeLogo - Client Component
 export function ThemeLogo() {
-  const { theme } = useTheme()
-  const logo = theme === "dark" ? "/global_pulse_logo_dark.png" : "/global_pulse_logo_light.png"
-
   return (
-    <Link href="/" prefetch={true} className="flex items-center space-x-2" aria-label="Global Pulse Home">
-      <Image
-        src={logo}
-        alt="Global Pulse Logo"
-        width={100}
-        height={100}
-        className=""
-        priority
-      />
+    <Link href="/" prefetch={true} className="flex items-center space-x-3 group" aria-label="Global Pulse Home">
+      <span className="inline-flex items-center justify-center">
+        <svg
+          width="64"
+          height="64"
+          viewBox="0 0 64 64"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-16 w-16 drop-shadow-md transition-transform group-hover:scale-105 animate-pulse-slow"
+          aria-hidden="true"
+        >
+          {/* Solid monochrome globe */}
+          <circle
+            cx="32"
+            cy="32"
+            r="28"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            opacity="0.95"
+          />
+          {/* Subtle latitude and longitude lines */}
+          <ellipse
+            cx="32"
+            cy="32"
+            rx="22"
+            ry="9"
+            stroke="currentColor"
+            strokeWidth="0.7"
+            opacity="0.25"
+            fill="none"
+          />
+          <ellipse
+            cx="32"
+            cy="32"
+            rx="9"
+            ry="22"
+            stroke="currentColor"
+            strokeWidth="0.7"
+            opacity="0.25"
+            fill="none"
+          />
+          {/* Bold monochrome heartbeat line */}
+          <path
+            d="M10 36 H22 L26 28 L30 44 L34 20 L38 44 L42 32 H54"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </svg>
+      </span>
+      <span className="font-extrabold text-2xl md:text-3xl text-foreground tracking-tight">Global Pulse</span>
     </Link>
   )
 }
