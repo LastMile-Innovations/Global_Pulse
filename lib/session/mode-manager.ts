@@ -1,5 +1,6 @@
-import { getRedisClient, SESSION_TTL } from "../redis/client"
+import { getRedisClient } from "@/lib/db/redis/redis-client"
 import { logger } from "../utils/logger"
+import { SESSION_TTL } from "./session-state"
 
 /**
  * Engagement mode types

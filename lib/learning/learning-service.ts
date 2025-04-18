@@ -1,10 +1,14 @@
 import { db } from "@/lib/db/drizzle"
 import { resonanceFlags, coherenceFeedback } from "@/lib/db/schema/feedback"
 import { learningUpdates } from "@/lib/db/schema/learning"
+import type { InferInsertModel } from 'drizzle-orm';
 import { KgService } from "@/lib/db/graph/kg-service"
 import { logger } from "@/lib/utils/logger"
 import { eq, isNull } from "drizzle-orm"
-import { neo4jDriver } from "@/lib/db/graph/neo4j-driver"
+import { getNeo4jDriver } from "@/lib/db/graph/neo4j-driver"
+
+// Infer the insert type from the schema
+type NewLearningUpdate = InferInsertModel<typeof learningUpdates>;
 
 // Types for the learning service
 export interface FeedbackContext {
@@ -45,7 +49,7 @@ export class LearningService {
   private kgService: KgService
 
   constructor() {
-    this.kgService = new KgService(neo4jDriver)
+    this.kgService = new KgService(getNeo4jDriver())
   }
 
   /**
@@ -122,7 +126,7 @@ export class LearningService {
           failed++
         }
       } catch (error) {
-        logger.error(`Error processing resonance flag ${flag.id}:`, error)
+        logger.error(`Error processing resonance flag ${flag.id}: ${error}`)
         failed++
       }
     }
@@ -193,7 +197,7 @@ export class LearningService {
           failed++
         }
       } catch (error) {
-        logger.error(`Error processing coherence feedback ${feedback.id}:`, error)
+        logger.error(`Error processing coherence feedback ${feedback.id}: ${error}`)
         failed++
       }
     }
@@ -252,7 +256,7 @@ export class LearningService {
         relevantAttachments: validAttachments,
       }
     } catch (error) {
-      logger.error(`Error retrieving feedback context for interaction ${interactionId}:`, error)
+      logger.error(`Error retrieving feedback context for interaction ${interactionId}: ${error}`)
       return null
     }
   }
@@ -469,23 +473,24 @@ export class LearningService {
       }
 
       // Log the update in PostgreSQL
-      await db.insert(learningUpdates).values({
+      const newUpdate: NewLearningUpdate = {
         feedbackId,
         userId,
         attachmentId: update.attachmentId,
         propertyChanged: update.propertyChanged,
-        oldValue: update.oldValue,
-        newValue: update.newValue,
-        delta: update.delta,
+        oldValue: String(update.oldValue),
+        newValue: String(update.newValue),
+        delta: String(update.delta),
         ruleApplied: update.ruleApplied,
-      })
+      }
+      await db.insert(learningUpdates).values(newUpdate)
 
       logger.info(
         `Applied UIG update: ${update.ruleApplied} to ${update.attachmentId} (${update.propertyChanged}: ${update.oldValue} → ${update.newValue})`,
       )
       return true
     } catch (error) {
-      logger.error(`Error applying UIG update:`, error)
+      logger.error(`Error applying UIG update: ${error}`)
       return false
     }
   }

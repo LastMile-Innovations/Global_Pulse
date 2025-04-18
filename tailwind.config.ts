@@ -133,22 +133,6 @@ const config = {
   					transform: 'translateY(-25%)',
   					animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)'
   				}
-  			},
-  			'accordion-down': {
-  				from: {
-  					height: '0'
-  				},
-  				to: {
-  					height: 'var(--radix-accordion-content-height)'
-  				}
-  			},
-  			'accordion-up': {
-  				from: {
-  					height: 'var(--radix-accordion-content-height)'
-  				},
-  				to: {
-  					height: '0'
-  				}
   			}
   		},
   		animation: {
@@ -160,9 +144,7 @@ const config = {
   			float: 'float 3s ease-in-out infinite',
   			'progress-indeterminate': 'progress-indeterminate 1.5s ease-in-out infinite',
   			'flow-slow': 'flow-slow 3s linear infinite',
-  			bounce: 'bounce 1s infinite',
-  			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			bounce: 'bounce 1s infinite'
   		}
   	}
   },

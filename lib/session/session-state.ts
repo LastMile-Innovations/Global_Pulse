@@ -1,8 +1,8 @@
-import { getRedisClient } from "@/lib/redis/client"
+import { getRedisClient } from "@/lib/db/redis/redis-client"
 import { logger } from "@/lib/utils/logger"
 
 // Session TTL in seconds (24 hours)
-const SESSION_TTL = 86400
+export const SESSION_TTL = 86400
 
 // Session state keys
 const SESSION_KEY_DISTRESS_CHECK_PERFORMED = "distressCheckPerformed"

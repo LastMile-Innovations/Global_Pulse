@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth/auth-utils"
-import { getRedisClient } from "@/lib/redis/client"
+import { getRedisClient } from "@/lib/db/redis/redis-client"
 import { logger } from "@/lib/utils/logger"
 import { createHash } from "crypto"
 
@@ -82,24 +82,25 @@ setInterval(() => {
  * Get the client IP address from the request with enhanced security
  */
 function getClientIp(request: NextRequest): string {
-  // Check for Vercel-specific headers
+  // Check for Vercel-specific headers first
   const xForwardedFor = request.headers.get("x-forwarded-for")
 
   if (xForwardedFor) {
-    // Get the first IP in the list (client IP)
-    // This is more secure as it gets the original client IP, not intermediate proxies
     const ips = xForwardedFor.split(",")
     const clientIp = ips[0].trim()
-
-    // Basic IP validation to prevent header injection
     if (/^[\d.a-f:]+$/i.test(clientIp)) {
       return clientIp
     }
   }
 
-  // Fallback to direct connection IP with validation
-  const ip = request.ip || "unknown"
-  return /^[\d.a-f:]+$/i.test(ip) ? ip : "unknown"
+  // Removed fallback to request.ip as it causes type errors
+  // const directIp = request.ip
+  // if (directIp && /^[\d.a-f:]+$/i.test(directIp)) {
+  //   return directIp
+  // }
+
+  // If header is not present or invalid, return unknown
+  return "unknown"
 }
 
 /**
@@ -268,7 +269,7 @@ export async function rateLimit(request: NextRequest, options: RateLimitOptions)
     // Rate limit not exceeded
     return null
   } catch (error) {
-    logger.error(`Unexpected error in rate limit function:`, error)
+    logger.error(`Unexpected error in rate limit function: ${error}`)
     return null // Fail open on any error
   }
 }
@@ -338,7 +339,7 @@ async function fixedWindowRateLimit(
       reset,
     }
   } catch (error) {
-    logger.error(`Redis error during fixed window rate limiting for key ${key}:`, error)
+    logger.error(`Redis error during fixed window rate limiting for key ${key}: ${error}`)
     return null
   }
 }
@@ -422,7 +423,7 @@ async function tokenBucketRateLimit(
       reset: Number(reset),
     }
   } catch (error) {
-    logger.error(`Redis error during token bucket rate limiting for key ${key}:`, error)
+    logger.error(`Redis error during token bucket rate limiting for key ${key}: ${error}`)
     return null
   }
 }
@@ -505,7 +506,7 @@ async function slidingWindowRateLimit(
       reset: Number(reset),
     }
   } catch (error) {
-    logger.error(`Redis error during sliding window rate limiting for key ${key}:`, error)
+    logger.error(`Redis error during sliding window rate limiting for key ${key}: ${error}`)
     return null
   }
 }
@@ -585,7 +586,7 @@ async function slidingWindowLogsRateLimit(
       reset: Number(reset),
     }
   } catch (error) {
-    logger.error(`Redis error during sliding window logs rate limiting for key ${key}:`, error)
+    logger.error(`Redis error during sliding window logs rate limiting for key ${key}: ${error}`)
     return null
   }
 }
@@ -634,7 +635,7 @@ export async function adaptiveRateLimit(
     // Use normal rate limiting if no health check
     return rateLimit(request, options)
   } catch (error) {
-    logger.error(`Error in adaptive rate limit:`, error)
+    logger.error(`Error in adaptive rate limit: ${error}`)
     return null // Fail open
   }
 }

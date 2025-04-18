@@ -38,7 +38,7 @@ export class ResonanceAnalyticsService {
       await this.updateWeeklyAnalytics(flagData.createdAt)
       await this.updateMonthlyAnalytics(flagData.createdAt)
     } catch (error) {
-      logger.error("Error processing flag for analytics:", error)
+      logger.error(`Error processing flag for analytics: ${error}`)
     }
   }
 
@@ -50,7 +50,7 @@ export class ResonanceAnalyticsService {
       // Use the central checkConsent function to check for consentAggregation permission
       return await checkConsent(userId, "consentAggregation")
     } catch (error) {
-      logger.error(`Error checking analytics consent for user ${userId}:`, error)
+      logger.error(`Error checking analytics consent for user ${userId}: ${error}`)
       // Default to false on error
       return false
     }
@@ -130,19 +130,29 @@ export class ResonanceAnalyticsService {
       const { startDate, endDate } = this.getPeriodDates(periodType, period)
 
       // Get all flags for this period
-      const flags = await db.query.resonanceFlags.findMany({
-        where: and(gte(resonanceFlags.createdAt, startDate), lt(resonanceFlags.createdAt, endDate)),
-      })
+      // FIX: Use processedAt instead of flaggedAt, as flaggedAt does not exist
+      const flags = await db
+        .select()
+        .from(resonanceFlags)
+        .where(
+          and(
+            gte(resonanceFlags.processedAt, startDate),
+            lt(resonanceFlags.processedAt, endDate)
+          )
+        )
 
       // Calculate distributions
       const tagDistribution = this.calculateTagDistribution(flags)
       const modeDistribution = this.calculateModeDistribution(flags)
       const responseTypeDistribution = this.calculateResponseTypeDistribution(flags)
 
-      // Update or insert analytics record
-      const existingRecord = await db.query.resonanceFlagAnalytics.findFirst({
-        where: and(eq(resonanceFlagAnalytics.periodType, periodType), eq(resonanceFlagAnalytics.period, period)),
-      })
+      // Check for existing analytics record
+      const existingRecordArr = await db
+        .select()
+        .from(resonanceFlagAnalytics)
+        .where(and(eq(resonanceFlagAnalytics.periodType, periodType), eq(resonanceFlagAnalytics.period, period)))
+
+      const existingRecord = existingRecordArr[0]
 
       if (existingRecord) {
         await db
@@ -166,7 +176,7 @@ export class ResonanceAnalyticsService {
         })
       }
     } catch (error) {
-      logger.error(`Error updating ${periodType} analytics for period ${period}:`, error)
+      logger.error(`Error updating ${periodType} analytics for period ${period}: ${error}`)
     }
   }
 
@@ -184,8 +194,10 @@ export class ResonanceAnalyticsService {
 
     // Count occurrences
     flags.forEach((flag) => {
-      if (flag.selectedTags && Array.isArray(flag.selectedTags)) {
-        flag.selectedTags.forEach((tag: string) => {
+      // Support both DB and query object shapes
+      const tags = flag.selectedTags || flag["selectedTags"]
+      if (tags && Array.isArray(tags)) {
+        tags.forEach((tag: string) => {
           distribution[tag] = (distribution[tag] || 0) + 1
         })
       }
@@ -204,7 +216,8 @@ export class ResonanceAnalyticsService {
     }
 
     flags.forEach((flag) => {
-      const mode = flag.modeAtTimeOfFlag?.toLowerCase() || "unknown"
+      // Support both DB and query object shapes
+      const mode = (flag.modeAtTimeOfFlag || flag["modeAtTimeOfFlag"] || flag.mode || flag["mode"])?.toLowerCase() || "unknown"
       distribution[mode] = (distribution[mode] || 0) + 1
     })
 
@@ -221,7 +234,8 @@ export class ResonanceAnalyticsService {
     }
 
     flags.forEach((flag) => {
-      const type = flag.responseTypeAtTimeOfFlag || "unknown"
+      // Support both DB and query object shapes
+      const type = flag.responseTypeAtTimeOfFlag || flag["responseTypeAtTimeOfFlag"] || flag.responseType || flag["responseType"] || "unknown"
       distribution[type] = (distribution[type] || 0) + 1
     })
 
@@ -263,21 +277,30 @@ export class ResonanceAnalyticsService {
    * Get the date of the first day of a week
    */
   private getDateOfWeek(year: number, week: number): Date {
-    const date = new Date(year, 0, 1)
-    const dayOffset = date.getDay() || 7
-    date.setDate(date.getDate() + (week - 1) * 7 + (1 - dayOffset))
-    return date
+    // ISO week: week 1 is the week with the first Thursday of the year
+    const simple = new Date(Date.UTC(year, 0, 1 + (week - 1) * 7))
+    const dow = simple.getUTCDay()
+    const ISOweekStart = simple
+    if (dow <= 4)
+      ISOweekStart.setUTCDate(simple.getUTCDate() - simple.getUTCDay() + 1)
+    else
+      ISOweekStart.setUTCDate(simple.getUTCDate() + 8 - simple.getUTCDay())
+    return new Date(ISOweekStart)
   }
 
   /**
    * Get week number of a date
    */
   private getWeekNumber(date: Date): number {
+    // Copy date so don't modify original
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-    const dayNum = d.getUTCDay() || 7
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum)
+    // Set to nearest Thursday: current date + 4 - current day number
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
+    // Get first day of year
     const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-    return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)
+    // Calculate full weeks to nearest Thursday
+    const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
+    return weekNo
   }
 
   /**
@@ -292,14 +315,20 @@ export class ResonanceAnalyticsService {
    */
   private async getFlagSequenceInSession(sessionId: string, flagDate: Date): Promise<number> {
     try {
+      // FIX: Use processedAt instead of flaggedAt
       const result = await db
         .select({ count: count() })
         .from(resonanceFlags)
-        .where(and(eq(resonanceFlags.sessionId, sessionId), lt(resonanceFlags.createdAt, flagDate)))
+        .where(
+          and(
+            eq(resonanceFlags.sessionId, sessionId),
+            lt(resonanceFlags.processedAt, flagDate)
+          )
+        )
 
       return (result[0]?.count || 0) + 1
     } catch (error) {
-      logger.error(`Error getting flag sequence for session ${sessionId}:`, error)
+      logger.error(`Error getting flag sequence for session ${sessionId}: ${error}`)
       return 1
     }
   }
@@ -310,17 +339,24 @@ export class ResonanceAnalyticsService {
   private async getTimeSinceSessionStart(sessionId: string, flagDate: Date): Promise<number | null> {
     try {
       // Get the first interaction in this session
-      const firstFlag = await db.query.resonanceFlags.findFirst({
-        where: eq(resonanceFlags.sessionId, sessionId),
-        orderBy: (flags, { asc }) => [asc(flags.createdAt)],
-      })
+      // FIX: Use processedAt instead of flaggedAt
+      const firstFlagArr = await db
+        .select()
+        .from(resonanceFlags)
+        .where(eq(resonanceFlags.sessionId, sessionId))
+        .orderBy(resonanceFlags.processedAt)
+        .limit(1)
+
+      const firstFlag = firstFlagArr[0]
 
       if (!firstFlag) return null
 
       // Calculate time difference in seconds
-      return Math.floor((flagDate.getTime() - firstFlag.createdAt.getTime()) / 1000)
+      // FIX: Use processedAt instead of flaggedAt
+      if (!firstFlag.processedAt) return null
+      return Math.floor((flagDate.getTime() - new Date(firstFlag.processedAt).getTime()) / 1000)
     } catch (error) {
-      logger.error(`Error calculating time since session start for ${sessionId}:`, error)
+      logger.error(`Error calculating time since session start for ${sessionId}: ${error}`)
       return null
     }
   }

@@ -37,101 +37,128 @@ If no entities are found, return an empty array: []
 `
 
 /**
- * Validates and normalizes entity types
+ * Service for recognizing named entities using LLM
  */
-function validateEntityType(type: string): EntityType {
-  const validTypes: EntityType[] = [
-    "PERSON",
-    "LOCATION",
-    "ORGANIZATION",
-    "DATE",
-    "TIME",
-    "MONEY",
-    "PERCENT",
-    "PRODUCT",
-    "EVENT",
-    "WORK_OF_ART",
-    "LAW",
-    "LANGUAGE",
-    "OTHER",
-  ]
+export class NerService {
+  /**
+   * Recognizes named entities in the provided text using LLM
+   *
+   * @param text The text to analyze for entities
+   * @returns A promise resolving to an EntityRecognitionResult or EntityRecognitionError
+   */
+  async recognizeEntities(text: string): Promise<EntityRecognitionResult | EntityRecognitionError> {
+    try {
+      // Handle empty or invalid input
+      if (!text || typeof text !== "string" || text.trim() === "") {
+        return { entities: DEFAULT_ENTITIES }
+      }
 
-  const normalizedType = type.toUpperCase() as EntityType
-  return validTypes.includes(normalizedType) ? normalizedType : "OTHER"
-}
+      // Prepare the prompt
+      const prompt = NER_PROMPT_TEMPLATE.replace("{text}", text)
 
-/**
- * Validates entity objects returned from the LLM
- */
-function validateEntity(entity: any): Entity | null {
-  try {
-    if (!entity || typeof entity !== "object") return null
+      // Call the LLM
+      const result = await generateLlmJson<Entity[]>(prompt, {
+        system: "You are an expert in named entity recognition. Extract entities precisely and accurately.",
+        temperature: 0.1,
+      })
 
-    // Check required fields
-    if (typeof entity.text !== "string" || entity.text.trim() === "") return null
-    if (typeof entity.type !== "string") return null
-    if (typeof entity.start !== "number" || entity.start < 0) return null
-    if (typeof entity.end !== "number" || entity.end <= entity.start) return null
+      // Defensive: If result is null or undefined, treat as error
+      if (result == null) {
+        logger.warn("LLM interaction returned null result")
+        return {
+          error: "LLM interaction failed",
+          entities: DEFAULT_ENTITIES,
+        }
+      }
 
-    // Normalize the entity type
-    const type = validateEntityType(entity.type)
+      // If the result is an array (success), validate and return entities
+      if (Array.isArray(result)) {
+        const validEntities = result.map(this.validateEntity).filter(Boolean) as Entity[]
+        return { entities: validEntities }
+      }
 
-    // Normalize the score (default to 1 if not provided or invalid)
-    const score = typeof entity.score === "number" && entity.score >= 0 && entity.score <= 1 ? entity.score : 1
+      // If the result is an object with error info (failure), handle accordingly
+      if (typeof result === "object" && result !== null) {
+        // Try to extract error message if present
+        const errorMsg =
+          (result as any).error ||
+          (typeof (result as any).message === "string" ? (result as any).message : undefined) ||
+          "Failed to extract entities from text"
+        logger.warn(`LLM interaction failed or returned error: ${errorMsg}`)
+        return {
+          error: errorMsg,
+          entities: DEFAULT_ENTITIES,
+        }
+      }
 
-    return {
-      text: entity.text,
-      type,
-      start: entity.start,
-      end: entity.end,
-      score,
-    }
-  } catch (error) {
-    logger.error(`Error validating entity: ${error}`)
-    return null
-  }
-}
-
-/**
- * Recognizes named entities in the provided text using LLM
- *
- * @param text The text to analyze for entities
- * @returns A promise resolving to an EntityRecognitionResult or EntityRecognitionError
- */
-export async function recognizeEntitiesLLM(text: string): Promise<EntityRecognitionResult | EntityRecognitionError> {
-  try {
-    // Handle empty or invalid input
-    if (!text || typeof text !== "string" || text.trim() === "") {
-      return { entities: DEFAULT_ENTITIES }
-    }
-
-    // Prepare the prompt
-    const prompt = NER_PROMPT_TEMPLATE.replace("{text}", text)
-
-    // Call the LLM
-    const result = await generateLlmJson<any[]>(prompt, {
-      system: "You are an expert in named entity recognition. Extract entities precisely and accurately.",
-      temperature: 0.1,
-    })
-
-    // Handle LLM failure
-    if (!result) {
-      logger.warn("LLM failed to return a valid response for entity recognition")
+      // Fallback: unexpected result type
+      logger.warn("LLM interaction returned unexpected result type")
       return {
-        error: "Failed to extract entities from text",
+        error: "Unexpected LLM result type",
+        entities: DEFAULT_ENTITIES,
+      }
+    } catch (error) {
+      logger.error(`Error in entity recognition: ${error}`)
+      return {
+        error: `Entity recognition failed: ${error}`,
         entities: DEFAULT_ENTITIES,
       }
     }
+  }
 
-    // Validate and filter entities
-    const validEntities = Array.isArray(result) ? (result.map(validateEntity).filter(Boolean) as Entity[]) : []
+  /**
+   * Validates and normalizes entity types
+   */
+  private validateEntityType(type: string): EntityType {
+    const validTypes: EntityType[] = [
+      "PERSON",
+      "LOCATION",
+      "ORGANIZATION",
+      "DATE",
+      "TIME",
+      "MONEY",
+      "PERCENT",
+      "PRODUCT",
+      "EVENT",
+      "WORK_OF_ART",
+      "LAW",
+      "LANGUAGE",
+      "OTHER",
+    ]
 
-    return { entities: validEntities }
-  } catch (error) {
-    logger.error(`Error in entity recognition: ${error}`)
-    return {
-      error: `Entity recognition failed: ${error}`,
-      entities: DEFAULT_ENTITIES,
+    const normalizedType = type.toUpperCase() as EntityType
+    return validTypes.includes(normalizedType) ? normalizedType : "OTHER"
+  }
+
+  /**
+   * Validates entity objects returned from the LLM
+   */
+  private validateEntity(entity: any): Entity | null {
+    try {
+      if (!entity || typeof entity !== "object") return null
+
+      // Check required fields
+      if (typeof entity.text !== "string" || entity.text.trim() === "") return null
+      if (typeof entity.type !== "string") return null
+      if (typeof entity.start !== "number" || entity.start < 0) return null
+      if (typeof entity.end !== "number" || entity.end <= entity.start) return null
+
+      // Normalize the entity type using the class method
+      const type = this.validateEntityType(entity.type)
+
+      // Normalize the score (default to 1 if not provided or invalid)
+      const score = typeof entity.score === "number" && entity.score >= 0 && entity.score <= 1 ? entity.score : 1
+
+      return {
+        text: entity.text,
+        type,
+        start: entity.start,
+        end: entity.end,
+        score,
+      }
+    } catch (error) {
+      logger.error(`Error validating entity: ${error}`)
+      return null
     }
   }
 }

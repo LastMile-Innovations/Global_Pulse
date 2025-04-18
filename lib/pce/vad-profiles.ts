@@ -1,18 +1,26 @@
+/**
+ * VADProfile represents the Valence-Arousal-Dominance model for emotions.
+ */
 export interface VADProfile {
-  valence: number
-  arousal: number
-  dominance: number
+  valence: number;   // -1 (very negative) to 1 (very positive)
+  arousal: number;   // 0 (calm) to 1 (excited)
+  dominance: number; // 0 (submissive) to 1 (dominant)
 }
 
+/**
+ * TYPICAL_VAD_PROFILES maps emotion labels to their VAD profiles.
+ * Duplicates and missing entries have been debugged and improved.
+ */
 export const TYPICAL_VAD_PROFILES: Record<string, VADProfile> = {
   // Fear Group
   Concerned: { valence: -0.3, arousal: 0.4, dominance: 0.3 },
   Cautious: { valence: -0.4, arousal: 0.5, dominance: 0.3 },
   Afraid: { valence: -0.7, arousal: 0.7, dominance: 0.2 },
-  Fearful: { valence: -0.7, arousal: 0.7, dominance: 0.2 },
+  Fearful: { valence: -0.8, arousal: 0.8, dominance: 0.1 }, // unified with Negative Anticipation
   Horror: { valence: -0.9, arousal: 0.9, dominance: 0.1 },
   Fright: { valence: -0.8, arousal: 0.9, dominance: 0.1 },
   Panic: { valence: -0.9, arousal: 1.0, dominance: 0.0 },
+  Terrified: { valence: -0.9, arousal: 0.95, dominance: 0.0 },
 
   // Anger Group
   Annoyed: { valence: -0.4, arousal: 0.4, dominance: 0.6 },
@@ -30,8 +38,8 @@ export const TYPICAL_VAD_PROFILES: Record<string, VADProfile> = {
   Despair: { valence: -1.0, arousal: 0.4, dominance: 0.0 },
 
   // Happiness Group
-  Satisfied: { valence: 0.6, arousal: 0.3, dominance: 0.6 },
-  Pleased: { valence: 0.7, arousal: 0.4, dominance: 0.6 },
+  Satisfied: { valence: 0.6, arousal: 0.35, dominance: 0.65 }, // average of two previous entries
+  Pleased: { valence: 0.7, arousal: 0.45, dominance: 0.65 },   // average of two previous entries
   Happy: { valence: 0.8, arousal: 0.6, dominance: 0.7 },
   Elated: { valence: 0.9, arousal: 0.8, dominance: 0.8 },
   Ecstatic: { valence: 1.0, arousal: 1.0, dominance: 0.9 },
@@ -68,12 +76,9 @@ export const TYPICAL_VAD_PROFILES: Record<string, VADProfile> = {
   Uneasy: { valence: -0.4, arousal: 0.5, dominance: 0.3 },
   Apprehensive: { valence: -0.5, arousal: 0.6, dominance: 0.3 },
   Dreading: { valence: -0.7, arousal: 0.7, dominance: 0.2 },
-  Fearful: { valence: -0.8, arousal: 0.8, dominance: 0.1 },
-  Terrified: { valence: -0.9, arousal: 0.9, dominance: 0.0 },
+  Terrified: { valence: -0.9, arousal: 0.95, dominance: 0.0 }, // unified with Fear Group
 
   // Pride Group
-  Satisfied: { valence: 0.6, arousal: 0.4, dominance: 0.7 },
-  Pleased: { valence: 0.7, arousal: 0.5, dominance: 0.7 },
   Proud: { valence: 0.8, arousal: 0.6, dominance: 0.9 },
   "Very Proud": { valence: 0.9, arousal: 0.7, dominance: 0.9 },
   Triumphant: { valence: 1.0, arousal: 0.8, dominance: 1.0 },
@@ -87,16 +92,12 @@ export const TYPICAL_VAD_PROFILES: Record<string, VADProfile> = {
 
   // Embarrassment Group
   "Slightly Embarrassed": { valence: -0.3, arousal: 0.4, dominance: 0.3 },
-  Embarrassed: { valence: -0.5, arousal: 0.5, dominance: 0.2 },
   "Very Embarrassed": { valence: -0.7, arousal: 0.6, dominance: 0.1 },
-  Humiliated: { valence: -0.8, arousal: 0.7, dominance: 0.0 },
-  Mortified: { valence: -0.9, arousal: 0.8, dominance: 0.0 },
 
   // Flattery Group
   Flattered: { valence: 0.6, arousal: 0.5, dominance: 0.5 },
   "Very Flattered": { valence: 0.7, arousal: 0.6, dominance: 0.5 },
   "Extremely Flattered": { valence: 0.8, arousal: 0.7, dominance: 0.6 },
-  Overwhelmed: { valence: 0.7, arousal: 0.8, dominance: 0.4 },
   "Excessively Flattered": { valence: 0.7, arousal: 0.8, dominance: 0.5 },
 
   // Surprise Group
@@ -161,14 +162,44 @@ export const TYPICAL_VAD_PROFILES: Record<string, VADProfile> = {
   Relaxed: { valence: 0.5, arousal: 0.2, dominance: 0.7 },
   Content: { valence: 0.6, arousal: 0.3, dominance: 0.6 },
   Serene: { valence: 0.7, arousal: 0.1, dominance: 0.7 },
-}
+
+  // Additional/Completed entries for coverage
+  Joyful: { valence: 0.9, arousal: 0.7, dominance: 0.8 },
+  Melancholy: { valence: -0.7, arousal: 0.2, dominance: 0.2 },
+  Lonely: { valence: -0.6, arousal: 0.3, dominance: 0.2 },
+  Grateful: { valence: 0.8, arousal: 0.5, dominance: 0.7 },
+  Resentful: { valence: -0.7, arousal: 0.6, dominance: 0.4 },
+  Hope: { valence: 0.7, arousal: 0.5, dominance: 0.7 },
+  Disgust: { valence: -0.8, arousal: 0.6, dominance: 0.4 },
+  Shock: { valence: -0.2, arousal: 0.9, dominance: 0.3 },
+  Awe: { valence: 0.5, arousal: 0.9, dominance: 0.5 },
+  Trust: { valence: 0.7, arousal: 0.3, dominance: 0.7 },
+  Distrust: { valence: -0.6, arousal: 0.4, dominance: 0.3 },
+  // Add more as needed for completeness
+};
 
 /**
- * Get the typical VAD profile for an emotion label
+ * Get the typical VAD profile for an emotion label.
+ * This function is case-insensitive and trims whitespace.
  *
  * @param label The emotion label to look up
  * @returns The VAD profile for the label, or the Neutral profile if not found
  */
 export function getTypicalVADProfile(label: string): VADProfile {
-  return TYPICAL_VAD_PROFILES[label] || TYPICAL_VAD_PROFILES["Neutral"]
+  if (!label || typeof label !== "string") {
+    return TYPICAL_VAD_PROFILES["Neutral"];
+  }
+  // Try direct match
+  if (TYPICAL_VAD_PROFILES[label]) {
+    return TYPICAL_VAD_PROFILES[label];
+  }
+  // Try case-insensitive, trimmed match
+  const normalized = label.trim().toLowerCase();
+  for (const key in TYPICAL_VAD_PROFILES) {
+    if (key.toLowerCase() === normalized) {
+      return TYPICAL_VAD_PROFILES[key];
+    }
+  }
+  // Not found, return Neutral
+  return TYPICAL_VAD_PROFILES["Neutral"];
 }

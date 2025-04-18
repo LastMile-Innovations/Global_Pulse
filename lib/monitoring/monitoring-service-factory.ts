@@ -3,7 +3,7 @@ import { NerService } from "../ai-sdk/ner-service"
 import { RelevanceFilter } from "./relevance-filter"
 import { NewsApiClient } from "./news-api-client"
 import { MonitoringService } from "./monitoring-service"
-import { getDriver } from "../db/graph/neo4j-driver"
+import { getNeo4jDriver } from "../db/graph/neo4j-driver"
 import { logger } from "../utils/logger"
 
 /**
@@ -16,7 +16,7 @@ export class MonitoringServiceFactory {
   static async create(newsApiKey: string, relevantKeywords?: string[]): Promise<MonitoringService> {
     try {
       // Create dependencies
-      const driver = await getDriver()
+      const driver = getNeo4jDriver()
       const kgService = new KgService(driver)
       const nerService = new NerService()
       const relevanceFilter = new RelevanceFilter(relevantKeywords)

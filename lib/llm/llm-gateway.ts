@@ -181,7 +181,7 @@ export async function generateLlmResponseViaSdk(
     logger.info(`Generating LLM response using model: ${modelId}`)
 
     // Get the model instance
-    const model = getModelInstance(modelId)
+    const model = getModelInstance(modelId as LlmModelId)
 
     // Create the LLM request promise
     const llmPromise = generateText({
@@ -252,15 +252,12 @@ export async function generateLlmJsonViaSdk<T>(
       data,
     }
   } catch (error) {
-    logger.error(`Error parsing LLM JSON response: ${error}`, {
-      response: response.text,
-    })
+    logger.error(`Error parsing LLM JSON response: ${error} - Response: ${response.text}`)
 
     return {
       success: false,
       error: "Failed to parse JSON response",
       errorCode: "PARSING",
-      modelUsed: response.modelUsed,
       data: null,
     }
   }

@@ -19,18 +19,19 @@ function mapEntityType(modelLabel: string): EntityType {
   // B- prefix means beginning of entity, I- prefix means inside/continuation of entity
   const label = modelLabel.replace(/^[BI]-/, "")
 
-  switch (label) {
-    case "PER":
-      return "PERSON"
-    case "LOC":
-      return "LOCATION"
-    case "ORG":
-      return "ORGANIZATION"
-    case "MISC":
-      return "MISC"
-    default:
-      return "OTHER"
+  // Normalize entity type
+  const validTypes: EntityType[] = [
+    "PERSON", "LOCATION", "ORGANIZATION", "DATE", "TIME", "MONEY", 
+    "PERCENT", "PRODUCT", "EVENT", "WORK_OF_ART", "LAW", "LANGUAGE"
+  ];
+  const normalizedType = label.toUpperCase();
+
+  if (validTypes.includes(normalizedType as any)) {
+    return normalizedType as EntityType;
   }
+  
+  // Fallback to OTHER for unrecognized types
+  return "OTHER";
 }
 
 /**

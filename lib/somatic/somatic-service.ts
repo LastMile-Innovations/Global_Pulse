@@ -1,5 +1,6 @@
 import { checkConsent } from "@/lib/ethics/consent"
-import { getRedisClient, SESSION_TTL } from "../redis/client"
+import { getRedisClient } from "@/lib/db/redis/redis-client"
+import { SESSION_TTL } from "../session/session-state"
 import { getTemplatedResponse } from "../responses/template-filler"
 import { logger } from "../utils/logger"
 import {

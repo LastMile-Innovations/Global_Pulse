@@ -1,8 +1,6 @@
-import { createOpenAI } from "ai/openai"
-import { createAnthropic } from "ai/anthropic"
-import { createGoogleGenerativeAI } from "ai/google"
-import { extractReasoningMiddleware } from "ai/middleware"
-import { wrapLanguageModel } from "ai"
+import { createOpenAI } from "@ai-sdk/openai"
+import { createAnthropic } from "@ai-sdk/anthropic"
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { logger } from "../utils/logger"
 
 /**
@@ -170,72 +168,37 @@ function parseModelId(modelId: string): { provider: ModelProvider; modelName: st
  * @throws Error if the provider is not supported or API keys are missing
  */
 export function getLanguageModelInstance(modelIdOrAlias: string) {
-  // Get model configuration if it's an alias
   const config = MODEL_ALIASES[modelIdOrAlias]
   const { provider, modelName } = parseModelId(modelIdOrAlias)
 
-  // Validate API keys
   if (!validateApiKeys(provider)) {
     throw new Error(`Missing API key for provider: ${provider}`)
   }
 
-  // Create base model instance
   let modelInstance
 
   switch (provider) {
     case "openai":
       modelInstance = createOpenAI({
         apiKey: process.env.OPENAI_API_KEY!,
-        model: modelName,
-        temperature: config?.defaultTemperature,
-        maxTokens: config?.defaultMaxTokens,
-        systemPrompt: config?.defaultSystemPrompt,
       })
       break
     case "anthropic":
       modelInstance = createAnthropic({
         apiKey: process.env.ANTHROPIC_API_KEY!,
-        model: modelName,
-        temperature: config?.defaultTemperature,
-        maxTokens: config?.defaultMaxTokens,
-        systemPrompt: config?.defaultSystemPrompt,
       })
       break
     case "google":
       modelInstance = createGoogleGenerativeAI({
         apiKey: process.env.GOOGLE_API_KEY!,
-        model: modelName,
-        temperature: config?.defaultTemperature,
-        maxTokens: config?.defaultMaxTokens,
-        systemPrompt: config?.defaultSystemPrompt,
       })
       break
     default:
       throw new Error(`Unsupported provider: ${provider}`)
   }
 
-  // Apply middleware if configured
-  let wrappedModel = modelInstance
-
-  // Apply reasoning middleware if configured
-  if (config?.applyReasoningMiddleware) {
-    wrappedModel = wrapLanguageModel(wrappedModel, extractReasoningMiddleware())
-    logger.debug(`Applied reasoning middleware to model: ${modelIdOrAlias}`)
-  }
-
-  // Apply custom logging middleware if configured
-  if (config?.applyLoggingMiddleware) {
-    wrappedModel = wrapLanguageModel(wrappedModel, loggingMiddleware())
-    logger.debug(`Applied logging middleware to model: ${modelIdOrAlias}`)
-  }
-
-  // Apply custom caching middleware if configured
-  if (config?.applyCachingMiddleware) {
-    wrappedModel = wrapLanguageModel(wrappedModel, cachingMiddleware())
-    logger.debug(`Applied caching middleware to model: ${modelIdOrAlias}`)
-  }
-
-  return wrappedModel
+  // Return the provider instance, model will be specified at call time
+  return modelInstance
 }
 
 /**
@@ -247,17 +210,17 @@ export function getLanguageModelInstance(modelIdOrAlias: string) {
 export function getEmbeddingModelInstance(modelIdOrAlias: string) {
   const { provider, modelName } = parseModelId(modelIdOrAlias)
 
-  // Validate API keys
   if (!validateApiKeys(provider)) {
     throw new Error(`Missing API key for provider: ${provider}`)
   }
 
-  // Currently only OpenAI supports embeddings through the AI SDK
   if (provider === "openai") {
-    return createOpenAI({
+    // Instantiate the provider
+    const openaiProvider = createOpenAI({
       apiKey: process.env.OPENAI_API_KEY!,
-      model: modelName,
     })
+    // Return the specific embedding model from the provider
+    return openaiProvider.embedding(modelName as any)
   }
 
   throw new Error(`Unsupported embedding provider: ${provider}`)
@@ -303,82 +266,6 @@ export function getModelConfig(aliasOrId: string): ModelConfig {
   return {
     modelId: aliasOrId as ModelId,
     applyLoggingMiddleware: true,
-  }
-}
-
-/**
- * Custom logging middleware for language models
- */
-function loggingMiddleware() {
-  return {
-    before: async ({ prompt, messages, options }) => {
-      const timestamp = new Date().toISOString()
-      logger.debug(`[${timestamp}] AI Request:`, {
-        prompt: typeof prompt === "string" ? prompt.substring(0, 100) + "..." : "complex prompt",
-        messageCount: messages?.length,
-        options: {
-          temperature: options?.temperature,
-          maxTokens: options?.maxTokens,
-          // Omit potentially sensitive data
-        },
-      })
-      return { prompt, messages, options }
-    },
-    after: async ({ prompt, messages, options, response }) => {
-      const timestamp = new Date().toISOString()
-      logger.debug(`[${timestamp}] AI Response:`, {
-        outputLength: response.text?.length,
-        usage: response.usage,
-        finishReason: response.finishReason,
-        // Omit potentially sensitive data
-      })
-      return response
-    },
-    error: async (error) => {
-      logger.error(`AI Request Error:`, {
-        name: error.name,
-        message: error.message,
-        // Don't log the full stack trace or sensitive details
-      })
-      throw error
-    },
-  }
-}
-
-/**
- * Custom caching middleware for language models
- * This is a simple implementation - a production version would use Redis or similar
- */
-function cachingMiddleware() {
-  // Simple in-memory cache (would use Redis in production)
-  const cache = new Map<string, any>()
-
-  return {
-    before: async ({ prompt, messages, options }) => {
-      // Create a cache key based on the input
-      // Note: This is a simplified implementation
-      const cacheKey =
-        typeof prompt === "string"
-          ? `prompt:${prompt}:temp:${options?.temperature}:max:${options?.maxTokens}`
-          : `messages:${JSON.stringify(messages)}:temp:${options?.temperature}:max:${options?.maxTokens}`
-
-      // Check if we have a cached response
-      if (cache.has(cacheKey)) {
-        logger.debug(`Cache hit for key: ${cacheKey.substring(0, 50)}...`)
-        return { cached: true, response: cache.get(cacheKey) }
-      }
-
-      // Store the cache key for later use
-      return { prompt, messages, options, cacheKey }
-    },
-    after: async ({ prompt, messages, options, response, cacheKey }) => {
-      // If we have a cache key, store the response
-      if (cacheKey) {
-        cache.set(cacheKey, response)
-        logger.debug(`Cached response for key: ${cacheKey.substring(0, 50)}...`)
-      }
-      return response
-    },
   }
 }
 

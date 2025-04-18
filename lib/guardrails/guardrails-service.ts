@@ -111,7 +111,7 @@ export class GuardrailsService {
         finalResponseText: candidateResponseText,
       }
     } catch (error) {
-      logger.error("Error applying guardrails:", error)
+      logger.error(`Error applying guardrails: ${error}`)
 
       // In case of error, fail safe by returning the fallback response
       const fallbackText = await this.getFallbackResponse(context)
@@ -193,7 +193,7 @@ export class GuardrailsService {
         },
       }
     } catch (error) {
-      logger.error("Error checking well-being risk:", error)
+      logger.error(`Error checking well-being risk: ${error}`)
 
       // Fail safe by returning risk detected
       return {
@@ -235,7 +235,7 @@ export class GuardrailsService {
         },
       }
     } catch (error) {
-      logger.error("Error checking manipulation risk:", error)
+      logger.error(`Error checking manipulation risk: ${error}`)
 
       // Fail safe by returning risk detected
       return {
@@ -277,7 +277,7 @@ export class GuardrailsService {
         candidateResponseSnippet,
       })
     } catch (error) {
-      logger.error("Error logging guardrail alert:", error)
+      logger.error(`Error logging guardrail alert: ${error}`)
     }
 
     // Return the fallback response
@@ -306,7 +306,7 @@ export class GuardrailsService {
         user_message: "", // No user message needed for generic response
       })
     } catch (error) {
-      logger.error("Error getting fallback response:", error)
+      logger.error(`Error getting fallback response: ${error}`)
 
       // Hardcoded fallback in case of error
       return "I understand. Let's continue our conversation."
