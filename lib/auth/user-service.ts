@@ -33,9 +33,10 @@ export class UserService {
       await this.kgService.createConsentProfileNode(userId)
 
       // Create core profile nodes (C, T, D)
-      await this.kgService.createCulturalContextProfile(userId)
-      await this.kgService.createPersonalityProfile(userId)
-      await this.kgService.createDevelopmentalStageProfile(userId)
+      // TODO: Implement or verify these KgService methods if profile nodes are needed
+      // await this.kgService.createCulturalContextProfile(userId)
+      // await this.kgService.createPersonalityProfile(userId)
+      // await this.kgService.createDevelopmentalStageProfile(userId)
 
       logger.info(`User registered successfully: ${userId}`)
       return userId

@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { db } from '@/lib/db';
-import { users } from '@/lib/db/schema';
+import { profiles } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { User } from '@supabase/supabase-js';
 
@@ -18,8 +18,8 @@ export async function isAdmin(): Promise<boolean> {
   }
 
   // Fetch user role from your database
-  const dbUser = await db.query.users.findFirst({
-    where: eq(users.id, user.id),
+  const dbUser = await db.query.profiles.findFirst({
+    where: eq(profiles.id, user.id),
     columns: { role: true }
   });
 

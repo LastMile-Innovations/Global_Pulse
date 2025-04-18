@@ -112,6 +112,7 @@
     "@types/node": "^22.14.1",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.2",
+    "@types/stopword": "^2.0.3",
     "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
     "dotenv": "^16.5.0",
     "drizzle-kit": "^0.30.6",

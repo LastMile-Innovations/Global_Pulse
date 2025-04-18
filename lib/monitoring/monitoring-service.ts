@@ -124,8 +124,18 @@ export class MonitoringService {
     const contentForNer = this.prepareContentForNer(newsItem)
 
     // Perform NER to extract entities
-    const entities = await this.nerService.recognizeEntities(contentForNer)
-    result.entitiesExtracted = entities.length
+    const nerResult = await this.nerService.recognizeEntities(contentForNer)
+
+    // Check if NER was successful
+    if ('error' in nerResult) {
+      logger.error(`NER failed for news item: ${nerResult.error}`);
+      // Optionally handle error further, e.g., update monitoring result errors
+      return result; // Return current counts (0 entities processed for this item)
+    }
+
+    // NER was successful, proceed with entities
+    const entities = nerResult; // Now type is narrowed to EntityRecognitionResult
+    result.entitiesExtracted = entities.length;
 
     // Create information event in UIG
     const eventId = await this.kgService.createInformationEvent({

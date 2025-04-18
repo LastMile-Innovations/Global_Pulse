@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     // Store tokens
     const externalSourceService = new ExternalSourceService()
     await externalSourceService.storeTokens(
-      userId,
+      userId as string,
       "google_calendar",
       {
         refreshToken: "",
@@ -57,14 +57,14 @@ export async function GET(request: NextRequest) {
     //   token: process.env.QSTASH_TOKEN!,
     // })
     const qstash = null
-    await qstash.publishJSON({
-      url: `${process.env.NEXT_PUBLIC_APP_URL}/api/workers/calendar-sync`,
-      body: {
-        userId,
-        sourceName: "google_calendar",
-      },
-      delay: 1, // Start sync after 1 second
-    })
+    // await qstash.publishJSON({
+    //   url: `${process.env.NEXT_PUBLIC_APP_URL}/api/workers/calendar-sync`,
+    //   body: {
+    //     userId,
+    //     sourceName: "google_calendar",
+    //   },
+    //   delay: 1, // Start sync after 1 second
+    // })
 
     // Redirect back to data hub page
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/data-hub?success=google_connected`)

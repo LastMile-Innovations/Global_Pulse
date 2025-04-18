@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { getDriver } from "@/lib/db/graph/neo4j-driver"
+
+import { getNeo4jDriver } from "@/lib/db/graph/neo4j-driver"
 import { KgService } from "@/lib/db/graph/kg-service"
 import { logger } from "@/lib/utils/logger"
 
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
     const offset = Number.parseInt(url.searchParams.get("offset") || "0", 10)
 
     // Create KgService
-    const driver = await getDriver()
+    const driver = await getNeo4jDriver()
     const kgService = new KgService(driver)
 
     // Fetch recent information events

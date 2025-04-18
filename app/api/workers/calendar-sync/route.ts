@@ -1,16 +1,20 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { type NextApiRequest, type NextApiResponse } from "next";
 import { ExternalSourceService } from "@/lib/data-hub/external-source-service"
 import { logger } from "@/lib/utils/logger"
 import { verifySignature } from "@upstash/qstash/nextjs"
 
-async function handler(request: NextRequest) {
+// Change handler signature to use NextApiRequest and NextApiResponse
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // Parse request body
-    const body = await request.json()
+    // Qstash signature verification happens in the middleware
+    // We access the verified body via req.body if verification passes
+    // Note: verifySignature middleware might parse the body automatically
+    // Adjust parsing logic if needed based on middleware behavior
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     const { userId, sourceName } = body
 
     if (!userId || sourceName !== "google_calendar") {
-      return NextResponse.json({ error: "Invalid request parameters" }, { status: 400 })
+      return res.status(400).json({ error: "Invalid request parameters" });
     }
 
     logger.info(`Starting calendar sync for user ${userId}`)
@@ -25,54 +29,53 @@ async function handler(request: NextRequest) {
     if (!tokens) {
       logger.error(`No tokens found for user ${userId}`)
       await externalSourceService.updateConnectionStatus(userId, "google_calendar", "error", "No valid tokens found")
-      return NextResponse.json({ error: "No tokens found" }, { status: 400 })
+      return res.status(400).json({ error: "No tokens found" });
     }
 
-    // Get fresh access token
-    // const googleClient = new GoogleCalendarClient()
-    // const { accessToken } = await googleClient.refreshAccessToken(tokens.refreshToken)
-
-    // Fetch calendar events
-    // const events = await googleClient.fetchCalendarEvents(
-    //   accessToken,
-    //   new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
-    //   new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-    // )
-    const events = []
+    // Placeholder for actual calendar fetching logic
+    const events: any[] = [] // Replace with actual type
 
     logger.info(`Fetched ${events.length} calendar events for user ${userId}`)
 
     // Process calendar data and update UIG
     await externalSourceService.processCalendarData(userId, events)
 
-    return NextResponse.json({ success: true, eventsProcessed: events.length })
+    // Update status back to connected (or idle)
+    await externalSourceService.updateConnectionStatus(userId, "google_calendar", "connected")
+
+    return res.status(200).json({ success: true, eventsProcessed: events.length });
+
   } catch (error) {
     logger.error("Error in calendar sync worker:", error)
 
-    // Try to update connection status if we have userId
+    // Try to update connection status if we have userId from the body
+    let userIdFromBody: string | undefined;
     try {
-      const body = await request.json()
-      const { userId } = body
+      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      userIdFromBody = body?.userId;
+    } catch (parseError) {
+      logger.error("Failed to parse request body during error handling:", parseError);
+    }
 
-      if (userId) {
+    if (userIdFromBody) {
+      try {
         const externalSourceService = new ExternalSourceService()
         await externalSourceService.updateConnectionStatus(
-          userId,
+          userIdFromBody,
           "google_calendar",
           "error",
           error instanceof Error ? error.message : "Unknown error",
         )
+      } catch (statusUpdateError) {
+        logger.error("Failed to update connection status after error:", statusUpdateError)
       }
-    } catch (e) {
-      logger.error("Failed to update connection status after error:", e)
     }
 
-    return NextResponse.json({ error: "Calendar sync failed" }, { status: 500 })
+    return res.status(500).json({ error: "Calendar sync failed" });
   }
 }
 
-// Wrap the handler with QStash verification middleware
 export const POST = verifySignature(handler)
 
-// Configure the runtime to use Edge for better performance
-export const runtime = "edge"
+// Remove edge runtime configuration if using NextApiRequest/Response
+// export const runtime = "edge"

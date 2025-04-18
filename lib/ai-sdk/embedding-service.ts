@@ -1,7 +1,8 @@
 import { embed, embedMany } from "ai"
 import { openai } from "@ai-sdk/openai"
 import { logger } from "../utils/logger"
-import type { EmbeddingModel, EmbeddingVector } from "./types"
+import type { EmbeddingVector } from "./types"
+type EmbeddingModel = string;
 
 /**
  * Service for generating and managing text embeddings
@@ -18,15 +19,15 @@ export class EmbeddingService {
    */
   async getEmbedding(text: string, modelName?: EmbeddingModel): Promise<EmbeddingVector> {
     try {
-      const model = modelName || this.defaultModel
-      const provider = this.getEmbeddingProvider(model)
+      const modelId = modelName || this.defaultModel
+      const embeddingModel = openai.embedding(modelId);
 
-      const { embeddings } = await embed({
-        model: provider,
-        input: text,
+      const embeddingResult = await embed({
+        model: embeddingModel,
+        value: text,
       })
 
-      return embeddings
+      return embeddingResult.embedding
     } catch (error) {
       logger.error(`Error generating embedding: ${error}`)
       throw new Error(`Failed to generate embedding: ${error instanceof Error ? error.message : String(error)}`)
@@ -42,15 +43,15 @@ export class EmbeddingService {
    */
   async getEmbeddings(texts: string[], modelName?: EmbeddingModel): Promise<EmbeddingVector[]> {
     try {
-      const model = modelName || this.defaultModel
-      const provider = this.getEmbeddingProvider(model)
+      const modelId = modelName || this.defaultModel
+      const embeddingModel = openai.embedding(modelId);
 
-      const { embeddings } = await embedMany({
-        model: provider,
-        inputs: texts,
+      const embeddingsResult = await embedMany({
+        model: embeddingModel,
+        values: texts,
       })
 
-      return embeddings
+      return embeddingsResult.embeddings
     } catch (error) {
       logger.error(`Error generating multiple embeddings: ${error}`)
       throw new Error(`Failed to generate embeddings: ${error instanceof Error ? error.message : String(error)}`)
@@ -88,25 +89,6 @@ export class EmbeddingService {
 
     // Cosine similarity
     return dotProduct / (mag1 * mag2)
-  }
-
-  /**
-   * Get the embedding provider instance for the specified model
-   *
-   * @param modelName The embedding model name
-   * @returns The provider instance
-   */
-  private getEmbeddingProvider(modelName: EmbeddingModel) {
-    // For now, we're using OpenAI models directly
-    // In the future, this could use the provider registry from Epic 2.01
-    switch (modelName) {
-      case "text-embedding-3-small":
-        return openai("text-embedding-3-small")
-      case "text-embedding-3-large":
-        return openai("text-embedding-3-large")
-      default:
-        return openai("text-embedding-3-small")
-    }
   }
 }
 

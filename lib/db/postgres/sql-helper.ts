@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm"
-import { getDrizzle } from "./drizzle"
+import { db } from "./drizzle"
 import { logger } from "../../utils/logger"
 
 /**
@@ -7,7 +7,6 @@ import { logger } from "../../utils/logger"
  */
 export async function executeRawQuery<T = any>(query: string, params: any[] = []): Promise<T[]> {
   try {
-    const db = getDrizzle()
     const result = await db.execute(sql.raw(query, params))
     return result as T[]
   } catch (error) {
@@ -20,7 +19,6 @@ export async function executeRawQuery<T = any>(query: string, params: any[] = []
  * Execute a transaction with multiple queries
  */
 export async function executeTransaction<T = any>(callback: (tx: any) => Promise<T>): Promise<T> {
-  const db = getDrizzle()
   const pool = db.driver
 
   const client = await pool.connect()

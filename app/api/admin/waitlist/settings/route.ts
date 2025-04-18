@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { waitlist_settings, waitlist_activity_logs } from '@/lib/db/schema';
-import { isAdmin, getCurrentUser } from '@/lib/auth';
+import { waitlist_settings, waitlist_activity_logs } from '@/lib/db/schema/waitlist';
+import { isAdmin, getCurrentUser } from '@/lib/auth/service';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { rateLimit } from '@/lib/redis/rate-limit'; // Assuming rate limiter utility
@@ -25,9 +25,9 @@ export async function GET(req: NextRequest) {
   // }
 
   try {
-    const settings = await db.query.waitlist_settings.findMany();
+    const settings = await db.select().from(waitlist_settings);
     // Convert to key-value object for easier frontend consumption
-    const settingsObj = settings.reduce((acc, setting) => {
+    const settingsObj = settings.reduce((acc: Record<string, any>, setting: { key: string; value: any }) => {
       acc[setting.key] = setting.value;
       return acc;
     }, {} as Record<string, any>);

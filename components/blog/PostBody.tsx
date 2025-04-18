@@ -1,16 +1,77 @@
 'use client';
 
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { cn } from '@/lib/utils';
+import type { Components } from 'react-markdown';
+import type { CSSProperties } from 'react';
 
 interface PostBodyProps {
   content: string;
 }
 
-export default function PostBody({ content }: PostBodyProps) {
+// Custom styling for different markdown elements
+const customComponents: Partial<Components> = {
+  // Headings
+  h1: ({ node, ...props }) => <h1 className="text-4xl font-bold my-6" {...props} />,
+  h2: ({ node, ...props }) => <h2 className="text-3xl font-semibold my-5 border-b pb-2" {...props} />,
+  h3: ({ node, ...props }) => <h3 className="text-2xl font-semibold my-4" {...props} />,
+  h4: ({ node, ...props }) => <h4 className="text-xl font-semibold my-3" {...props} />,
+  // Paragraphs
+  p: ({ node, ...props }) => <p className="my-4 leading-relaxed" {...props} />,
+  // Lists
+  ul: ({ node, ...props }) => <ul className="list-disc list-inside my-4 pl-4 space-y-2" {...props} />,
+  ol: ({ node, ...props }) => <ol className="list-decimal list-inside my-4 pl-4 space-y-2" {...props} />,
+  li: ({ node, ...props }) => <li className="my-1" {...props} />,
+  // Links
+  a: ({ node, ...props }) => <a className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+  // Code blocks
+  code({ node, className, children, ...props }) {
+    const match = /language-(\w+)/.exec(className || '');
+    const language = match ? match[1] : 'text';
+    const codeString = String(children).replace(/\n$/, '');
+
+    return (
+      <SyntaxHighlighter
+        style={dracula as any}
+        language={language}
+        PreTag="div"
+        className="rounded-md my-4 text-sm"
+        {...props}
+      >
+        {codeString}
+      </SyntaxHighlighter>
+    );
+  },
+  // Blockquotes
+  blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-gray-300 pl-4 italic my-4 text-gray-600" {...props} />,
+  // Thematic breaks (horizontal rules)
+  hr: ({ node, ...props }) => <hr className="my-8 border-gray-300" {...props} />,
+  // Tables
+  table: ({ node, ...props }) => <table className="table-auto w-full my-4 border-collapse border border-gray-300" {...props} />,
+  thead: ({ node, ...props }) => <thead className="bg-gray-100" {...props} />,
+  tbody: ({ node, ...props }) => <tbody {...props} />,
+  tr: ({ node, ...props }) => <tr className="border-b border-gray-300" {...props} />,
+  th: ({ node, ...props }) => <th className="border border-gray-300 px-4 py-2 text-left font-semibold" {...props} />,
+  td: ({ node, ...props }) => <td className="border border-gray-300 px-4 py-2" {...props} />,
+  img({ src, alt }) {
+    return (
+      <div className="flex flex-col items-center my-8">
+        <img 
+          src={src} 
+          alt={alt} 
+          className="rounded-lg shadow-md max-h-[600px] object-cover"
+        />
+        {alt && <p className="text-center text-sm text-muted-foreground mt-2">{alt}</p>}
+      </div>
+    );
+  },
+};
+
+const PostBody: React.FC<PostBodyProps> = ({ content }) => {
   return (
     <div className={cn(
       "prose prose-lg dark:prose-invert max-w-none",
@@ -26,53 +87,13 @@ export default function PostBody({ content }: PostBodyProps) {
       "prose-hr:border-border"
     )}>
       <ReactMarkdown
+        components={customComponents}
         remarkPlugins={[remarkGfm]}
-        components={{
-          code({ node, inline, className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || '');
-            return !inline && match ? (
-              <div className="rounded-md overflow-hidden my-6">
-                <div className="bg-zinc-800 text-xs px-3 py-1.5 text-gray-300 font-mono">
-                  {match[1]}
-                </div>
-                <SyntaxHighlighter
-                  {...props}
-                  style={atomDark}
-                  language={match[1]}
-                  className="!m-0 !rounded-t-none !bg-zinc-900"
-                >
-                  {String(children).replace(/\n$/, '')}
-                </SyntaxHighlighter>
-              </div>
-            ) : (
-              <code className={cn("bg-muted px-1.5 py-0.5 rounded-md font-mono text-sm", className)} {...props}>
-                {children}
-              </code>
-            );
-          },
-          blockquote({ children }) {
-            return (
-              <blockquote className="not-italic border-l-2 border-primary/50 pl-4 py-1">
-                {children}
-              </blockquote>
-            );
-          },
-          img({ src, alt }) {
-            return (
-              <div className="flex flex-col items-center my-8">
-                <img 
-                  src={src} 
-                  alt={alt} 
-                  className="rounded-lg shadow-md max-h-[600px] object-cover"
-                />
-                {alt && <p className="text-center text-sm text-muted-foreground mt-2">{alt}</p>}
-              </div>
-            );
-          },
-        }}
       >
         {content}
       </ReactMarkdown>
     </div>
   );
-} 
+};
+
+export default PostBody; 

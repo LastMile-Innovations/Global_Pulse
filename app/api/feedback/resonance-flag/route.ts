@@ -51,7 +51,6 @@ export async function POST(request: Request) {
 
     // Insert the resonance flag into the database
     await db.insert(resonanceFlags).values({
-      userId,
       sessionId,
       flaggedInteractionId,
       precedingInteractionId: precedingInteractionId || null,

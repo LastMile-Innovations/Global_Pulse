@@ -4,50 +4,43 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { logger } from "../utils/logger"
 
 /**
- * Model provider types
+ * Supported model providers for MVP production.
  */
 export type ModelProvider = "openai" | "anthropic" | "google"
 
 /**
- * Model type
+ * Supported model types for extensibility.
  */
 export type ModelType = "language" | "embedding" | "image"
 
 /**
- * Model identifier format: provider:model-name
- * Examples: openai:gpt-4o, anthropic:claude-3-sonnet
+ * Model identifier format: provider:model-name (e.g., openai:gpt-4o)
  */
 export type ModelId = `${ModelProvider}:${string}`
 
 /**
- * Model configuration interface
+ * Model configuration for aliasing, defaults, and middleware.
  */
 export interface ModelConfig {
-  /** The actual model ID to use */
   modelId: ModelId
-  /** Default temperature setting */
   defaultTemperature?: number
-  /** Default max tokens setting */
   defaultMaxTokens?: number
-  /** Default system prompt */
   defaultSystemPrompt?: string
-  /** Whether to apply reasoning middleware */
   applyReasoningMiddleware?: boolean
-  /** Whether to apply custom logging middleware */
   applyLoggingMiddleware?: boolean
-  /** Whether to apply custom caching middleware */
   applyCachingMiddleware?: boolean
+  // Extend with more middleware/config as needed
 }
 
 /**
- * Model alias mapping
+ * Alias mapping for models, with production-ready defaults.
  */
 interface ModelAliasMap {
   [alias: string]: ModelConfig
 }
 
 /**
- * Default model aliases with configurations
+ * Default model aliases and their configurations for MVP production.
  */
 const MODEL_ALIASES: ModelAliasMap = {
   // Chat models
@@ -123,89 +116,82 @@ const MODEL_ALIASES: ModelAliasMap = {
 }
 
 /**
- * Validates that required API keys are present for the specified provider
- * @param provider The model provider
- * @returns True if the required API keys are present, false otherwise
+ * Validate that required API keys are present for a provider.
+ * Logs a warning if missing in production.
  */
 function validateApiKeys(provider: ModelProvider): boolean {
   switch (provider) {
     case "openai":
-      return !!process.env.OPENAI_API_KEY
+      if (!process.env.OPENAI_API_KEY) {
+        logger.warn("OPENAI_API_KEY is not set. OpenAI models will not be available.")
+        return false
+      }
+      return true
     case "anthropic":
-      return !!process.env.ANTHROPIC_API_KEY
+      if (!process.env.ANTHROPIC_API_KEY) {
+        logger.warn("ANTHROPIC_API_KEY is not set. Anthropic models will not be available.")
+        return false
+      }
+      return true
     case "google":
-      return !!process.env.GOOGLE_API_KEY
+      if (!process.env.GOOGLE_API_KEY) {
+        logger.warn("GOOGLE_API_KEY is not set. Google models will not be available.")
+        return false
+      }
+      return true
     default:
+      logger.error(`Unknown provider: ${provider}`)
       return false
   }
 }
 
 /**
- * Parses a model ID into provider and model name
- * @param modelId The model ID in format "provider:model-name" or an alias
- * @returns The parsed provider and model name
- * @throws Error if the model ID format is invalid
+ * Parse a model ID or alias into provider and model name.
+ * Throws for invalid format.
  */
-function parseModelId(modelId: string): { provider: ModelProvider; modelName: string } {
-  // Check if the modelId is an alias
-  const config = MODEL_ALIASES[modelId]
-  const resolvedId = config ? config.modelId : modelId
+function parseModelId(modelIdOrAlias: string): { provider: ModelProvider; modelName: string } {
+  // If alias, resolve to actual modelId
+  const config = MODEL_ALIASES[modelIdOrAlias]
+  const resolvedId = config ? config.modelId : modelIdOrAlias
 
-  // Parse the model ID
   const parts = resolvedId.split(":")
   if (parts.length !== 2) {
-    throw new Error(`Invalid model ID format: ${modelId}. Expected format: "provider:model-name"`)
+    throw new Error(`Invalid model ID format: ${modelIdOrAlias}. Expected format: "provider:model-name"`)
   }
-
   const [provider, modelName] = parts as [ModelProvider, string]
-  return { provider, modelName }
+  if (!["openai", "anthropic", "google"].includes(provider)) {
+    throw new Error(`Unknown provider in model ID: ${provider}`)
+  }
+  return { provider: provider as ModelProvider, modelName }
 }
 
 /**
- * Gets a language model instance for the specified model ID or alias
- * @param modelIdOrAlias The model ID in format "provider:model-name" or an alias
- * @returns The language model instance with applied middleware
- * @throws Error if the provider is not supported or API keys are missing
+ * Get a language model instance for a model ID or alias.
+ * Throws if provider is unsupported or API key is missing.
  */
 export function getLanguageModelInstance(modelIdOrAlias: string) {
-  const config = MODEL_ALIASES[modelIdOrAlias]
-  const { provider, modelName } = parseModelId(modelIdOrAlias)
+  const { provider } = parseModelId(modelIdOrAlias)
 
   if (!validateApiKeys(provider)) {
     throw new Error(`Missing API key for provider: ${provider}`)
   }
 
-  let modelInstance
-
   switch (provider) {
     case "openai":
-      modelInstance = createOpenAI({
-        apiKey: process.env.OPENAI_API_KEY!,
-      })
-      break
+      return createOpenAI({ apiKey: process.env.OPENAI_API_KEY! })
     case "anthropic":
-      modelInstance = createAnthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY!,
-      })
-      break
+      return createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
     case "google":
-      modelInstance = createGoogleGenerativeAI({
-        apiKey: process.env.GOOGLE_API_KEY!,
-      })
-      break
+      return createGoogleGenerativeAI({ apiKey: process.env.GOOGLE_API_KEY! })
     default:
       throw new Error(`Unsupported provider: ${provider}`)
   }
-
-  // Return the provider instance, model will be specified at call time
-  return modelInstance
 }
 
 /**
- * Gets an embedding model instance for the specified model ID or alias
- * @param modelIdOrAlias The model ID in format "provider:model-name" or an alias
- * @returns The embedding model instance
- * @throws Error if the provider is not supported or API keys are missing
+ * Get an embedding model instance for a model ID or alias.
+ * Throws if provider is unsupported or API key is missing.
+ * MVP: Only OpenAI embedding models are supported.
  */
 export function getEmbeddingModelInstance(modelIdOrAlias: string) {
   const { provider, modelName } = parseModelId(modelIdOrAlias)
@@ -215,54 +201,43 @@ export function getEmbeddingModelInstance(modelIdOrAlias: string) {
   }
 
   if (provider === "openai") {
-    // Instantiate the provider
-    const openaiProvider = createOpenAI({
-      apiKey: process.env.OPENAI_API_KEY!,
-    })
-    // Return the specific embedding model from the provider
+    const openaiProvider = createOpenAI({ apiKey: process.env.OPENAI_API_KEY! })
+    // Defensive: ensure embedding method exists
+    if (typeof openaiProvider.embedding !== "function") {
+      throw new Error("OpenAI provider does not support embedding method")
+    }
     return openaiProvider.embedding(modelName as any)
   }
 
-  throw new Error(`Unsupported embedding provider: ${provider}`)
+  throw new Error(`Embedding models are only supported for OpenAI in MVP. Unsupported provider: ${provider}`)
 }
 
 /**
- * Validates that all required API keys are present for configured providers
- * Logs warnings for missing API keys
+ * Validate all configured providers for required API keys.
+ * Logs warnings for missing keys.
  */
 export function validateConfiguredProviders(): void {
   const providers: ModelProvider[] = ["openai", "anthropic", "google"]
-
   for (const provider of providers) {
-    if (!validateApiKeys(provider)) {
-      logger.warn(`Missing API key for provider: ${provider}. Some functionality may be limited.`)
-    } else {
-      logger.info(`API key for provider ${provider} is configured.`)
-    }
+    validateApiKeys(provider)
   }
 }
 
 /**
- * Resolves a model alias to its full model configuration
- * @param aliasOrId A model alias or full model ID
- * @returns The resolved model configuration or undefined if not an alias
+ * Resolve a model alias to its configuration, or undefined if not an alias.
  */
 export function resolveModelAlias(aliasOrId: string): ModelConfig | undefined {
   return MODEL_ALIASES[aliasOrId]
 }
 
 /**
- * Gets the model configuration for a given alias or ID
- * @param aliasOrId A model alias or full model ID
- * @returns The model configuration or a default configuration if not an alias
+ * Get the model configuration for an alias or model ID.
+ * If not an alias, returns a default config for the ID.
  */
 export function getModelConfig(aliasOrId: string): ModelConfig {
   const config = MODEL_ALIASES[aliasOrId]
-  if (config) {
-    return config
-  }
-
-  // If not an alias, create a default configuration
+  if (config) return config
+  // Defensive: fallback config for unknown IDs
   return {
     modelId: aliasOrId as ModelId,
     applyLoggingMiddleware: true,
@@ -270,10 +245,8 @@ export function getModelConfig(aliasOrId: string): ModelConfig {
 }
 
 /**
- * Dynamically selects a model based on the task requirements
- * @param task The task description
- * @param options Additional options to consider
- * @returns The selected model alias
+ * Select a model alias for a given task and options.
+ * MVP: Covers chat, structured, embedding, reasoning, creative.
  */
 export function selectModelForTask(
   task: "chat" | "structured" | "embedding" | "reasoning" | "creative",
@@ -281,27 +254,22 @@ export function selectModelForTask(
 ): string {
   const { quality = "balanced", latencySensitive = false } = options || {}
 
-  // Select model based on task and quality requirements
   switch (task) {
     case "chat":
       if (latencySensitive) return "default-chat-mini"
       if (quality === "high") return "high-quality"
       if (quality === "low") return "fast"
       return "default-chat"
-
     case "structured":
       return "structured-output"
-
     case "embedding":
       return quality === "high" ? "high-quality-embedding" : "default-embedding"
-
     case "reasoning":
       return "reasoning"
-
     case "creative":
       return "creative-writing"
-
     default:
+      logger.warn(`Unknown task "${task}", falling back to default-chat`)
       return "default-chat"
   }
 }

@@ -1,9 +1,12 @@
-import { NextResponse } from "next/server"
+import { NextResponse, type NextRequest } from "next/server"
 import { z } from "zod"
 import { rateLimit } from "@/lib/redis/rate-limit"
 import { logger } from "@/lib/utils/logger"
 
-// Define the schema for research contact requests
+/**
+ * POST /api/research-contact
+ * Accepts a research contact request, validates, rate-limits, logs, and (MVP) returns success.
+ */
 const researchContactSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Valid email is required"),
@@ -23,65 +26,77 @@ const researchContactSchema = z.object({
   }),
 })
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
-    const identifier = request.headers.get("x-forwarded-for") || "anonymous"
-    const { success } = await rateLimit(identifier, 5, 60 * 60) // 5 requests per hour
-
-    if (!success) {
-      return NextResponse.json({ error: "Rate limit exceeded. Please try again later." }, { status: 429 })
+    // --- Rate limiting using new API ---
+    const rateLimitResponse = await rateLimit(request, {
+      limit: 5,
+      window: 60 * 60, // 1 hour
+      keyPrefix: "research_contact",
+      includeHeaders: true,
+      ipFallback: { enabled: true, limit: 3 }, // fallback for unauthenticated/IP
+    })
+    if (rateLimitResponse instanceof NextResponse) {
+      // If rate limited, return the standardized response
+      return rateLimitResponse
     }
 
-    // Parse and validate the request body
-    const body = await request.json()
-    const validatedData = researchContactSchema.safeParse(body)
-
-    if (!validatedData.success) {
+    // --- Parse and validate the request body ---
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch (err) {
+      logger.warn("Invalid JSON in research contact request")
       return NextResponse.json(
-        { error: "Invalid request data", details: validatedData.error.format() },
-        { status: 400 },
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
       )
     }
 
-    const { name, email, institution, researchArea, message, collaborationType } = validatedData.data
+    const validatedData = researchContactSchema.safeParse(body)
+    if (!validatedData.success) {
+      logger.warn("Validation failed for research contact request")
+      return NextResponse.json(
+        { error: "Invalid request data", details: validatedData.error.format() },
+        { status: 400 }
+      )
+    }
 
-    // Store the research contact request in the database
-    // This is a placeholder - you would implement this based on your schema
-    // await db.insert(researchContacts).values({
-    //   name,
-    //   email,
-    //   institution,
-    //   researchArea,
-    //   message,
-    //   collaborationType,
-    //   createdAt: new Date(),
-    // })
-
-    // Log the request for now
-    logger.info("Research contact request received", {
+    const {
       name,
       email,
       institution,
       researchArea,
+      message,
       collaborationType,
-    })
+    } = validatedData.data
 
-    // Send notification email to admin (implementation would depend on your email service)
-    // await sendNotificationEmail({
-    //   subject: `New Research Collaboration Request: ${collaborationType}`,
-    //   body: `From: ${name} (${email}) at ${institution}\nResearch Area: ${researchArea}\n\n${message}`,
-    // })
+    // --- MVP: Log the request (do not store in DB or send email yet) ---
+    logger.info(
+      "Research contact request received: " +
+        JSON.stringify({
+          name,
+          email,
+          institution,
+          researchArea,
+          collaborationType,
+        })
+    )
 
+    // --- MVP: Return success response ---
     return NextResponse.json(
       {
         success: true,
-        message: "Your research contact request has been received. Our team will review it and get back to you soon.",
+        message:
+          "Your research contact request has been received. Our team will review it and get back to you soon.",
       },
-      { status: 200 },
+      { status: 200 }
     )
   } catch (error) {
-    logger.error("Error processing research contact request", { error })
-    return NextResponse.json({ error: "An unexpected error occurred. Please try again later." }, { status: 500 })
+    logger.error("Error processing research contact request", error)
+    return NextResponse.json(
+      { error: "An unexpected error occurred. Please try again later." },
+      { status: 500 }
+    )
   }
 }

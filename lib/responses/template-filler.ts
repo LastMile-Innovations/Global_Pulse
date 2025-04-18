@@ -6,39 +6,12 @@ import { getRandomTemplate, getTemplateById, type ResponseTemplate } from "./tem
  * Context parameters for template filling
  */
 export interface TemplateContextParams {
-  /**
-   * User ID
-   */
   userId: string
-
-  /**
-   * Session ID
-   */
   sessionId: string
-
-  /**
-   * User's message
-   */
   user_message: string
-
-  /**
-   * Emotional valence (-1.0 to 1.0)
-   */
   valence?: number
-
-  /**
-   * Emotional arousal (0.0 to 1.0)
-   */
   arousal?: number
-
-  /**
-   * Emotional dominance (0.0 to 1.0)
-   */
   dominance?: number
-
-  /**
-   * Additional context parameters
-   */
   [key: string]: any
 }
 
@@ -46,21 +19,8 @@ export interface TemplateContextParams {
  * Options for template filling
  */
 export interface TemplateFillingOptions {
-  /**
-   * Whether to use LLM assistance for parameter filling
-   * If false, only direct substitution will be used
-   */
   useLlmAssistance?: boolean
-
-  /**
-   * Specific template ID to use
-   * If provided, this template will be used instead of a random one
-   */
   templateId?: string
-
-  /**
-   * Model ID to use for LLM assistance
-   */
   llmModelId?: string
 }
 
@@ -79,11 +39,9 @@ export async function getTemplatedResponse(
   try {
     logger.debug(`Getting templated response for intent: ${intentKey}`)
 
-    // Get the template
     let template: ResponseTemplate | undefined
 
     if (options.templateId) {
-      // Get specific template by ID
       logger.debug(`Looking for specific template with ID: ${options.templateId}`)
       template = getTemplateById(options.templateId)
       if (!template) {
@@ -94,17 +52,13 @@ export async function getTemplatedResponse(
     }
 
     if (!template) {
-      // Get random template for intent
       logger.debug(`Getting random template for intent: ${intentKey}`)
       template = getRandomTemplate(intentKey)
     }
 
-    // If no template found, use generic safe response
     if (!template) {
       logger.warn(`No template found for intent ${intentKey}, using generic safe response`)
       template = getRandomTemplate("generic_safe_response")
-
-      // If still no template found (should never happen), return hardcoded fallback
       if (!template) {
         logger.error("No generic safe response template found")
         return "I understand. Let's continue our conversation."
@@ -113,15 +67,12 @@ export async function getTemplatedResponse(
 
     logger.debug(`Selected template: ${template.id}`)
 
-    // Fill the template
     const filledTemplate = await fillTemplate(template, contextParams, options)
     logger.debug(`Filled template: ${filledTemplate}`)
 
     return filledTemplate
-  } catch (error) {
-    logger.error(`Error getting templated response for intent ${intentKey}:`, error)
-
-    // Return hardcoded fallback in case of error
+  } catch (error: any) {
+    logger.error(`Error getting templated response for intent ${intentKey}: ${error?.message || error}`)
     return "I understand. Let's continue our conversation."
   }
 }
@@ -141,42 +92,38 @@ async function fillTemplate(
   try {
     let filledTemplate = template.template
 
-    // Process each parameter
-    for (const param of template.parameters) {
+    // Defensive: ensure parameters is an array
+    const parameters = Array.isArray(template.parameters) ? template.parameters : []
+
+    for (const param of parameters) {
       const paramName = param.name
       let paramValue: string | undefined
 
-      // Check if parameter exists in context
-      if (paramName in contextParams) {
-        // Direct substitution
+      // Direct substitution if present in context
+      if (Object.prototype.hasOwnProperty.call(contextParams, paramName)) {
         paramValue = String(contextParams[paramName])
       } else if (param.useLlmAssistance && options.useLlmAssistance !== false) {
-        // LLM-assisted parameter filling
         paramValue = await fillParameterWithLlm(param, contextParams, options)
       }
 
-      // Use default value if parameter is still undefined
+      // Use default if still undefined
       if (paramValue === undefined) {
-        paramValue = param.defaultValue || ""
-
-        // Log when falling back to default value for required parameters
+        paramValue = param.defaultValue ?? ""
         if (param.required && param.defaultValue) {
           logger.debug(`Using default value "${param.defaultValue}" for required parameter "${paramName}"`)
         }
       }
 
-      // Replace parameter in template
+      // Replace all occurrences of {paramName}
       filledTemplate = filledTemplate.replace(new RegExp(`\\{${paramName}\\}`, "g"), paramValue)
     }
 
-    // Replace any remaining parameters with empty string
+    // Remove any remaining {param} placeholders
     filledTemplate = filledTemplate.replace(/\{[^}]+\}/g, "")
 
     return filledTemplate
-  } catch (error) {
-    logger.error("Error filling template:", error)
-
-    // Return the original template with parameters removed in case of error
+  } catch (error: any) {
+    logger.error(`Error filling template: ${error?.message || error}`)
     return template.template.replace(/\{[^}]+\}/g, "")
   }
 }
@@ -194,13 +141,11 @@ async function fillParameterWithLlm(
   options: TemplateFillingOptions = {},
 ): Promise<string | undefined> {
   try {
-    // Skip if no LLM prompt
     if (!param.llmPrompt) {
       logger.debug(`No LLM prompt defined for parameter ${param.name}, skipping LLM assistance`)
       return undefined
     }
 
-    // Skip if LLM assistance is explicitly disabled
     if (options.useLlmAssistance === false) {
       logger.debug(`LLM assistance disabled via options for parameter ${param.name}`)
       return undefined
@@ -212,30 +157,29 @@ async function fillParameterWithLlm(
       filledPrompt = filledPrompt.replace(new RegExp(`\\{${key}\\}`, "g"), String(value))
     }
 
-    // Log the filled prompt for debugging
     logger.debug(`LLM prompt for parameter ${param.name}: ${filledPrompt}`)
 
-    // Call LLM
     const llmResponse = await generateLlmResponseViaSdk(filledPrompt, {
       modelId: options.llmModelId,
-      temperature: 0.2, // Low temperature for more deterministic responses
-      maxTokens: 30, // Short responses
+      temperature: 0.2,
+      maxTokens: 30,
       systemPrompt:
         "You are a helpful assistant that provides very concise responses. Respond with only the specific information requested, using as few words as possible.",
     })
 
-    // Return LLM response if successful
-    if (llmResponse.success && llmResponse.text) {
+    if (llmResponse && llmResponse.success && llmResponse.text) {
       const cleanedResponse = llmResponse.text.trim().replace(/^["']|["']$|\.$/g, "")
       logger.debug(`LLM generated value for parameter ${param.name}: "${cleanedResponse}"`)
       return cleanedResponse
     }
 
-    // Log error and return undefined
-    logger.warn(`LLM parameter filling failed for parameter ${param.name}:`, llmResponse.error)
+    // Log error and return undefined (fix: only one argument for logger.warn)
+    logger.warn(
+      `LLM parameter filling failed for parameter ${param.name}: ${llmResponse?.error || "Unknown error"}`
+    )
     return undefined
-  } catch (error) {
-    logger.error(`Error filling parameter ${param.name} with LLM:`, error)
+  } catch (error: any) {
+    logger.error(`Error filling parameter ${param.name} with LLM: ${error?.message || error}`)
     return undefined
   }
 }

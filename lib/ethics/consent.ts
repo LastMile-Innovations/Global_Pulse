@@ -1,5 +1,5 @@
 import { getRedisClient } from "../db/redis/redis-client"
-import type { KgService } from "../db/graph/kg-service"
+import { KgService } from "../db/graph/kg-service"
 import { getNeo4jDriver } from "../db/graph/neo4j-driver"
 import type { KgConsentProfile } from "../types/kg-types"
 import { logger } from "@/lib/utils/logger"
@@ -110,7 +110,7 @@ export async function invalidateConsentCache(userId: string): Promise<void> {
     const keys = await redis.keys(`consent:${userId}:*`)
 
     if (keys.length > 0) {
-      await redis.del(keys)
+      await redis.del(...keys)
       logger.info(`Invalidated ${keys.length} consent cache entries for user ${userId}`)
     }
   } catch (error) {

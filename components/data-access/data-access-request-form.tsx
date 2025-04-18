@@ -22,11 +22,12 @@ const formSchema = z.object({
   intentDeclaration: z.string().min(100, {
     message: "Please provide a detailed intent declaration (minimum 100 characters)",
   }),
-  policyAcknowledged: z.literal(true, {
-    errorMap: () => ({ message: "You must acknowledge the Data Use Policy" }),
+  policyAcknowledged: z.boolean().refine((val) => val === true, {
+    message: "You must acknowledge the Data Use Policy",
   }),
 })
 
+// Infer the type directly from the schema
 type FormValues = z.infer<typeof formSchema>
 
 export function DataAccessRequestForm() {
@@ -34,6 +35,7 @@ export function DataAccessRequestForm() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
 
+  // Use the inferred type
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,10 +44,11 @@ export function DataAccessRequestForm() {
       contactEmail: "",
       contactPhone: "",
       intentDeclaration: "",
-      policyAcknowledged: false,
+      policyAcknowledged: false, // Default can be false, refine handles validation
     },
   })
 
+  // onSubmit receives the validated data where policyAcknowledged is true
   async function onSubmit(data: FormValues) {
     setIsSubmitting(true)
     setSubmitStatus("idle")
@@ -202,7 +205,11 @@ export function DataAccessRequestForm() {
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                 <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>

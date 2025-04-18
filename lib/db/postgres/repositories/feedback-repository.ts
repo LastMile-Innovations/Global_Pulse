@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm"
-import { getDrizzle } from "../drizzle"
-import { coherenceFeedback, distressRecords } from "../../schema/feedback"
+import { db } from "@/lib/db/postgres/drizzle"
+import { coherenceFeedback, distressRecords } from "@/lib/db/schema/feedback"
 import { logger } from "../../../utils/logger"
 
 /**
@@ -20,7 +20,6 @@ export class FeedbackRepository {
     metadata?: any
   }) {
     try {
-      const db = getDrizzle()
       const result = await db.insert(coherenceFeedback).values(feedbackData).returning()
       return result[0]
     } catch (error) {
@@ -34,8 +33,7 @@ export class FeedbackRepository {
    */
   async getFeedbackByInteractionId(interactionId: string) {
     try {
-      const db = getDrizzle()
-      const result = await db.select().from(coherenceFeedback).where(eq(coherenceFeedback.interactionId, interactionId))
+      const result = await db.select().from(coherenceFeedback).where(eq(coherenceFeedback.messageId, interactionId))
       return result
     } catch (error) {
       logger.error(`Error getting feedback by interaction ID: ${error}`)
@@ -55,7 +53,6 @@ export class FeedbackRepository {
     responseProvided?: string
   }) {
     try {
-      const db = getDrizzle()
       const result = await db.insert(distressRecords).values(distressData).returning()
       return result[0]
     } catch (error) {
@@ -69,7 +66,6 @@ export class FeedbackRepository {
    */
   async getDistressRecordsByUserId(userId: string) {
     try {
-      const db = getDrizzle()
       const result = await db.select().from(distressRecords).where(eq(distressRecords.userId, userId))
       return result
     } catch (error) {

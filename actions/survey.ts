@@ -1,245 +1,223 @@
-"use server"
+"use server";
 
 /**
- * Survey Actions Module
+ * @file survey.ts
  * 
- * This module provides server actions for handling survey-related operations:
+ * Server actions for survey operations:
  * - Fetching the next unanswered question for a user
  * - Submitting survey responses
  * 
- * Security features:
- * - Server-side authentication using Supabase
+ * Security:
+ * - Server-side authentication (Supabase)
  * - No client-side user ID handling
  * - Input validation and error handling
- * - Prevention of duplicate submissions
+ * - Duplicate submission prevention
  * 
- * Performance optimizations:
+ * Performance:
  * - Redis caching for frequently accessed data
  * - Cache invalidation on data changes
  */
 
-import { createClient } from "@/utils/supabase/server"; 
-import { revalidatePath } from 'next/cache';
-import { nanoid } from 'nanoid';
-import { db } from '@/lib/db'; 
-import { questions, surveyResponses, topics } from '@/lib/db/schema'; 
-import { eq, notInArray, desc, sql, and } from 'drizzle-orm'; 
+import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
+import { nanoid } from "nanoid";
+import { db } from "@/lib/db";
+import * as surveySchema from "@/lib/db/schema/surveys";
+import { eq, notInArray, desc, and } from "drizzle-orm";
 import { cacheQuery, createCacheKey, invalidateTags } from "@/lib/redis/client";
 
 /**
- * Fetches the next unanswered question for the authenticated user
+ * Fetch the next unanswered survey question for the authenticated user.
  * 
- * This function:
- * 1. Authenticates the user using Supabase
- * 2. Checks Redis cache for existing question data
- * 3. If not cached, queries the database for unanswered questions
- * 4. Returns the next question or null if all questions are answered
- * 
- * @param {Object} params - Function parameters
- * @param {string|null} params.topicId - Optional topic ID to filter questions by
- * @returns {Promise<{success: boolean, question?: any, error?: string}>} - Response object
- * @throws Will not throw errors, instead returns {success: false, error: string}
+ * @param {Object} params
+ * @param {string|null} params.topicId - Optional topic ID to filter questions
+ * @returns {Promise<{success: boolean, question?: any, error?: string}>}
  */
 export async function fetchNextQuestion({
   topicId = null,
 }: {
-  topicId: string | null; 
-}) {
-  // Authenticate the user
-  const supabase = await createClient(); 
-  const { data: { user }, error: authError } = await supabase.auth.getUser(); 
+  topicId: string | null;
+}): Promise<{ success: boolean; question?: any; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
     console.error("fetchNextQuestion: Unauthorized access attempt or error.", authError);
-    return { success: false, error: "Authentication required." }; 
+    return { success: false, error: "Authentication required." };
   }
 
-  const userId = user.id; 
+  const userId = user.id;
 
   try {
-    // --- Caching Implementation --- 
-    const cacheKey = createCacheKey('nextQuestion', { userId, topicId: topicId ?? 'all' });
+    const cacheKey = createCacheKey("nextQuestion", { userId, topicId: topicId ?? "all" });
     const userTag = `user:${userId}`;
 
-    // Use cacheQuery to fetch or get cached question
     const cachedQuestionData = await cacheQuery(
       cacheKey,
       async () => {
-        // --- Original Database Query Logic --- 
-        // Subquery to find questions already answered by the user
+        // Subquery: questions already answered by the user
         const answeredQuestionsSubquery = db
-          .select({ questionId: surveyResponses.questionId })
-          .from(surveyResponses)
-          .where(eq(surveyResponses.userId, userId));
+          .select({ questionId: surveySchema.surveyResponses.questionId })
+          .from(surveySchema.surveyResponses)
+          .where(eq(surveySchema.surveyResponses.userId, userId));
 
-        // Build the query using Drizzle ORM
-        let query = db
+        // Main query: next unanswered question (optionally filtered by topic)
+        const query = db
           .select({
-            id: questions.id,
-            text: questions.text,
-            type: questions.type,
-            parameters: questions.parameters,
-            topicId: questions.topicId,
-            topicName: topics.name, 
+            id: surveySchema.questions.id,
+            text: surveySchema.questions.text,
+            type: surveySchema.questions.type,
+            parameters: surveySchema.questions.parameters,
+            topicId: surveySchema.questions.topicId,
+            topicName: surveySchema.topics.name,
           })
-          .from(questions)
-          .leftJoin(topics, eq(questions.topicId, topics.id)) 
+          .from(surveySchema.questions)
+          .leftJoin(
+            surveySchema.topics,
+            eq(surveySchema.questions.topicId, surveySchema.topics.id)
+          )
           .where(
             and(
-              // Exclude questions the user has already answered
-              notInArray(questions.id, answeredQuestionsSubquery),
-              // Apply topic filter if provided
-              topicId ? eq(questions.topicId, topicId) : undefined
+              notInArray(surveySchema.questions.id, answeredQuestionsSubquery),
+              topicId ? eq(surveySchema.questions.topicId, topicId) : undefined
             )
           )
-          .orderBy(desc(questions.createdAt))
+          .orderBy(desc(surveySchema.questions.createdAt))
           .limit(1);
 
-        const question = await query.execute(); 
-
-        // Drizzle returns an array, even with limit(1). Get the first element or null.
-        const nextQuestion = question.length > 0 ? question[0] : null;
-        // --- End Original Database Query Logic ---
-
-        // Return the data to be cached
-        return nextQuestion;
+        const question = await query.execute();
+        return question.length > 0 ? question[0] : null;
       },
       {
-        ttl: 60, // Cache for 60 seconds
-        tags: [userTag] // Tag cache entry by user ID
+        ttl: 60,
+        tags: [userTag],
       }
     );
 
-    // If no question found (either from cache or DB), return success but with no question
     if (!cachedQuestionData) {
       return { success: true, question: null };
     }
 
     return { success: true, question: cachedQuestionData };
   } catch (err: any) {
-    console.error('Error fetching next question:', err);
-    return { success: false, error: 'Failed to fetch the next question' };
+    console.error("Error fetching next question:", err);
+    return { success: false, error: "Failed to fetch the next question" };
   }
 }
 
 /**
- * Submits a user's response to a survey question
+ * Submit a user's response to a survey question.
  * 
- * This function:
- * 1. Authenticates the user using Supabase
- * 2. Validates the input data (question ID and answer)
- * 3. Verifies the question exists
- * 4. Checks for existing responses to prevent duplicates
- * 5. Creates a response record in the database
- * 6. Invalidates relevant caches
- * 7. Revalidates affected pages
- * 
- * @param {Object} params - Function parameters
+ * @param {Object} params
  * @param {number} params.questionId - ID of the question being answered
- * @param {any} params.answer - The user's answer (can be string, number, or object)
- * @returns {Promise<{success: boolean, responseId?: string, error?: string}>} - Response object
- * @throws Will not throw errors, instead returns {success: false, error: string}
+ * @param {any} params.answer - The user's answer (string, number, or object)
+ * @returns {Promise<{success: boolean, responseId?: string, error?: string}>}
  */
 export async function submitSurveyResponse({
   questionId,
   answer,
 }: {
-  questionId: number; 
+  questionId: number;
   answer: any;
-}) {
-  // Authenticate the user
-  const supabase = await createClient(); 
-  const { data: { user }, error: authError } = await supabase.auth.getUser(); 
+}): Promise<{ success: boolean; responseId?: string; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
     console.error("submitSurveyResponse: Unauthorized access attempt or error.", authError);
-    return { success: false, error: "Authentication required." }; 
+    return { success: false, error: "Authentication required." };
   }
 
-  const userId = user.id; 
+  const userId = user.id;
 
   try {
-    // Validate the input data
+    // Input validation
     if (!questionId || questionId <= 0) {
       return { success: false, error: "Invalid question ID" };
     }
-
     if (answer === undefined || answer === null) {
       return { success: false, error: "Answer is required" };
     }
 
-    // Verify the question exists
+    // Verify question exists
     const questionExists = await db
-      .select({ id: questions.id })
-      .from(questions)
-      .where(eq(questions.id, questionId))
+      .select({ id: surveySchema.questions.id })
+      .from(surveySchema.questions)
+      .where(eq(surveySchema.questions.id, questionId))
       .limit(1);
 
     if (questionExists.length === 0) {
       return { success: false, error: "Question not found" };
     }
 
-    // Determine the type of answer and extract the relevant data
+    // Parse answer
     let optionId: string | null = null;
     let numericValue: number | null = null;
     let textValue: string | null = null;
 
-    if (typeof answer === 'string') {
+    if (typeof answer === "string") {
       optionId = answer;
-    } else if (typeof answer === 'number') {
+    } else if (typeof answer === "number") {
       numericValue = answer;
-    } else if (answer && typeof answer === 'object') {
-      if (answer.optionId) optionId = answer.optionId;
-      if (typeof answer.value === 'number') numericValue = answer.value;
-      if (typeof answer.text === 'string') textValue = answer.text;
+    } else if (answer && typeof answer === "object") {
+      if (typeof answer.optionId === "string") optionId = answer.optionId;
+      if (typeof answer.value === "number") numericValue = answer.value;
+      if (typeof answer.text === "string") textValue = answer.text;
     }
 
-    // Check if user has already answered this question
+    // Prevent duplicate responses
     const existingResponse = await db
-      .select({ id: surveyResponses.id })
-      .from(surveyResponses)
-      .where(and(
-        eq(surveyResponses.userId, userId),
-        eq(surveyResponses.questionId, questionId)
-      ))
+      .select({ id: surveySchema.surveyResponses.id })
+      .from(surveySchema.surveyResponses)
+      .where(
+        and(
+          eq(surveySchema.surveyResponses.userId, userId),
+          eq(surveySchema.surveyResponses.questionId, questionId)
+        )
+      )
       .limit(1);
 
-    // If user has already answered, return error
     if (existingResponse.length > 0) {
       return { success: false, error: "You have already answered this question" };
     }
 
-    // Create a response record using Drizzle
-    const responseId = nanoid(); 
+    // Insert response
+    const responseId = nanoid();
 
-    await db.insert(surveyResponses).values({
+    // The schema may require optionId, numericValue, textValue to be string | null
+    // Ensure types are correct for DB insert
+    await db.insert(surveySchema.surveyResponses).values({
       id: responseId,
       userId: userId,
       questionId: questionId,
-      optionId: optionId,
-      numericValue: numericValue,
-      textValue: textValue,
-      source: 'survey_feed',
+      optionId: optionId ?? null,
+      numericValue: numericValue !== null ? String(numericValue) : null,
+      textValue: textValue ?? null,
+      source: "survey_feed",
     });
 
-    // --- Cache Invalidation --- 
-    // Invalidate the user's 'nextQuestion' cache after successful submission
+    // Invalidate cache for this user
     try {
       await invalidateTags(`user:${userId}`);
-      console.log(`Cache invalidated for tag: user:${userId}`);
+      // Optionally log cache invalidation
+      // console.log(`Cache invalidated for tag: user:${userId}`);
     } catch (cacheError) {
       console.error("Failed to invalidate cache:", cacheError);
-      // Continue even if cache invalidation fails, main operation succeeded
     }
-    // --- End Cache Invalidation ---
 
     // Revalidate relevant paths
-    revalidatePath('/survey');
-    revalidatePath('/explore'); 
+    revalidatePath("/survey");
+    revalidatePath("/explore");
 
     return { success: true, responseId };
   } catch (err: any) {
-    console.error('Error submitting survey response:', err);
-    return { success: false, error: 'Failed to submit your response' };
+    console.error("Error submitting survey response:", err);
+    return { success: false, error: "Failed to submit your response" };
   }
 }

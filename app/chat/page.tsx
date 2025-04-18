@@ -1,38 +1,45 @@
-import { Suspense } from "react"
-import Link from "next/link"
-import { createClient } from "@/utils/supabase/server"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Plus, Search } from "lucide-react"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import TrendingTopics from "./components/trending-topics"
-import ChatList from "./components/chat-list"
-import { DatabaseErrorFallback } from "@/components/database-error-fallback"
+import { Suspense } from "react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Search } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import TrendingTopics from "@/components/chat/trending-topics";
+import ChatList from "@/components/chat/chat-list";
+import { DatabaseErrorFallback } from "@/components/database-error-fallback";
 
 export default async function ChatIndexPage() {
-  const supabase = await createClient()
-
+  let user;
   try {
-    // Get the current user with error handling
+    const supabase = await createClient();
     const {
-      data: { user },
-    } = await supabase.auth.getUser()
+      data: { user: supaUser },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    // Redirect to login if not authenticated
+    if (userError) {
+      throw userError;
+    }
+    user = supaUser;
+  } catch (error) {
+    // Database or auth error
+    console.error("Error in chat page:", error);
     return (
       <div className="container max-w-4xl py-8">
         <h1 className="text-3xl font-bold mb-6">Your Conversations</h1>
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="mb-4 text-muted-foreground">Please log in to start or view conversations</p>
-            <Button asChild>
-              <Link href="/login">Log In</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <DatabaseErrorFallback
+          message="There was an error connecting to the database. The database tables may not be set up yet."
+          showHomeButton={true}
+        />
       </div>
-    )
+    );
+  }
+
+  if (!user) {
+    // Not logged in, redirect to login
+    redirect("/login?next=/chat");
   }
 
   return (
@@ -46,6 +53,7 @@ export default async function ChatIndexPage() {
           type="search"
           placeholder="Search chats..."
           className="w-full pl-10 pr-4 py-2 border rounded-md bg-background"
+          disabled
         />
       </div>
 
@@ -85,17 +93,5 @@ export default async function ChatIndexPage() {
         </Suspense>
       </div>
     </div>
-  )
-  } catch (error) {
-    console.error("Error in chat page:", error);
-    return (
-      <div className="container max-w-4xl py-8">
-        <h1 className="text-3xl font-bold mb-6">Your Conversations</h1>
-        <DatabaseErrorFallback 
-          message="There was an error connecting to the database. The database tables may not be set up yet." 
-          showHomeButton={true}
-        />
-      </div>
-    )
-  }
+  );
 }

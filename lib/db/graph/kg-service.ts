@@ -1,4 +1,4 @@
-import type { Driver } from "neo4j-driver"
+import type { Driver, Record as Neo4jRecord } from "neo4j-driver"
 import { KgInteractionLayer } from "./kg-interaction-layer"
 import { logger } from "@/lib/utils/logger"
 
@@ -423,10 +423,7 @@ export class KgService {
   async hideErInstance(userId: string, interactionId: string): Promise<boolean> {
     // Input validation
     if (!userId || !interactionId) {
-      logger.warn(`Invalid input for hideEr  {
-    // Input validation
-    if (!userId || !interactionId) {
-      logger.warn(\`Invalid input for hideErInstance: userId=${userId}, interactionId=${interactionId}`)
+      logger.warn(`Invalid input for hideErInstance: userId=${userId}, interactionId=${interactionId}`)
       return false
     }
 
@@ -449,7 +446,7 @@ export class KgService {
         interactionId,
       })
 
-      return updateCount > 0
+      return typeof updateCount === 'number' && updateCount > 0
     } catch (error) {
       logger.error(`Error hiding ERInstance for interaction ${interactionId} by user ${userId}: ${error}`)
       return false
@@ -625,14 +622,16 @@ export class KgService {
         endTime: now,
       })
 
-      if (!result || !result.records) {
+      // Check if the result is a non-empty array
+      if (!result || !Array.isArray(result) || result.length === 0) {
         return []
       }
 
-      return result.records.map((record) => ({
-        period: record.get("period"),
-        avgMood: record.get("avgMood"),
-        avgStress: record.get("avgStress"),
+      // Map directly over the result array
+      return result.map((record: Neo4jRecord) => ({ // Use Neo4jRecord type
+        period: record.get('period')?.toString() ?? '',
+        avgMood: record.get('avgMood') ?? null,
+        avgStress: record.get('avgStress') ?? null,
       }))
     } catch (error) {
       logger.error(`Error getting user state time series for user ${userId}:`, error)
@@ -669,15 +668,17 @@ export class KgService {
         limit,
       })
 
-      if (!result || !result.records) {
+      // Check if the result is a non-empty array
+      if (!result || !Array.isArray(result) || result.length === 0) {
         return []
       }
 
-      return result.records.map((record) => ({
-        name: record.get("name"),
-        type: record.get("type"),
-        powerLevel: record.get("powerLevel"),
-        valence: record.get("valence"),
+      // Map directly over the result array
+      return result.map((record: Neo4jRecord) => ({ // Use Neo4jRecord type
+        name: record.get('name') ?? 'Unknown',
+        type: record.get('type') ?? 'Unknown',
+        powerLevel: record.get('powerLevel') ?? 0,
+        valence: record.get('valence') ?? 0,
       }))
     } catch (error) {
       logger.error(`Error getting top attachments for user ${userId}:`, error)
@@ -724,11 +725,13 @@ export class KgService {
         limit,
       })
 
-      if (!result || !result.records) {
+      // Check if the result is a non-empty array
+      if (!result || !Array.isArray(result) || result.length === 0) {
         return []
       }
 
-      return result.records.map((record) => ({
+      // Map directly over the result array
+      return result.map((record: Neo4jRecord) => ({ // Add Neo4jRecord type
         triggerContext: record.get("triggerContext"),
         commonReaction: record.get("commonReaction"),
         frequency: record.get("frequency").toNumber(),
@@ -816,11 +819,13 @@ export class KgService {
 
       const result = await this.kgLayer.executeCypher(cypher, { userId, startTime, limit })
 
-      if (!result || !result.records) {
+      // Check if the result is a non-empty array
+      if (!result || !Array.isArray(result) || result.length === 0) {
         return []
       }
 
-      return result.records.map((record) => ({
+      // Map directly over the result array
+      return result.map((record: Neo4jRecord) => ({ // Add Neo4jRecord type
         timestamp: record.get("timestamp").toNumber(),
         vadV: record.get("vadV"),
         vadA: record.get("vadA"),
@@ -1032,11 +1037,13 @@ export class KgService {
 
       const result = await this.kgLayer.executeCypher(cypher, { limit, offset })
 
-      if (!result || !result.records) {
+      // Check if the result is a non-empty array
+      if (!result || !Array.isArray(result) || result.length === 0) {
         return []
       }
 
-      return result.records.map((record) => ({
+      // Map directly over the result array
+      return result.map((record: Neo4jRecord) => ({ // Add Neo4jRecord type
         eventId: record.get("eventId"),
         title: record.get("title"),
         summary: record.get("summary"),
@@ -1086,11 +1093,13 @@ export class KgService {
 
       const result = await this.kgLayer.executeCypher(cypher, { entityId, limit })
 
-      if (!result || !result.records) {
+      // Check if the result is a non-empty array
+      if (!result || !Array.isArray(result) || result.length === 0) {
         return []
       }
 
-      return result.records.map((record) => ({
+      // Map directly over the result array
+      return result.map((record: Neo4jRecord) => ({ // Add Neo4jRecord type
         eventId: record.get("eventId"),
         title: record.get("title"),
         summary: record.get("summary"),

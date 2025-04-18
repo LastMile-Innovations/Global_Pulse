@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,16 +13,10 @@ import {
 } from "lucide-react";
 import FaqSection from "@/components/ui/faq-section";
 
-// Lazy load Accordion and its subcomponents for performance
-// const Accordion = dynamic(() => import("@/components/ui/accordion").then(mod => mod.Accordion), { ssr: false });
-// const AccordionItem = dynamic(() => import("@/components/ui/accordion").then(mod => mod.AccordionItem), { ssr: false });
-// const AccordionTrigger = dynamic(() => import("@/components/ui/accordion").then(mod => mod.AccordionTrigger), { ssr: false });
-// const AccordionContent = dynamic(() => import("@/components/ui/accordion").then(mod => mod.AccordionContent), { ssr: false });
-
 export const metadata: Metadata = {
-  title: "FAQ - Global Pulse (Hackathon Edition)",
+  title: "FAQ - Global Pulse (MVP Edition)",
   description:
-    "Frequently asked questions about Global Pulse, our hackathon demo and open-source framework for emotional intelligence.",
+    "Frequently asked questions about Global Pulse, our open-source emotional intelligence framework and MVP.",
 };
 
 export default function FAQPage() {
@@ -36,7 +29,7 @@ export default function FAQPage() {
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Welcome! We just wrapped an intense 10-day build sprint for the Vercel AI Hackathon, turning an idea into the
           first functioning core of Global Pulse. It's raw, it's early, and honestly, we're running on fumes and
-          excitement. We know you have questions about what we've built so far and where this crazy journey is headed.
+          excitement. We know you have questions about what we've built so far and where this journey is headed.
         </p>
       </header>
 
@@ -51,30 +44,28 @@ export default function FAQPage() {
                 answer: (
                   <div className="space-y-3">
                     <p>
-                      <strong>Let's be crystal clear:</strong> Right now, Global Pulse is a <em>demo</em> and an{" "}
+                      <strong>Let's be clear:</strong> Global Pulse is currently a <em>demo</em> and an{" "}
                       <em>open-source codebase</em>, not a live, interactive chat experience. You can't directly "talk" to
                       Pulse yet.
                     </p>
                     <p>
-                      What we built in our 10-day hackathon sprint is the foundation – the engine block and chassis, if
-                      you will. We've created:
+                      What we built in our 10-day hackathon sprint is the foundation. We've created:
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
                         <strong>A Demo:</strong> Showcasing how the EWEF and UIG are designed to work together to analyze
-                        emotional experiences
+                        emotional experiences.
                       </li>
                       <li>
                         <strong>The Core Code:</strong> The open-source implementation of our Enhanced Webb Emotional
-                        Framework (EWEF) and Unified Identity Graph (UIG) systems
+                        Framework (EWEF) and Unified Identity Graph (UIG) systems.
                       </li>
                       <li>
-                        <strong>The Vision:</strong> Documentation explaining where we're headed with this technology
+                        <strong>The Vision:</strong> Documentation explaining where we're headed with this technology.
                       </li>
                     </ul>
                     <p>
-                      Think of it as the architectural blueprints and foundation of a house – you can see the plans and
-                      the basement, but you can't move in and live there yet!
+                      Think of it as the blueprints and foundation of a house – you can see the plans and the basement, but you can't move in yet!
                     </p>
                   </div>
                 ),
@@ -87,8 +78,7 @@ export default function FAQPage() {
                     <p>
                       <strong>UIG (Unified Identity Graph):</strong> Think of it as a private, secure, dynamic map of your
                       unique identity – the things you care about (Attachments), their importance (PL), your
-                      positive/negative feelings towards them (V), and how they connect. It constantly evolves as you
-                      interact.
+                      positive/negative feelings towards them (V), and how they connect. It evolves as you interact.
                     </p>
                     <p>
                       <strong>EWEF (Enhanced Webb Emotional Framework):</strong> This is the analysis engine. It takes
@@ -112,18 +102,18 @@ export default function FAQPage() {
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
                         <strong>The Core Concept:</strong> How the EWEF analyzes interactions to understand the "why"
-                        behind emotions
+                        behind emotions.
                       </li>
                       <li>
                         <strong>UIG Visualization:</strong> How your identity graph would map your{" "}
-                        <code>{"{Attachments}"}</code> (Values, Goals, Beliefs, etc.)
+                        <code>{"{Attachments}"}</code> (Values, Goals, Beliefs, etc.).
                       </li>
                       <li>
                         <strong>Analysis Flow:</strong> The process of taking perceptions (P), comparing them to
-                        expectations (EP), and generating emotional responses (ER)
+                        expectations (EP), and generating emotional responses (ER).
                       </li>
                       <li>
-                        <strong>Key Components:</strong> The various modules that make up the system architecture
+                        <strong>Key Components:</strong> The various modules that make up the system architecture.
                       </li>
                     </ul>
                     <p>
@@ -131,7 +121,7 @@ export default function FAQPage() {
                       in action.
                     </p>
                     <div className="mt-3">
-                      <Link href="/how-it-works" passHref legacyBehavior>
+                      <Link href="/how-it-works" legacyBehavior>
                         <Button variant="outline" className="group transition hover:scale-105">
                           <ExternalLink className="mr-2 h-4 w-4 group-hover:text-secondary" />
                           Explore the Demo
@@ -147,24 +137,24 @@ export default function FAQPage() {
                   <div className="space-y-3">
                     <p>
                       The core of Global Pulse – the EWEF pipeline logic, UIG utilities, and related components – is
-                      available as open-source code. Here's how you can engage with it:
+                      available as open-source code. Here's how you can engage:
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
                         <strong>Explore:</strong> Browse the repository to understand how we've implemented the
-                        psychological frameworks
+                        psychological frameworks.
                       </li>
                       <li>
-                        <strong>Report Issues:</strong> Found a bug or have a suggestion? Open an issue on GitHub
+                        <strong>Report Issues:</strong> Found a bug or have a suggestion? Open an issue on GitHub.
                       </li>
                       <li>
-                        <strong>Contribute:</strong> Submit pull requests with improvements or extensions
+                        <strong>Contribute:</strong> Submit pull requests with improvements or extensions.
                       </li>
                       <li>
-                        <strong>Discuss:</strong> Join conversations about the architecture and implementation
+                        <strong>Discuss:</strong> Join conversations about the architecture and implementation.
                       </li>
                       <li>
-                        <strong>Fork:</strong> Create your own version or experiment with the code
+                        <strong>Fork:</strong> Create your own version or experiment with the code.
                       </li>
                     </ul>
                     <p>
@@ -208,17 +198,17 @@ export default function FAQPage() {
                     <p>Our roadmap includes:</p>
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
-                        <strong>Stabilizing the Core:</strong> Refining the EWEF and UIG implementations based on feedback
+                        <strong>Stabilizing the Core:</strong> Refining the EWEF and UIG implementations based on feedback.
                       </li>
                       <li>
                         <strong>Building the Chat Interface:</strong> Creating the conversational layer that will become
-                        Pulse
+                        Pulse.
                       </li>
                       <li>
-                        <strong>Integrating Safeguards:</strong> Ensuring the system operates ethically and responsibly
+                        <strong>Integrating Safeguards:</strong> Ensuring the system operates ethically and responsibly.
                       </li>
                       <li>
-                        <strong>Testing & Iteration:</strong> Gradually expanding access to ensure quality
+                        <strong>Testing & Iteration:</strong> Gradually expanding access to ensure quality.
                       </li>
                     </ul>
                     <p>
@@ -245,7 +235,7 @@ export default function FAQPage() {
                       healthcare professional. We provide crisis resources in emergencies, but that is the extent of our
                       direct mental health intervention.
                     </p>
-                    <Link href="/demo/crisis-resources" passHref legacyBehavior>
+                    <Link href="/demo/crisis-resources" legacyBehavior>
                       <Button variant="outline" className="mt-2 group transition hover:scale-105">
                         <AlertCircle className="mr-2 h-4 w-4 group-hover:text-destructive" />
                         Crisis Resources
@@ -306,7 +296,7 @@ export default function FAQPage() {
                       <li>Connecting to external data sources</li>
                     </ul>
                     <p>
-                      Our privacy foundations are already in place, though, so when we do launch interactive features,
+                      Our privacy foundations are already in place, so when we do launch interactive features,
                       your data will be protected from day one.
                     </p>
                   </div>
@@ -338,7 +328,7 @@ export default function FAQPage() {
                         it's used.
                       </li>
                     </ul>
-                    <Link href="/privacy" passHref legacyBehavior>
+                    <Link href="/privacy" legacyBehavior>
                       <Button variant="outline" size="sm" className="group transition hover:scale-105 mt-2">
                         <Lock className="mr-2 h-4 w-4 group-hover:text-primary" />
                         Privacy Policy
@@ -357,11 +347,11 @@ export default function FAQPage() {
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
                         <strong>Aggregate Insights:</strong> Anonymous, collective trends about emotional responses to
-                        public events or topics
+                        public events or topics.
                       </li>
                       <li>
                         <strong>Revenue Sharing:</strong> A model where users who consent to having their anonymized data
-                        contribute to commercial aggregate insights will share in the revenue generated
+                        contribute to commercial aggregate insights will share in the revenue generated.
                       </li>
                     </ul>
                     <p>
@@ -381,24 +371,24 @@ export default function FAQPage() {
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
-                        <strong>Consent Enforcement:</strong> Code that actively checks user permissions before processing
+                        <strong>Consent Enforcement:</strong> Code that actively checks user permissions before processing.
                       </li>
                       <li>
                         <strong>Well-being Priority:</strong> VAD impact simulation designed to catch potentially harmful
-                        responses
+                        responses.
                       </li>
                       <li>
-                        <strong>Distress Protocol:</strong> Trigger detection and resource linking functionality
+                        <strong>Distress Protocol:</strong> Trigger detection and resource linking functionality.
                       </li>
                       <li>
-                        <strong>Bias Checking:</strong> Basic keyword checks (though this needs significant expansion)
+                        <strong>Bias Checking:</strong> Basic keyword checks (to be expanded).
                       </li>
                     </ul>
                     <p>
                       You can review these implementations in our open-source code. They'll continue to be refined as we
                       develop the platform.
                     </p>
-                    <Link href="/ethics" passHref legacyBehavior>
+                    <Link href="/ethics" legacyBehavior>
                       <Button variant="outline" size="sm" className="group transition hover:scale-105 mt-2">
                         <Shield className="mr-2 h-4 w-4 group-hover:text-primary" />
                         Safety & Ethics
@@ -422,18 +412,18 @@ export default function FAQPage() {
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
                         <strong>Early Notification:</strong> You'll be among the first to know when we launch interactive
-                        features
+                        features.
                       </li>
                       <li>
-                        <strong>Development Updates:</strong> Occasional emails about our progress building the platform
+                        <strong>Development Updates:</strong> Occasional emails about our progress building the platform.
                       </li>
                       <li>
                         <strong>Opportunity for Input:</strong> Chances to provide feedback that shapes the direction of
-                        Global Pulse
+                        Global Pulse.
                       </li>
                       <li>
                         <strong>Priority Access:</strong> When we do start rolling out interactive features, waitlist
-                        members will get priority
+                        members will get priority.
                       </li>
                     </ul>
                     <p>
@@ -529,16 +519,16 @@ export default function FAQPage() {
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
                         <strong>Transparency:</strong> When dealing with emotional data, we believe users deserve to see
-                        exactly how their information is processed
+                        exactly how their information is processed.
                       </li>
                       <li>
-                        <strong>Trust:</strong> Open code means accountability – we can't hide problematic practices
+                        <strong>Trust:</strong> Open code means accountability – we can't hide problematic practices.
                       </li>
                       <li>
-                        <strong>Collaboration:</strong> We genuinely believe community input will make this better
+                        <strong>Collaboration:</strong> We genuinely believe community input will make this better.
                       </li>
                       <li>
-                        <strong>Learning:</strong> Others can learn from our approach (and we can learn from feedback)
+                        <strong>Learning:</strong> Others can learn from our approach (and we can learn from feedback).
                       </li>
                     </ul>
                     <p>You can contribute by:</p>
@@ -575,17 +565,17 @@ export default function FAQPage() {
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
                       <li>
-                        <strong>Hosted Service:</strong> Offering a reliable, scalable hosted version of the platform
+                        <strong>Hosted Service:</strong> Offering a reliable, scalable hosted version of the platform.
                       </li>
                       <li>
-                        <strong>Premium Features:</strong> Advanced capabilities for individual users or teams
+                        <strong>Premium Features:</strong> Advanced capabilities for individual users or teams.
                       </li>
                       <li>
                         <strong>Aggregate Insights:</strong> Selling strictly anonymized, aggregate insight products
-                        derived from users who have explicitly consented (with revenue sharing)
+                        derived from users who have explicitly consented (with revenue sharing).
                       </li>
                       <li>
-                        <strong>Enterprise Solutions:</strong> Customized implementations for specific use cases
+                        <strong>Enterprise Solutions:</strong> Customized implementations for specific use cases.
                       </li>
                     </ul>
                     <p>
@@ -605,7 +595,7 @@ export default function FAQPage() {
           Still got questions after wading through our post-hackathon reality check?
         </h2>
         <div className="flex flex-wrap justify-center gap-4">
-          <Link href="/contact" passHref legacyBehavior>
+          <Link href="/contact" legacyBehavior>
             <Button className="transition hover:scale-105">Contact Us</Button>
           </Link>
           <a
@@ -618,7 +608,7 @@ export default function FAQPage() {
               Explore the Code
             </Button>
           </a>
-          <Link href="/#waitlist" passHref legacyBehavior>
+          <Link href="/#waitlist" legacyBehavior>
             <Button variant="outline" className="transition hover:scale-105">
               <ExternalLink className="mr-2 h-4 w-4" />
               Join the Waitlist

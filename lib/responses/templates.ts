@@ -1,11 +1,14 @@
+/**
+ * TemplateParameter describes a variable that can be filled in a template.
+ */
 export interface TemplateParameter {
   /**
-   * Name of the parameter
+   * Name of the parameter (used as {name} in template)
    */
   name: string
 
   /**
-   * Whether the parameter is required
+   * Whether the parameter is required for the template to be valid
    */
   required: boolean
 
@@ -27,7 +30,7 @@ export interface TemplateParameter {
 }
 
 /**
- * Response template
+ * ResponseTemplate describes a single response template.
  */
 export interface ResponseTemplate {
   /**
@@ -47,20 +50,16 @@ export interface ResponseTemplate {
 }
 
 /**
- * Template library
+ * TemplateLibrary is a mapping from intent keys to arrays of templates.
  */
 export interface TemplateLibrary {
-  /**
-   * Templates grouped by intent
-   */
   [intentKey: string]: ResponseTemplate[]
 }
 
 /**
- * Pre-authored response templates
+ * Pre-authored response templates for all supported intents.
  */
 export const templates: TemplateLibrary = {
-  // Validate uncertainty templates
   validate_uncertainty: [
     {
       id: "validate_uncertainty_1",
@@ -94,7 +93,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Listening acknowledgment templates
   listening_ack: [
     {
       id: "listening_ack_1",
@@ -113,7 +111,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Validate high distress templates
   validate_high_distress: [
     {
       id: "validate_high_distress_1",
@@ -147,7 +144,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Somatic body cue prompt templates
   somatic_body_cue_prompt: [
     {
       id: "somatic_body_cue_prompt_1",
@@ -181,7 +177,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Somatic response acknowledgment templates
   somatic_response_ack: [
     {
       id: "somatic_response_ack_1",
@@ -200,7 +195,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Felt coherence check-in templates
   felt_coherence_checkin: [
     {
       id: "felt_coherence_checkin_1",
@@ -214,7 +208,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Distress consent check-in templates
   distress_consent_checkin: [
     {
       id: "distress_consent_checkin_1",
@@ -254,7 +247,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Generic safe response templates
   generic_safe_response: [
     {
       id: "generic_safe_response_1",
@@ -274,7 +266,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Bootstrap self-map prompt templates
   bootstrap_self_map_prompt: [
     {
       id: "bootstrap_self_map_prompt_1",
@@ -296,7 +287,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Bootstrap acknowledgment templates
   bootstrap_acknowledgment: [
     {
       id: "bootstrap_acknowledgment_1",
@@ -315,7 +305,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Add a new intent for acknowledging emotional states
   emotional_acknowledgment: [
     {
       id: "emotional_acknowledgment_1",
@@ -365,7 +354,6 @@ export const templates: TemplateLibrary = {
     },
   ],
 
-  // Add a new intent for grounding exercises
   grounding_prompt: [
     {
       id: "grounding_prompt_1",
@@ -401,7 +389,7 @@ export const templates: TemplateLibrary = {
 }
 
 /**
- * Get a random template for the given intent
+ * Get a random template for the given intent.
  * @param intentKey The intent key
  * @returns A random template for the intent, or undefined if none exists
  */
@@ -410,13 +398,12 @@ export function getRandomTemplate(intentKey: string): ResponseTemplate | undefin
   if (!intentTemplates || intentTemplates.length === 0) {
     return undefined
   }
-
   const randomIndex = Math.floor(Math.random() * intentTemplates.length)
   return intentTemplates[randomIndex]
 }
 
 /**
- * Get a specific template by ID
+ * Get a specific template by ID.
  * @param templateId The template ID
  * @returns The template with the given ID, or undefined if none exists
  */
@@ -432,10 +419,45 @@ export function getTemplateById(templateId: string): ResponseTemplate | undefine
 }
 
 /**
- * Get all templates for the given intent
+ * Get all templates for the given intent.
  * @param intentKey The intent key
  * @returns All templates for the intent, or an empty array if none exist
  */
 export function getTemplatesForIntent(intentKey: string): ResponseTemplate[] {
   return templates[intentKey] || []
+}
+
+/**
+ * Fill a template string with parameter values.
+ * @param template The template string with {placeholders}
+ * @param params An object mapping parameter names to values
+ * @returns The filled template string
+ */
+export function fillTemplate(template: string, params: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (_, key) => {
+    return params[key] !== undefined ? params[key] : `{${key}}`
+  })
+}
+
+/**
+ * Get all intent keys available in the template library.
+ * @returns Array of intent keys
+ */
+export function getAllIntentKeys(): string[] {
+  return Object.keys(templates)
+}
+
+/**
+ * Validate that all required parameters are present for a template.
+ * @param template The ResponseTemplate
+ * @param params The parameter values
+ * @returns true if valid, false if any required parameter is missing
+ */
+export function validateTemplateParams(template: ResponseTemplate, params: Record<string, string>): boolean {
+  for (const param of template.parameters) {
+    if (param.required && (params[param.name] === undefined || params[param.name] === null)) {
+      return false
+    }
+  }
+  return true
 }

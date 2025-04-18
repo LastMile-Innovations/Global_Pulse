@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import { shouldTriggerSomaticPrompt, generateSomaticPrompt } from "@/lib/somatic/somatic-service"
 import { logger } from "@/lib/utils/logger"
 import { SomaticTriggerTestPayloadSchema } from "@/lib/schemas/api"
+import { VADOutput } from "@/lib/types/pce-types"
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +17,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { userId, sessionId, vad, userMessage, currentTurn } = validationResult.data
+    const { userId, sessionId, vad: inputVad, userMessage, currentTurn } = validationResult.data
+
+    // Transform VAD input to expected VADOutput structure
+    const vad: VADOutput = {
+      valence: inputVad.v,
+      arousal: inputVad.a,
+      dominance: inputVad.d,
+      confidence: 1.0, // Assuming confidence 1.0 as it's not in the input schema
+    };
 
     // Test shouldTriggerSomaticPrompt
     const shouldTrigger = await shouldTriggerSomaticPrompt(userId, sessionId, vad, currentTurn)

@@ -1,17 +1,15 @@
-"use server"
+"use server";
 
 import { db } from '@/lib/db';
-import { schema } from '@/lib/db/schema';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { eq, sql } from 'drizzle-orm';
-import type { PostgresJsTransaction } from 'drizzle-orm/postgres-js';
 import type { NewWaitlistUser } from '@/lib/db/schema';
 import { waitlist_users, waitlist_referrals, waitlist_activity_logs } from '@/lib/db/schema/waitlist';
 
 const JoinSchema = z.object({
   email: z.string().email(),
-  name: z.string().optional(),
+  name: z.string().min(1, "Name is required").optional(),
   interest: z.string().optional(),
   referralCode: z.string().optional(),
   emailPreferences: z.any().optional(),
@@ -33,73 +31,107 @@ export async function joinWaitlist(input: unknown): Promise<JoinWaitlistResult> 
   const { email, name, interest, referralCode, emailPreferences, privacyAccepted } = parsed.data;
 
   try {
-    // Use transaction for atomicity, add explicit type for tx
-    const result = await db.transaction(async (tx) => { 
-      // Check for existing user using waitlist_users
-      const [existing] = await tx.select().from(waitlist_users).where(eq(waitlist_users.email, email)).limit(1);
+    // Use transaction for atomicity
+    const result = await db.transaction(async (tx) => {
+      // Check for existing user
+      const [existing] = await tx
+        .select()
+        .from(waitlist_users)
+        .where(eq(waitlist_users.email, email))
+        .limit(1);
+
       if (existing) {
         throw new Error('Email already registered');
       }
+
       // Generate unique referral code
       let newReferralCode: string;
-      while (true) {
+      let attempts = 0;
+      do {
         newReferralCode = nanoid(10);
-        const [codeExists] = await tx.select().from(waitlist_users).where(eq(waitlist_users.referralCode, newReferralCode)).limit(1);
+        const [codeExists] = await tx
+          .select()
+          .from(waitlist_users)
+          .where(eq(waitlist_users.referralCode, newReferralCode))
+          .limit(1);
         if (!codeExists) break;
-      }
-      // Prepare insert object with all schema fields
+        attempts++;
+        if (attempts > 5) throw new Error("Failed to generate unique referral code");
+      } while (true);
+
+      // Prepare insert object
       const newUserData: NewWaitlistUser = {
         email,
-        name,
-        interest,
+        name: name ?? null,
+        interest: interest ?? null,
         referralCode: newReferralCode,
-        referredByCode: referralCode,
+        referredByCode: referralCode ?? null,
         priorityScore: 0,
         referralCount: 0,
         status: 'pending',
         emailPreferences: emailPreferences ?? null,
         privacyAccepted: privacyAccepted,
-        // createdAt and updatedAt are set by default in schema
+        // createdAt and updatedAt handled by schema defaults
       };
-      // Create user using waitlist_users
+
+      // Insert new user
       const [newUser] = await tx.insert(waitlist_users).values(newUserData).returning();
-      // Handle referral
+
+      // Handle referral logic
       if (referralCode) {
-        const [referrer] = await tx.select().from(waitlist_users).where(eq(waitlist_users.referralCode, referralCode)).limit(1);
+        const [referrer] = await tx
+          .select()
+          .from(waitlist_users)
+          .where(eq(waitlist_users.referralCode, referralCode))
+          .limit(1);
+
         if (referrer && referrer.id !== newUser.id) {
           await tx.insert(waitlist_referrals).values({
             referrerId: referrer.id,
             referredId: newUser.id,
           });
-          await tx.update(waitlist_users)
+
+          await tx
+            .update(waitlist_users)
             .set({
-              referralCount: referrer.referralCount + 1,
-              priorityScore: sql`${waitlist_users.priorityScore} + 10`, // TODO: Get points from settings
+              referralCount: (referrer.referralCount ?? 0) + 1,
+              priorityScore: sql`${waitlist_users.priorityScore} + 10`, // MVP: static points
             })
             .where(eq(waitlist_users.id, referrer.id));
         }
       }
-      // Log activity using waitlist_activity_logs
+
+      // Log activity
       await tx.insert(waitlist_activity_logs).values({
         waitlistUserId: newUser.id,
         action: 'signup',
         details: { email, referralCode },
       });
+
       return newUser;
     });
-    // (Optional) Send confirmation email here
-    const referralLink = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/waitlist?ref=${result.referralCode}`;
+
+    // Compose referral link
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+    const referralLink = `${baseUrl}/waitlist?ref=${result.referralCode}`;
+
     return {
       success: true,
-      user: { email: result.email, name: result.name, referralCode: result.referralCode },
+      user: {
+        email: result.email,
+        name: result.name,
+        referralCode: result.referralCode,
+      },
       referralLink,
     };
   } catch (error: any) {
-    // Add logging for internal errors
-    if (error.message === 'Email already registered') {
+    if (error?.message === 'Email already registered') {
       return { success: false, error: 'Email already registered' };
     }
-    console.error("Error in joinWaitlist action:", error); // Log internal errors
+    if (error?.message === 'Failed to generate unique referral code') {
+      return { success: false, error: 'Could not generate referral code, please try again.' };
+    }
+    console.error("Error in joinWaitlist action:", error);
     return { success: false, error: 'An internal error occurred' };
   }
-} 
+}

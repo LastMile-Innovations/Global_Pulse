@@ -1,66 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { waitlist_users, waitlist_activity_logs } from '@/lib/db/schema';
+import { schema } from '@/lib/db/schema';
+import { rateLimit } from '@/lib/redis/rate-limit';
+import { eq } from 'drizzle-orm';
+import { logger } from '@/lib/utils/logger';
 import { z } from 'zod';
-import { rateLimit } from '@/lib/redis/rate-limit'; // Assuming rate limiter utility
-import { sql, desc, asc, count } from 'drizzle-orm';
 
-const StatusSchema = z.object({ email: z.string().email() });
+// Use a Zod object for better error messages
+const EmailQuerySchema = z.object({
+  email: z.string().email(),
+});
 
-export async function POST(req: NextRequest) {
-  // Apply rate limiting
-  const rateLimitResponse = await rateLimit(req);
+export async function GET(req: NextRequest) {
+  // Rate limit check (window must be a number, not a string)
+  const rateLimitResponse = await rateLimit(req, {
+    keyPrefix: 'waitlist_status',
+    limit: 10,
+    window: 300, // 5 minutes in seconds
+  });
   if (rateLimitResponse) return rateLimitResponse;
 
+  // Get email from query params
+  const email = req.nextUrl.searchParams.get('email');
+  const parsed = EmailQuerySchema.safeParse({ email });
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid or missing email parameter' }, { status: 400 });
+  }
+
   try {
-    const body = await req.json();
-    const parsed = StatusSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Invalid input', details: parsed.error.errors }, { status: 400 });
-    }
-    const { email } = parsed.data;
+    // Always use lowercased email for lookup
+    const normalizedEmail = parsed.data.email.toLowerCase();
 
-    const user = await db.query.waitlist_users.findFirst({ where: (u, { eq }) => eq(u.email, email) });
+    const user = await db
+      .select({
+        id: schema.waitlist_users.id,
+        status: schema.waitlist_users.status,
+        priorityScore: schema.waitlist_users.priorityScore,
+        referralCode: schema.waitlist_users.referralCode,
+        createdAt: schema.waitlist_users.createdAt,
+      })
+      .from(schema.waitlist_users)
+      .where(eq(schema.waitlist_users.email, normalizedEmail))
+      .limit(1)
+      .then(res => res[0]);
+
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ status: 'not_found' }, { status: 404 });
     }
 
-    // Calculate position using a window function for efficiency
-    // Note: This requires PostgreSQL
-    const positionQuery = sql`
-      SELECT position
-      FROM (
-        SELECT id, ROW_NUMBER() OVER (ORDER BY priority_score DESC, created_at ASC) as position
-        FROM waitlist_users
-      ) as ranked_users
-      WHERE id = ${user.id}
-    `;
-    // Directly execute the raw SQL query
-    const positionResult: Array<{ position: number | null }> = await db.execute(positionQuery);
-    const position = positionResult[0]?.position ?? null;
-
-    if (position === null) {
-      console.warn('Could not determine waitlist position for user:', user.id);
-      // Decide how to handle this - maybe return null or default position?
-    }
-
-    // Log status check
-    await db.insert(waitlist_activity_logs).values({
-      waitlistUserId: user.id,
-      action: 'status_check',
-      details: { email },
-    });
-
+    // MVP: No position calculation, just return basic info
     return NextResponse.json({
-      position,
-      score: user.priorityScore,
-      referralCount: user.referralCount,
-      referralLink: `${process.env.NEXT_PUBLIC_BASE_URL || ''}/waitlist?ref=${user.referralCode}`,
       status: user.status,
+      referralCode: user.referralCode,
+      joinedAt: user.createdAt,
     });
 
   } catch (error: any) {
-    console.error('Check status error:', error);
+    logger.error('Error fetching waitlist status:', error);
     return NextResponse.json({ error: 'An internal error occurred' }, { status: 500 });
   }
-} 
+}

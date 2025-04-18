@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm"
-import { getDrizzle } from "../drizzle"
-import { users, userSessions } from "../../schema/users"
+import { db } from "@/lib/db/postgres/drizzle"
+import { profiles, userSessions } from "@/lib/db/schema"
 import { logger } from "../../../utils/logger"
 
 /**
@@ -17,8 +17,7 @@ export class UserRepository {
     profileData?: string
   }) {
     try {
-      const db = getDrizzle()
-      const result = await db.insert(users).values(userData).returning()
+      const result = await db.insert(profiles).values(userData).returning()
       return result[0]
     } catch (error) {
       logger.error(`Error creating user: ${error}`)
@@ -31,8 +30,7 @@ export class UserRepository {
    */
   async getUserById(userId: string) {
     try {
-      const db = getDrizzle()
-      const result = await db.select().from(users).where(eq(users.userId, userId))
+      const result = await db.select().from(profiles).where(eq(profiles.id, userId))
       return result[0] || null
     } catch (error) {
       logger.error(`Error getting user by ID: ${error}`)
@@ -45,7 +43,6 @@ export class UserRepository {
    */
   async createSession(sessionData: { sessionId: string; userId: string }) {
     try {
-      const db = getDrizzle()
       const result = await db.insert(userSessions).values(sessionData).returning()
       return result[0]
     } catch (error) {
@@ -59,7 +56,6 @@ export class UserRepository {
    */
   async updateSessionActivity(sessionId: string) {
     try {
-      const db = getDrizzle()
       const result = await db
         .update(userSessions)
         .set({ lastActivity: new Date() })

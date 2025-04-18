@@ -1,4 +1,4 @@
-import { Redis, type RedisConfigNodejs } from "@upstash/redis"
+import { Redis, type RedisConfigNodejs } from "@upstash/redis";
 
 /**
  * High-performance Redis client for Next.js applications
@@ -15,56 +15,59 @@ import { Redis, type RedisConfigNodejs } from "@upstash/redis"
 // --- Configuration ---
 
 // Define specific environment variable names for clarity
-const primaryUrl = process.env.UPSTASH_REDIS_PRIMARY_URL || process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || "";
-const primaryToken = process.env.UPSTASH_REDIS_PRIMARY_TOKEN || process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "";
-const replicaUrl = process.env.UPSTASH_REDIS_REPLICA_URL || primaryUrl; // Fallback to primary if no replica specified
-const replicaToken = process.env.UPSTASH_REDIS_REPLICA_TOKEN || primaryToken; // Fallback to primary if no replica specified
+const primaryUrl =
+  process.env.UPSTASH_REDIS_PRIMARY_URL ||
+  process.env.KV_REST_API_URL ||
+  process.env.UPSTASH_REDIS_REST_URL ||
+  "";
+const primaryToken =
+  process.env.UPSTASH_REDIS_PRIMARY_TOKEN ||
+  process.env.KV_REST_API_TOKEN ||
+  process.env.UPSTASH_REDIS_REST_TOKEN ||
+  "";
+const replicaUrl =
+  process.env.UPSTASH_REDIS_REPLICA_URL || primaryUrl; // Fallback to primary if no replica specified
+const replicaToken =
+  process.env.UPSTASH_REDIS_REPLICA_TOKEN || primaryToken; // Fallback to primary if no replica specified
 
 // Early exit if primary credentials are missing
 if (!primaryUrl || !primaryToken) {
   throw new Error(
     "Missing Upstash Redis primary credentials. Please set UPSTASH_REDIS_PRIMARY_URL and UPSTASH_REDIS_PRIMARY_TOKEN environment variables."
-  )
+  );
 }
 
 // Shared configuration for both clients
 const redisConfig: Partial<RedisConfigNodejs> = {
-  // Essential for Edge Runtime & Serverless performance
   enableAutoPipelining: true,
-  // Simplifies common use cases by handling JSON automatically
   automaticDeserialization: true,
-  // Sensible defaults for edge/serverless: fail relatively fast
   retry: {
     retries: 3,
-    backoff: (retryCount: number) => Math.min(Math.exp(retryCount) * 50, 1000), // Exponential backoff up to 1s
+    backoff: (retryCount: number) =>
+      Math.min(Math.exp(retryCount) * 50, 1000), // Exponential backoff up to 1s
   },
-  // Disable verbose logging in production for performance
   latencyLogging: process.env.NODE_ENV === "development",
-}
+};
 
 /**
  * Upstash Redis Client for WRITE operations (and commands not safe on replicas).
  * Connects to the primary Redis instance.
- * Use this for: SET, DEL, INCR, DECR, HSET, HDEL, ZADD, ZREM, SADD, SREM, PUBLISH, Pipelined writes, Transactions (MULTI/EXEC).
- * Also use for read commands that MUST see the absolute latest data if not using Global DB eventual consistency.
  */
 export const redisPrimary = new Redis({
   url: primaryUrl,
   token: primaryToken,
   ...redisConfig,
-})
+});
 
 /**
  * Upstash Redis Client for READ operations.
  * Connects to the read replica Redis instance (falls back to primary if replica URL/Token aren't set).
- * Use this for: GET, MGET, HGETALL, HMGET, ZRANGE, ZSCORE, SMEMBERS, SCAN variants etc.
- * Ideal for caching reads and leveraging potential Global Database read replicas for lower latency.
  */
 export const redisReplica = new Redis({
   url: replicaUrl,
   token: replicaToken,
   ...redisConfig,
-})
+});
 
 /**
  * Generates a consistent cache key with an optional parameters object.
@@ -73,22 +76,20 @@ export const redisReplica = new Redis({
  * @param prefix - The base prefix for the key (e.g., 'user', 'posts:list').
  * @param params - Optional object containing parameters to include in the key.
  * @returns A formatted cache key string.
- *
- * @example
- * createCacheKey('user', { id: 123 }) // => "user:{\"id\":123}"
- * createCacheKey('posts:list')       // => "posts:list:default"
  */
-export const createCacheKey = (prefix: string, params: Record<string, unknown> = {}): string => {
-  const sortedEntries = Object.entries(params).sort(([keyA], [keyB]) => keyA.localeCompare(keyB));
-
+export const createCacheKey = (
+  prefix: string,
+  params: Record<string, unknown> = {}
+): string => {
+  const sortedEntries = Object.entries(params).sort(([a], [b]) =>
+    a.localeCompare(b)
+  );
   if (sortedEntries.length === 0) {
     return `${prefix}:default`;
   }
-
-  // Stable stringify ensures consistent key despite object property order differences
   const paramsString = JSON.stringify(Object.fromEntries(sortedEntries));
   return `${prefix}:${paramsString}`;
-}
+};
 
 // --- Caching Abstraction ---
 
@@ -97,7 +98,7 @@ type CacheOptions = {
   ttl?: number;
   /** Optional array of tags for tag-based invalidation. */
   tags?: string[];
-}
+};
 
 /**
  * Fetches data from cache or executes a query function, caching the result.
@@ -144,20 +145,19 @@ export async function cacheQuery<T>(
     // 4. If tags are provided, add key to tag sets using a pipeline on the primary client
     let tagPipelinePromise: Promise<unknown> | null = null;
     if (tags.length > 0) {
-      const uniqueTags = [...new Set(tags)]; // Ensure tags are unique
-      const p = redisPrimary.pipeline();
-      uniqueTags.forEach(tag => {
-        if (tag) { // Avoid adding empty tags
-            p.sadd(`tag:${tag}`, key);
-        }
-      });
-      // Check if there are any commands to execute
-      tagPipelinePromise = p.exec();
+      const uniqueTags = [...new Set(tags)].filter(Boolean); // Ensure tags are unique and non-empty
+      if (uniqueTags.length > 0) {
+        const p = redisPrimary.pipeline();
+        uniqueTags.forEach(tag => {
+          p.sadd(`tag:${tag}`, key);
+        });
+        tagPipelinePromise = p.exec();
+      }
     }
 
     // Wait for cache set and tag operations to complete (auto-pipelining helps if separate awaits)
     // Using Promise.all ensures they run concurrently where possible by the client/env
-    await Promise.all([setPromise, tagPipelinePromise].filter(p => p !== null));
+    await Promise.all([setPromise, tagPipelinePromise].filter(Boolean));
 
     return data;
 
@@ -187,7 +187,7 @@ export async function cacheQuery<T>(
  */
 export async function invalidateTags(tags: string | string[]): Promise<void> {
   const tagList = Array.isArray(tags) ? tags : [tags];
-  const uniqueTags = [...new Set(tagList)].filter(tag => tag); // Ensure unique and non-empty
+  const uniqueTags = [...new Set(tagList)].filter(Boolean); // Ensure unique and non-empty
 
   if (uniqueTags.length === 0) return;
 
@@ -196,10 +196,17 @@ export async function invalidateTags(tags: string | string[]): Promise<void> {
   try {
     // 1. Get all keys associated with these tags using the read replica client
     // Use SUNION for efficiency if needing keys from multiple tags at once
-    // Handle type conversion for sunion
-    const keysToInvalidate = await redisReplica.sunion(tagKeys as unknown as string);
+    // Upstash Redis client expects ...args for sunion, not a single string
+    // Fix: Upstash Redis types require tuple for spread, so cast as [string, ...string[]] if needed
+    let keysToInvalidate: unknown[] = [];
+    if (tagKeys.length === 1) {
+      keysToInvalidate = await redisReplica.sunion(tagKeys[0]);
+    } else if (tagKeys.length > 1) {
+      // TypeScript: force as [string, ...string[]]
+      keysToInvalidate = await redisReplica.sunion(...(tagKeys as [string, ...string[]]));
+    }
 
-    if (keysToInvalidate.length > 0) {
+    if (Array.isArray(keysToInvalidate) && keysToInvalidate.length > 0) {
       // 2. Delete all cache keys AND the tag sets themselves using a pipeline on the primary client
       const p = redisPrimary.pipeline();
       // Delete each key individually to avoid type errors
@@ -209,6 +216,11 @@ export async function invalidateTags(tags: string | string[]): Promise<void> {
         }
       });
       // Delete tag keys
+      tagKeys.forEach(tagKey => p.del(tagKey));
+      await p.exec();
+    } else {
+      // Even if no keys, still delete the tag sets to avoid memory leaks
+      const p = redisPrimary.pipeline();
       tagKeys.forEach(tagKey => p.del(tagKey));
       await p.exec();
     }
@@ -293,6 +305,52 @@ export const redis = redisPrimary;
 // relevant to your application (e.g., leaderboard updates, session management checks)
 // using the exported `redisPrimary` and `redisReplica` clients.
 
+// --- Additional helpers (examples, non-breaking) ---
 
+/**
+ * Get a value from Redis (read replica), with optional fallback.
+ * @param key 
+ * @param fallback 
+ */
+export async function getFromCache<T>(key: string, fallback?: () => Promise<T>): Promise<T | null> {
+  try {
+    const value = await redisReplica.get<T>(key);
+    if (value !== undefined && value !== null) return value;
+    if (fallback) return await fallback();
+    return null;
+  } catch (err) {
+    console.error(`Error getting key ${key} from cache`, err);
+    if (fallback) return await fallback();
+    return null;
+  }
+}
 
+/**
+ * Set a value in Redis (primary), with optional TTL.
+ * @param key 
+ * @param value 
+ * @param ttl 
+ */
+export async function setCache<T>(key: string, value: T, ttl?: number): Promise<void> {
+  try {
+    if (ttl && ttl > 0) {
+      await redisPrimary.setex(key, ttl, value);
+    } else {
+      await redisPrimary.set(key, value);
+    }
+  } catch (err) {
+    console.error(`Error setting key ${key} in cache`, err);
+  }
+}
 
+/**
+ * Delete a key from Redis (primary).
+ * @param key 
+ */
+export async function deleteCache(key: string): Promise<void> {
+  try {
+    await redisPrimary.del(key);
+  } catch (err) {
+    console.error(`Error deleting key ${key} from cache`, err);
+  }
+}

@@ -1,21 +1,45 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getUserFromRequest } from "@/lib/auth/auth-utils"
+import { auth } from "@/lib/auth/auth-utils"
 import { checkConsent } from "@/lib/ethics/consent"
 import { logger } from "@/lib/utils/logger"
-import { getRedisClient } from "@/lib/redis/client"
+import { getRedisClient } from "@/lib/db/redis/redis-client"
 import crypto from "crypto"
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_CALENDAR_REDIRECT_URI!
+const GOOGLE_SCOPES = [
+  "https://www.googleapis.com/auth/calendar.readonly",
+  // Add more scopes as needed
+].join(" ")
+const GOOGLE_AUTH_BASE = "https://accounts.google.com/o/oauth2/v2/auth"
+
+function buildGoogleAuthUrl(state: string): string {
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+    response_type: "code",
+    scope: GOOGLE_SCOPES,
+    access_type: "offline",
+    prompt: "consent",
+    state,
+    include_granted_scopes: "true",
+  })
+  return `${GOOGLE_AUTH_BASE}?${params.toString()}`
+}
 
 export async function POST(request: NextRequest) {
   try {
     // Authenticate user
-    const user = await getUserFromRequest(request)
-    if (!user) {
+    const userId = await auth(request)
+    if (!userId) {
+      logger.warn("Unauthorized attempt to connect Google Calendar")
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     // Check if user has granted consent for Google Calendar
-    const hasConsent = await checkConsent(user.id, "CAN_ACCESS_SOURCE_google_calendar")
+    const hasConsent = await checkConsent(userId, "CAN_ACCESS_SOURCE_google_calendar")
     if (!hasConsent) {
+      logger.warn(`User ${userId} has not granted consent for Google Calendar`)
       return NextResponse.json(
         { error: "You must grant consent for Google Calendar integration in your privacy settings" },
         { status: 403 },
@@ -27,12 +51,13 @@ export async function POST(request: NextRequest) {
 
     // Store state in Redis with expiration (10 minutes)
     const redis = getRedisClient()
-    await redis.set(`oauth_state:${state}`, user.id, { ex: 600 })
+    await redis.set(`oauth_state:${state}`, userId, { ex: 600 })
 
-    // Generate authorization URL
-    // const googleClient = new GoogleCalendarClient()
-    // const authUrl = googleClient.getAuthUrl(state)
-    const authUrl = ""
+    // Build Google OAuth2 authorization URL
+    const authUrl = buildGoogleAuthUrl(state)
+
+    logger.info(`Initiated Google Calendar OAuth for user ${userId}`)
+
     return NextResponse.json({ authUrl })
   } catch (error) {
     logger.error("Error initiating Google Calendar connection:", error)

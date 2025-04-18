@@ -34,10 +34,10 @@ export function extractKeywords(text: string, options?: KeywordExtractionOptions
 
     // 4. Apply custom stopwords if provided
     const filteredTokens =
-      customStopwords.length > 0 ? withoutStopwords.filter((word) => !customStopwords.includes(word)) : withoutStopwords
+      customStopwords.length > 0 ? withoutStopwords.filter((word: string) => !customStopwords.includes(word)) : withoutStopwords
 
     // 5. Filter short words
-    const significantTokens = filteredTokens.filter((word) => word.length >= minWordLength)
+    const significantTokens = filteredTokens.filter((word: string) => word.length >= minWordLength)
 
     // 6. Calculate frequency
     const frequencyMap: Record<string, number> = {}

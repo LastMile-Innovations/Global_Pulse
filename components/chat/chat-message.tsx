@@ -2,9 +2,14 @@
 import type { Message as AIMessage } from "ai"
 import { User, Bot } from "lucide-react"
 import { cn } from "@/lib/utils"
-import MultipleChoiceInput from "./generative-ui/multiple-choice-input"
-import SliderInput from "./generative-ui/slider-input"
-import ButtonsInput from "./generative-ui/buttons-input"
+import { Button } from "@/components/ui/button"
+import { Icons } from "@/components/shared/icons"
+import { Separator } from "@/components/ui/separator"
+import { type Message } from "ai/react"
+import MultipleChoiceInput from "../genui/multiple-choice-input"
+import SliderInput from "../genui/slider-input"
+import ButtonsInput from "../genui/buttons-input"
+import { CoherenceCheck } from "./coherence-check"
 
 // Define the structure of parts within message.content when it's an array
 // Based on usage within the component

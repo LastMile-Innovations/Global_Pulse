@@ -45,18 +45,16 @@ export function MessageItem({ message, sessionId, previousMessageId, isLastMessa
         if (typeof checkInData.reviewInteractionId === "string") {
           setReviewInteractionId(checkInData.reviewInteractionId)
         } else {
-          logger.warn("Check-in data found but reviewInteractionId is missing or invalid", {
-            messageId: message.id,
-            checkInData,
-          })
+          const logContext = { messageId: message.id, checkInData };
+          logger.warn(`Check-in data found but reviewInteractionId is missing or invalid: ${JSON.stringify(logContext)}`);
         }
       }
     } else if (message.content.includes("How well did my previous response") && !isCheckIn) {
       // Log warning if we detect check-in text but metadata is missing
-      logger.warn("Detected potential check-in text but metadata missing", {
-        messageId: message.id,
-        data: message.data,
-      })
+      const logContext = { messageId: message.id, data: message.data };
+      logger.warn(
+        `Detected potential check-in text but metadata missing or invalid: ${JSON.stringify(logContext)}`
+      )
     }
   }, [message, isCheckIn])
 

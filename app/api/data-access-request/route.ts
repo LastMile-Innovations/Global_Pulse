@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
   try {
     // Authenticate user
-    const userId = await auth(request)
+    const userId = await auth(request as unknown as Request)
     if (!userId) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 })
     }
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Authenticate user
-    const userId = await auth(request)
+    const userId = await auth(request as unknown as Request)
     if (!userId) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 })
     }

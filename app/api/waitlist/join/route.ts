@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { waitlist_users, waitlist_referrals, waitlist_activity_logs } from '@/lib/db/schema';
-import { nanoid } from 'nanoid';
 import { z } from 'zod';
-import { rateLimit } from '@/lib/redis/rate-limit'; // Assuming rate limiter utility
+import { db } from '@/lib/db';
+import { schema } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { logger } from '@/lib/utils/logger';
+import { nanoid } from 'nanoid';
+import { rateLimit } from '@/lib/redis/rate-limit';
+import { redis } from '@/lib/redis/client';
+import { sql } from 'drizzle-orm';
 
 const JoinSchema = z.object({
   email: z.string().email(),
@@ -18,9 +21,15 @@ const JoinSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  // Apply rate limiting
-  const rateLimitResponse = await rateLimit(req);
-  if (rateLimitResponse) return rateLimitResponse;
+  // Rate limit check (window must be a number, not a string)
+  const rateLimitResponse = await rateLimit(req, {
+    keyPrefix: 'waitlist_join',
+    limit: 5,
+    window: 600, // 10 minutes in seconds
+  });
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
 
   try {
     const body = await req.json();
@@ -30,77 +39,139 @@ export async function POST(req: NextRequest) {
     }
     const { email, name, interest, referralCode, emailPreferences, privacyAccepted } = parsed.data;
 
-    // Use transaction for atomicity
-    const result = await db.transaction(async (tx) => {
-      // Check for existing user
-      const existing = await tx.query.waitlist_users.findFirst({ where: (u, { eq }) => eq(u.email, email) });
+    // Use a variable to store the response if we need to return early from inside the transaction
+    let earlyResponse: Response | null = null;
+
+    await db.transaction(async (tx) => {
+      // Check if email exists
+      const existing = await tx.select({ id: schema.waitlist_users.id })
+        .from(schema.waitlist_users)
+        .where(eq(schema.waitlist_users.email, email))
+        .limit(1)
+        .then(res => res[0]);
+
       if (existing) {
-        // Throw an error to rollback transaction and return specific response
-        throw new Error('Email already registered');
+        logger.info(`Waitlist signup attempt for existing email: ${email}`);
+        // Set early response and return to break out of transaction
+        earlyResponse = NextResponse.json({ success: true, message: 'Signup request received.' });
+        return;
       }
 
       // Generate unique referral code
-      let newReferralCode: string;
-      while (true) {
-        newReferralCode = nanoid(10);
-        const codeExists = await tx.query.waitlist_users.findFirst({ where: (u, { eq }) => eq(u.referralCode, newReferralCode) });
-        if (!codeExists) break;
+      let newReferralCode: string | null = null;
+      let codeExists = true;
+      while (codeExists) {
+        const candidate = nanoid(10);
+        const found = await tx.select({ id: schema.waitlist_users.id })
+          .from(schema.waitlist_users)
+          .where(eq(schema.waitlist_users.referralCode, candidate))
+          .limit(1)
+          .then(res => res[0]);
+        if (!found) {
+          newReferralCode = candidate;
+          codeExists = false;
+        }
       }
 
-      // Create user
-      const [newUser] = await tx.insert(waitlist_users).values({
+      // Defensive: should never happen, but TS check
+      if (!newReferralCode) {
+        throw new Error("Failed to generate unique referral code.");
+      }
+
+      // Handle referral code if provided
+      let referrerId: string | null = null;
+      let referrerScoreIncrement = 0;
+      if (referralCode) {
+        const referrer = await tx.select({
+          id: schema.waitlist_users.id,
+          priorityScore: schema.waitlist_users.priorityScore
+        })
+          .from(schema.waitlist_users)
+          .where(eq(schema.waitlist_users.referralCode, referralCode))
+          .limit(1)
+          .then(res => res[0]);
+
+        if (referrer) {
+          referrerId = referrer.id;
+          // Fetch the referral bonus from settings or use a default
+          let referralBonus = 10;
+          try {
+            const bonusSetting = await redis.get('waitlist:referral_bonus');
+            if (typeof bonusSetting === 'string') {
+              const parsedBonus = parseInt(bonusSetting, 10);
+              if (!isNaN(parsedBonus)) {
+                referralBonus = parsedBonus;
+              }
+            }
+          } catch (redisError) {
+            logger.error('Failed to fetch referral bonus from Redis:', redisError);
+          }
+
+          referrerScoreIncrement = referralBonus;
+          await tx.update(schema.waitlist_users)
+            .set({
+              priorityScore: sql`${schema.waitlist_users.priorityScore} + ${referrerScoreIncrement}`,
+              referralCount: sql`${schema.waitlist_users.referralCount} + 1`,
+            })
+            .where(eq(schema.waitlist_users.id, referrerId));
+
+          logger.info(`Applied referral bonus (${referrerScoreIncrement}) to referrer ${referrerId} for new user ${email}`);
+        } else {
+          logger.warn(`Invalid referral code used during signup: ${referralCode}`);
+        }
+      }
+
+      // Insert new user
+      const newUser = await tx.insert(schema.waitlist_users).values({
         email,
         name,
         interest,
         referralCode: newReferralCode,
-        referredByCode: referralCode,
-        emailPreferences,
-        privacyAccepted,
-        status: 'pending',
-      }).returning();
+        referredByCode: referralCode ?? null,
+        priorityScore: 1 + referrerScoreIncrement,
+        privacyAccepted: privacyAccepted,
+        emailPreferences: emailPreferences ?? null,
+      }).returning({ id: schema.waitlist_users.id });
 
-      // Handle referral
-      if (referralCode) {
-        const referrer = await tx.query.waitlist_users.findFirst({ where: (u, { eq }) => eq(u.referralCode, referralCode) });
-        if (referrer && referrer.id !== newUser.id) {
-          await tx.insert(waitlist_referrals).values({
-            referrerId: referrer.id,
-            referredId: newUser.id,
-          });
-          // Update referrer stats
-          await tx.update(waitlist_users)
-            .set({
-              referralCount: referrer.referralCount + 1,
-              priorityScore: referrer.priorityScore + 10, // TODO: Get points from settings
-            })
-            .where(eq(waitlist_users.id, referrer.id));
-        }
+      const newUserId = newUser[0]?.id;
+
+      if (!newUserId) {
+        throw new Error("Failed to insert new waitlist user.");
+      }
+
+      // Insert referral record if applicable
+      if (referrerId) {
+        await tx.insert(schema.waitlist_referrals).values({
+          referrerId: referrerId,
+          referredId: newUserId,
+        });
       }
 
       // Log activity
-      await tx.insert(waitlist_activity_logs).values({
-        waitlistUserId: newUser.id,
+      await tx.insert(schema.waitlist_activity_logs).values({
+        waitlistUserId: newUserId,
         action: 'signup',
-        details: { email, referralCode },
+        details: {
+          name: name ?? null,
+          email,
+          interest: interest ?? null,
+          referralCode: referralCode ?? null,
+          referrerId: referrerId ?? null
+        },
       });
 
-      return newUser;
+      logger.info(`New waitlist user signed up: ${email}, ID: ${newUserId}`);
     });
 
-    // (Optional) Send confirmation email here
+    // If earlyResponse was set (user already existed), return it
+    if (earlyResponse) {
+      return earlyResponse;
+    }
 
-    return NextResponse.json({
-      success: true,
-      user: { email: result.email, name: result.name, referralCode: result.referralCode },
-      referralLink: `${process.env.NEXT_PUBLIC_BASE_URL || ''}/waitlist?ref=${result.referralCode}`,
-    });
+    return NextResponse.json({ success: true, message: 'Successfully joined the waitlist!' });
 
   } catch (error: any) {
-    console.error('Join waitlist error:', error);
-    // Handle specific transaction rollback error
-    if (error.message === 'Email already registered') {
-      return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
-    }
-    return NextResponse.json({ error: 'An internal error occurred' }, { status: 500 });
+    logger.error('Error joining waitlist:', error);
+    return NextResponse.json({ error: 'An error occurred while joining the waitlist.' }, { status: 500 });
   }
-} 
+}

@@ -13,31 +13,40 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react"
 
+// Define collaboration types
+const collaborationTypes = [
+  "framework-validation",
+  "algorithm-development",
+  "open-source",
+  "ethical-ai",
+  "data-access",
+  "other",
+] as const // Use const assertion for literal types
+type CollaborationType = (typeof collaborationTypes)[number];
+
 // Form validation schema
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name is required" }),
   email: z.string().email({ message: "Valid email is required" }),
-  institution: z.string().min(2, { message: "Institution is required" }),
-  researchArea: z.string().min(2, { message: "Research area is required" }),
-  message: z.string().min(10, { message: "Message is required (min 10 characters)" }),
-  collaborationType: z.enum(
-    ["framework-validation", "algorithm-development", "open-source", "ethical-ai", "data-access", "other"],
-    {
-      required_error: "Please select a collaboration type",
-    },
-  ),
-  agreeToTerms: z.literal(true, {
-    errorMap: () => ({ message: "You must agree to the terms" }),
+  institution: z.string().min(2, { message: "Institution/affiliation is required" }),
+  researchArea: z.string().min(10, { message: "Please describe your research area" }),
+  collaborationType: z.enum(collaborationTypes, { message: "Please select a collaboration type" }),
+  message: z.string().min(50, { message: "Please provide a detailed message (minimum 50 characters)" }),
+  // Use boolean().refine() for validation
+  agreeToTerms: z.boolean().refine((val) => val === true, {
+    message: "You must agree to the terms and conditions",
   }),
-})
+});
 
-type FormValues = z.infer<typeof formSchema>
+// Infer the type from the schema
+type FormValues = z.infer<typeof formSchema>;
 
 export function ResearchContactForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
-  const [errorMessage, setErrorMessage] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
+  // Use the inferred type
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,37 +54,39 @@ export function ResearchContactForm() {
       email: "",
       institution: "",
       researchArea: "",
+      collaborationType: undefined, // Default to undefined for enum
       message: "",
-      agreeToTerms: false,
+      agreeToTerms: false, // Default can be false
     },
-  })
+  });
 
+  // onSubmit receives validated data
   async function onSubmit(data: FormValues) {
-    setIsSubmitting(true)
-    setSubmitStatus("idle")
-    setErrorMessage("")
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
+    setErrorMessage("");
 
     try {
-      const response = await fetch("/api/research-contact", {
+      const response = await fetch("/api/research-contact", { // Make sure endpoint is correct
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to submit request")
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to submit contact request");
       }
 
-      setSubmitStatus("success")
-      form.reset()
+      setSubmitStatus("success");
+      form.reset();
     } catch (error) {
-      setSubmitStatus("error")
-      setErrorMessage(error instanceof Error ? error.message : "An unexpected error occurred")
+      setSubmitStatus("error");
+      setErrorMessage(error instanceof Error ? error.message : "An unexpected error occurred");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -227,18 +238,18 @@ export function ResearchContactForm() {
             control={form.control}
             name="agreeToTerms"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-gray-800 p-4">
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                 <FormControl>
                   <Checkbox
+                    // field.value is correctly typed as boolean
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    className="data-[state=checked]:bg-primary"
+                    disabled={isSubmitting}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>
-                    I understand that this is a research collaboration inquiry and agree to Global Pulse's data handling
-                    practices for this contact form.
+                    I agree to the Research Collaboration Terms and Conditions.
                   </FormLabel>
                   <FormMessage />
                 </div>

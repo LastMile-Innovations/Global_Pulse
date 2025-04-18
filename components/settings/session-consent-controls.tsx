@@ -5,7 +5,7 @@ import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import { AlertCircle, Info } from "lucide-react"
+import { AlertCircle, Info, Terminal } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 interface SessionConsentControlsProps {
@@ -100,7 +100,7 @@ export function SessionConsentControls({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <Alert variant="outline" className="bg-blue-50 border-blue-200">
+        <Alert variant="default" className="bg-blue-50 border-blue-200">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertTitle className="text-blue-800">Session-Level Controls</AlertTitle>
           <AlertDescription className="text-blue-700">
@@ -128,7 +128,7 @@ export function SessionConsentControls({
           </div>
 
           {!consentAggregation && (
-            <Alert variant="outline" className="bg-gray-50 border-gray-200 mt-1">
+            <Alert variant="default" className="bg-gray-50 border-gray-200 mt-1">
               <AlertCircle className="h-4 w-4 text-gray-600" />
               <AlertDescription className="text-gray-700 text-xs">
                 This control is inactive because you have not enabled Aggregate Insights in your main consent settings.
@@ -154,7 +154,7 @@ export function SessionConsentControls({
           </div>
 
           {!consentAnonymizedPatternTraining && (
-            <Alert variant="outline" className="bg-gray-50 border-gray-200 mt-1">
+            <Alert variant="default" className="bg-gray-50 border-gray-200 mt-1">
               <AlertCircle className="h-4 w-4 text-gray-600" />
               <AlertDescription className="text-gray-700 text-xs">
                 This control is inactive because you have not enabled AI Training in your main consent settings.

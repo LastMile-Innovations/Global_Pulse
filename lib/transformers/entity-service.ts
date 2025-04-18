@@ -23,15 +23,15 @@ function mapEntityType(modelLabel: string): EntityType {
   const validTypes: EntityType[] = [
     "PERSON", "LOCATION", "ORGANIZATION", "DATE", "TIME", "MONEY", 
     "PERCENT", "PRODUCT", "EVENT", "WORK_OF_ART", "LAW", "LANGUAGE"
-  ];
-  const normalizedType = label.toUpperCase();
+  ]
+  const normalizedType = label.toUpperCase()
 
-  if (validTypes.includes(normalizedType as any)) {
-    return normalizedType as EntityType;
+  if (validTypes.includes(normalizedType as EntityType)) {
+    return normalizedType as EntityType
   }
   
   // Fallback to OTHER for unrecognized types
-  return "OTHER";
+  return "OTHER"
 }
 
 /**
@@ -45,9 +45,9 @@ async function initNerPipeline(modelName: string = DEFAULT_MODEL) {
       logger.info("Named entity recognition pipeline initialized successfully")
     }
     return nerPipeline
-  } catch (error) {
-    logger.error(`Failed to initialize NER pipeline: ${error}`)
-    throw new Error(`Failed to initialize NER pipeline: ${error}`)
+  } catch (error: any) {
+    logger.error(`Failed to initialize NER pipeline: ${error?.message || error}`)
+    throw new Error(`Failed to initialize NER pipeline: ${error?.message || error}`)
   }
 }
 
@@ -64,17 +64,20 @@ function processEntityResults(rawEntities: any[]): Entity[] {
   let currentEntity: Entity | null = null
 
   for (const item of rawEntities) {
-    const { word, entity, score, start, end } = item
-    const entityType = mapEntityType(entity)
+    // Defensive: support both 'entity' and 'entity_group' (some models use entity_group)
+    const entityLabel = item.entity || item.entity_group
+    const { word, score, start, end } = item
+    const entityType = mapEntityType(entityLabel)
 
     // If this is a beginning of a new entity (B- prefix) or a different entity type
-    if (entity.startsWith("B-") || !currentEntity || entityType !== currentEntity.type) {
-      // If we have a current entity, push it to the results
+    if (
+      entityLabel.startsWith("B-") ||
+      !currentEntity ||
+      entityType !== currentEntity.type
+    ) {
       if (currentEntity) {
         mergedEntities.push(currentEntity)
       }
-
-      // Start a new entity
       currentEntity = {
         text: word,
         type: entityType,
@@ -84,11 +87,15 @@ function processEntityResults(rawEntities: any[]): Entity[] {
       }
     }
     // If this is a continuation of the current entity (I- prefix)
-    else if (entity.startsWith("I-") && currentEntity) {
-      // Append to the current entity
-      currentEntity.text += " " + word
+    else if (entityLabel.startsWith("I-") && currentEntity) {
+      // Handle subword tokens (e.g., ##ing) by joining without space if needed
+      if (word.startsWith("##")) {
+        currentEntity.text += word.replace(/^##/, "")
+      } else {
+        currentEntity.text += " " + word
+      }
       currentEntity.end = end
-      // Update score to average
+      // Update score to running average
       currentEntity.score = (currentEntity.score + score) / 2
     }
   }
@@ -98,7 +105,18 @@ function processEntityResults(rawEntities: any[]): Entity[] {
     mergedEntities.push(currentEntity)
   }
 
-  return mergedEntities
+  // Remove duplicates (by text and type, keep highest score)
+  const uniqueEntities: Entity[] = []
+  const seen = new Set<string>()
+  for (const ent of mergedEntities) {
+    const key = `${ent.text.toLowerCase()}|${ent.type}`
+    if (!seen.has(key)) {
+      uniqueEntities.push(ent)
+      seen.add(key)
+    }
+  }
+
+  return uniqueEntities
 }
 
 /**
@@ -107,7 +125,9 @@ function processEntityResults(rawEntities: any[]): Entity[] {
  * @param text The text to analyze for entities
  * @returns A promise resolving to an EntityRecognitionResult or EntityRecognitionError
  */
-export async function recognizeEntities(text: string): Promise<EntityRecognitionResult | EntityRecognitionError> {
+export async function recognizeEntities(
+  text: string
+): Promise<EntityRecognitionResult | EntityRecognitionError> {
   try {
     // Handle empty or invalid input
     if (!text || typeof text !== "string" || text.trim() === "") {
@@ -118,16 +138,31 @@ export async function recognizeEntities(text: string): Promise<EntityRecognition
     const ner = await initNerPipeline()
 
     // Recognize entities in the text
-    const rawResults = await ner(text, { aggregation_strategy: "none" })
+    // Defensive: some models return an object with .entities, some return an array
+    let rawResults: any
+    try {
+      rawResults = await ner(text, { aggregation_strategy: "none" })
+    } catch (err: any) {
+      logger.error(`NER pipeline error: ${err?.message || err}`)
+      return {
+        error: `Entity recognition failed: ${err?.message || err}`,
+        entities: DEFAULT_ENTITIES,
+      }
+    }
+
+    // If the result is an object with .entities, use that
+    if (rawResults && typeof rawResults === "object" && Array.isArray(rawResults.entities)) {
+      rawResults = rawResults.entities
+    }
 
     // Process and merge entity spans
     const entities = processEntityResults(rawResults)
 
     return { entities }
-  } catch (error) {
-    logger.error(`Error in entity recognition: ${error}`)
+  } catch (error: any) {
+    logger.error(`Error in entity recognition: ${error?.message || error}`)
     return {
-      error: `Entity recognition failed: ${error}`,
+      error: `Entity recognition failed: ${error?.message || error}`,
       entities: DEFAULT_ENTITIES,
     }
   }

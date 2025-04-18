@@ -7,8 +7,12 @@ export const logger = {
     console.warn(`[WARN] ${message}`)
   },
 
-  error: (message: string) => {
-    console.error(`[ERROR] ${message}`)
+  error: (message: string, details?: any) => {
+    if (details) {
+      console.error(`[ERROR] ${message}`, details);
+    } else {
+      console.error(`[ERROR] ${message}`);
+    }
   },
 
   debug: (message: string) => {

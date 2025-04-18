@@ -1,8 +1,10 @@
 "use client"
 
+import React from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import type { ConfirmationComponent as ConfirmationComponentType } from "@/lib/ai-sdk/schemas/ui_components"
+import { cn } from "@/lib/utils"
 
 interface ConfirmationComponentProps extends ConfirmationComponentType {
   onSubmit: (data: any) => void
@@ -31,25 +33,23 @@ export function ConfirmationComponent({
   }
 
   // Map confirmStyle to button variant
-  const getButtonVariant = () => {
+  const getButtonVariant = (): "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" => {
     switch (confirmStyle) {
-      case "success":
-        return "success"
       case "danger":
-        return "destructive"
       case "warning":
-        return "warning"
+        return "destructive"
+      case "primary":
       case "info":
-        return "outline"
+      case "success":
       default:
         return "default"
     }
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Confirmation</CardTitle>
+        <CardTitle>{message}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>

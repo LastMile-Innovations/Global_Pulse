@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
-import { getRedisClient } from "@/lib/redis/client"
+import { getRedisClient } from "@/lib/db/redis/redis-client"
 import { logger } from "@/lib/utils/logger"
 import { auth } from "@/lib/auth/auth-utils"
 import { SessionPauseUpdatePayloadSchema } from "@/lib/schemas/api"
+import { NextRequest } from "next/server"
 
 // Session TTL in seconds (24 hours)
 const SESSION_TTL = 86400
@@ -10,7 +11,7 @@ const SESSION_TTL = 86400
 export async function POST(request: Request) {
   try {
     // Authenticate the request
-    const userId = await auth(request)
+    const userId = await auth(request as unknown as NextRequest)
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

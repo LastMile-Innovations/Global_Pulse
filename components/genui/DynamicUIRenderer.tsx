@@ -6,19 +6,28 @@ import { useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
-import { SliderComponent } from "./components/SliderComponent"
-import { MultipleChoiceComponent } from "./components/MultipleChoiceComponent"
-import { ConfirmationComponent } from "./components/ConfirmationComponent"
-import { InfoCardComponent } from "./components/InfoCardComponent"
-import { FormInputComponent } from "./components/FormInputComponent"
+import { SliderComponent } from "@/components/genui/components/SliderComponent"
+import { MultipleChoiceComponent } from "@/components/genui/components/MultipleChoiceComponent"
+import { ConfirmationComponent } from "@/components/genui/components/ConfirmationComponent"
+import { InfoCardComponent } from "@/components/genui/components/InfoCardComponent"
+import { FormInputComponent } from "@/components/genui/components/FormInputComponent"
+import type {
+  UIComponent,
+  SliderComponent as SliderProps,
+  MultipleChoiceComponent as MultipleChoiceProps,
+  ConfirmationComponent as ConfirmationProps,
+  InfoCardComponent as InfoCardProps,
+  FormInputComponent as FormInputProps,
+} from "@/lib/ai-sdk/schemas/ui_components"
 
 interface DynamicUIRendererProps {
   sessionId?: string
   onSubmit?: (result: any) => void
   onError?: (error: Error) => void
+  components: UIComponent[]
 }
 
-export function DynamicUIRenderer({ sessionId, onSubmit, onError }: DynamicUIRendererProps) {
+export function DynamicUIRenderer({ sessionId, onSubmit, onError, components }: DynamicUIRendererProps) {
   const [context, setContext] = useState<Record<string, any> | null>(null)
   const [targetSchema, setTargetSchema] = useState<string | null>(null)
 
@@ -39,7 +48,7 @@ export function DynamicUIRenderer({ sessionId, onSubmit, onError }: DynamicUIRen
   }
 
   // Handle submission from UI components
-  const handleComponentSubmit = async (data: any) => {
+  const handleComponentSubmit = async (componentIndex: number, data: any) => {
     if (!targetSchema || !context) return
 
     try {
@@ -102,20 +111,96 @@ export function DynamicUIRenderer({ sessionId, onSubmit, onError }: DynamicUIRen
   }
 
   // Render the appropriate component based on the type
-  switch (object.type) {
-    case "slider":
-      return <SliderComponent {...object} onSubmit={handleComponentSubmit} />
-    case "multipleChoice":
-      return <MultipleChoiceComponent {...object} onSubmit={handleComponentSubmit} />
-    case "confirmation":
-      return <ConfirmationComponent {...object} onSubmit={handleComponentSubmit} />
-    case "infoCard":
-      return <InfoCardComponent {...object} />
-    case "formInput":
-      return <FormInputComponent {...object} onSubmit={handleComponentSubmit} />
-    default:
-      return <div>Unsupported component type</div>
-  }
+  return (
+    <div className="space-y-8">
+      {components.map((component, index) => {
+        const key = index // Use index as key
+
+        switch (component.type) {
+          case "slider":
+            // component is now narrowed to SliderProps
+            return (
+              <SliderComponent
+                key={key}
+                type={component.type}
+                label={component.label}
+                description={component.description}
+                min={component.min}
+                max={component.max}
+                step={component.step}
+                defaultValue={component.defaultValue}
+                minLabel={component.minLabel}
+                maxLabel={component.maxLabel}
+                showValue={component.showValue}
+                onSubmit={(data) => handleComponentSubmit(index, data)}
+              />
+            )
+          case "multipleChoice":
+            // component is now narrowed to MultipleChoiceProps
+            return (
+              <MultipleChoiceComponent
+                key={key}
+                type={component.type} // Pass the literal type
+                question={component.question}
+                description={component.description}
+                options={component.options}
+                allowMultiple={component.allowMultiple}
+                defaultSelected={component.defaultSelected}
+                onSubmit={(data) => handleComponentSubmit(index, data)}
+              />
+            )
+          case "confirmation":
+            // component is now narrowed to ConfirmationProps
+            return (
+              <ConfirmationComponent
+                key={key}
+                type={component.type}
+                message={component.message}
+                description={component.description}
+                confirmLabel={component.confirmLabel}
+                denyLabel={component.denyLabel}
+                confirmStyle={component.confirmStyle}
+                onSubmit={(data) => handleComponentSubmit(index, data)}
+              />
+            )
+          case "infoCard":
+            // component is now narrowed to InfoCardProps
+            return (
+              <InfoCardComponent
+                key={key}
+                type={component.type}
+                title={component.title}
+                content={component.content}
+                imageUrl={component.imageUrl}
+                footer={component.footer}
+                variant={component.variant}
+                // No onSubmit for InfoCard
+              />
+            )
+          case "formInput":
+            // component is now narrowed to FormInputProps
+            return (
+              <FormInputComponent
+                key={key}
+                type={component.type}
+                label={component.label}
+                inputType={component.inputType}
+                placeholder={component.placeholder}
+                defaultValue={component.defaultValue}
+                required={component.required}
+                description={component.description}
+                validation={component.validation}
+                onSubmit={(data) => handleComponentSubmit(index, data)}
+              />
+            )
+          default:
+            const exhaustiveCheck: never = component;
+            console.warn(`Unsupported component type: ${(exhaustiveCheck as any)?.type}`)
+            return null
+        }
+      })}
+    </div>
+  )
 }
 
 // Export the generateUI function for external use

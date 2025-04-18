@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { waitlist_invitations, waitlist_users, waitlist_activity_logs } from '@/lib/db/schema';
-import { isAdmin } from '@/lib/auth';
+import { waitlist_invitations, waitlist_users, waitlist_activity_logs } from '@/lib/db/schema/waitlist';
+import { isAdmin } from '@/lib/auth/auth-utils';
 import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { eq, inArray, and } from 'drizzle-orm';
@@ -14,7 +14,8 @@ const InviteSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  if (!(await isAdmin())) {
+  // Pass the request to isAdmin for proper authentication
+  if (!(await isAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -36,18 +37,23 @@ export async function POST(req: NextRequest) {
     const errors: { userId: string; error: string }[] = [];
 
     // Fetch users to invite in one query
-    const usersToInvite = await db.query.waitlist_users.findMany({
-      where: and(inArray(waitlist_users.id, userIds), eq(waitlist_users.status, 'pending')),
-    });
+    const usersToInvite = await db
+      .select()
+      .from(waitlist_users)
+      .where(and(inArray(waitlist_users.id, userIds), eq(waitlist_users.status, 'pending')));
 
-    const foundUserIds = new Set(usersToInvite.map(u => u.id));
+    const foundUserIds = new Set(usersToInvite.map((u: any) => u.id));
 
     await db.transaction(async (tx) => {
       for (const user of usersToInvite) {
         let code: string;
         while (true) {
           code = nanoid(16);
-          const exists = await tx.query.waitlist_invitations.findFirst({ where: eq(waitlist_invitations.invitationCode, code) });
+          const exists = await tx
+            .select()
+            .from(waitlist_invitations)
+            .where(eq(waitlist_invitations.invitationCode, code))
+            .then((rows) => rows[0]);
           if (!exists) break;
         }
 
@@ -60,7 +66,8 @@ export async function POST(req: NextRequest) {
           batchId,
         });
 
-        await tx.update(waitlist_users)
+        await tx
+          .update(waitlist_users)
           .set({ status: 'invited' })
           .where(eq(waitlist_users.id, user.id));
 
@@ -79,15 +86,19 @@ export async function POST(req: NextRequest) {
 
       // Handle users not found or not pending
       for (const requestedId of userIds) {
-          if (!foundUserIds.has(requestedId)) {
-              // Need to check if user exists but isn't pending, or doesn't exist at all
-              const userExists = await tx.query.waitlist_users.findFirst({ where: eq(waitlist_users.id, requestedId), columns: { status: true } });
-              if (!userExists) {
-                errors.push({ userId: requestedId, error: 'User not found' });
-              } else if (userExists.status !== 'pending') {
-                 errors.push({ userId: requestedId, error: `User status is ${userExists.status}` });
-              }
+        if (!foundUserIds.has(requestedId)) {
+          // Need to check if user exists but isn't pending, or doesn't exist at all
+          const userExists = await tx
+            .select({ status: waitlist_users.status })
+            .from(waitlist_users)
+            .where(eq(waitlist_users.id, requestedId))
+            .then((rows) => rows[0]);
+          if (!userExists) {
+            errors.push({ userId: requestedId, error: 'User not found' });
+          } else if (userExists.status !== 'pending') {
+            errors.push({ userId: requestedId, error: `User status is ${userExists.status}` });
           }
+        }
       }
     });
 
@@ -97,4 +108,4 @@ export async function POST(req: NextRequest) {
     console.error('Admin invite error:', error);
     return NextResponse.json({ error: 'An internal error occurred' }, { status: 500 });
   }
-} 
+}

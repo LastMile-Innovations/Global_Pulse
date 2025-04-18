@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { waitlist_users, waitlist_activity_logs } from '@/lib/db/schema';
-import { isAdmin } from '@/lib/auth';
+import { waitlist_users, waitlist_activity_logs } from '@/lib/db/schema/waitlist';
+import { isAdmin } from '@/lib/auth/auth-utils';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { rateLimit } from '@/lib/redis/rate-limit'; // Assuming rate limiter utility
@@ -12,7 +12,8 @@ const AdjustSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  if (!(await isAdmin())) {
+  // Pass the request to isAdmin for proper authentication
+  if (!(await isAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -29,7 +30,8 @@ export async function POST(req: NextRequest) {
 
     const { userId, newScore } = parsed.data;
 
-    const result = await db.update(waitlist_users)
+    const result = await db
+      .update(waitlist_users)
       .set({ priorityScore: newScore })
       .where(eq(waitlist_users.id, userId))
       .returning({ id: waitlist_users.id }); // Check if update was successful
@@ -40,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     await db.insert(waitlist_activity_logs).values({
       waitlistUserId: userId,
-      action: 'admin_adjust_score', // More specific action
+      action: 'admin_adjust_score',
       details: { newScore },
     });
 
@@ -50,4 +52,4 @@ export async function POST(req: NextRequest) {
     console.error('Admin adjust score error:', error);
     return NextResponse.json({ error: 'An internal error occurred' }, { status: 500 });
   }
-} 
+}

@@ -14,6 +14,11 @@ const DEFAULT_MODEL_ID = "structured-output"
 const CERTAINTY_THRESHOLD = 0.3
 const EMBEDDING_SIMILARITY_THRESHOLD = 0.7
 
+// Type guard for error objects
+function isError(obj: any): obj is { error: string } {
+  return typeof obj === 'object' && obj !== null && 'error' in obj;
+}
+
 /**
  * Infer self-map attachments from text
  * @param text User text to analyze
@@ -34,31 +39,31 @@ export async function inferSelfMapAttachments(
 ): Promise<InferredAttachment[]> {
   try {
     // Set default options
-    const certaintyThreshold = options.certaintyThreshold || CERTAINTY_THRESHOLD
-    const maxResults = options.maxResults || 10
+    const certaintyThreshold = options.certaintyThreshold ?? CERTAINTY_THRESHOLD
+    const maxResults = options.maxResults ?? 10
 
     // Get NLP features if not provided
     const features = nlpFeatures || (await getCoreNlpFeatures(text, { includeEmbedding: true }))
 
     // Generate candidates using different methods
-    const candidates: InferredAttachment[] = []
+    let candidates: InferredAttachment[] = []
 
     // 1. Generate candidates using Zero-Shot Classification
     const zscCandidates = await generateZSCCandidates(text)
-    candidates.push(...zscCandidates)
+    candidates = candidates.concat(zscCandidates)
 
     // 2. Generate candidates using Named Entity Recognition
     const nerCandidates = await generateNERCandidates(features)
-    candidates.push(...nerCandidates)
+    candidates = candidates.concat(nerCandidates)
 
     // 3. Generate candidates using keywords
     const keywordCandidates = generateKeywordCandidates(features)
-    candidates.push(...keywordCandidates)
+    candidates = candidates.concat(keywordCandidates)
 
     // 4. Generate candidates using embeddings (if available)
     if (features.embedding) {
       const embeddingCandidates = await generateEmbeddingCandidates(features.embedding, userId)
-      candidates.push(...embeddingCandidates)
+      candidates = candidates.concat(embeddingCandidates)
     }
 
     // Log candidate generation
@@ -69,13 +74,13 @@ export async function inferSelfMapAttachments(
 
     // Filter by certainty threshold and limit results
     const filteredAttachments = refinedAttachments
-      .filter((attachment) => attachment.certainty >= certaintyThreshold)
-      .sort((a, b) => b.certainty - a.certainty)
+      .filter((attachment) => typeof attachment.certainty === "number" && attachment.certainty >= certaintyThreshold)
+      .sort((a, b) => (b.certainty ?? 0) - (a.certainty ?? 0))
       .slice(0, maxResults)
 
     // Include raw candidates if requested
     if (options.includeRawCandidates) {
-      logger.debug("Raw attachment candidates:", candidates)
+      logger.debug("Raw attachment candidates: " + JSON.stringify(candidates))
     }
 
     return filteredAttachments
@@ -94,49 +99,42 @@ async function generateZSCCandidates(text: string): Promise<InferredAttachment[]
   try {
     const result = await classifyConceptsZSC_LLM(text)
 
-    if (result.error || !result.concepts.length) {
+    if (isError(result)) {
+      logger.warn(`ZSC LLM returned error: ${result.error}`)
+      return []
+    }
+    if (!result.concepts?.length) {
+      logger.debug("ZSC LLM returned no concepts.")
       return []
     }
 
     return result.concepts.map((concept) => {
-      // Map concept type to attachment type
       let attachmentType: AttachmentType = "CONCEPT"
       switch (concept.type) {
-        case "VALUE":
-          attachmentType = "VALUE"
-          break
-        case "GOAL":
-          attachmentType = "GOAL"
-          break
-        case "NEED":
-          attachmentType = "NEED"
-          break
-        case "BELIEF":
-          attachmentType = "BELIEF"
-          break
-        case "INTEREST":
-          attachmentType = "INTEREST"
-          break
-        default:
-          attachmentType = "CONCEPT"
+        case "VALUE": attachmentType = "VALUE"; break
+        case "GOAL": attachmentType = "GOAL"; break
+        case "NEED": attachmentType = "NEED"; break
+        case "BELIEF": attachmentType = "BELIEF"; break
+        case "INTEREST": attachmentType = "INTEREST"; break
+        default: attachmentType = "CONCEPT"
       }
 
-      // Map score to PL and V (initial estimates)
-      const estimatedPL = Math.min(10, Math.round(concept.score * 10))
-      const estimatedV = Math.min(10, Math.max(-10, Math.round(concept.score * 10)))
+      const score = concept.score ?? 0.5
+      const estimatedPL = Math.max(0, Math.min(10, Math.round(score * 10)))
+      const estimatedV = Math.max(-10, Math.min(10, Math.round((score) * 10)))
 
       return {
         name: concept.text,
         type: attachmentType,
         estimatedPL,
         estimatedV,
-        certainty: concept.score,
+        certainty: score,
         sourceText: concept.text,
-        inferenceMethod: "ZSC",
+        inferenceMethod: "ZSC" as const,
       }
-    })
+    }).filter(Boolean)
   } catch (error) {
-    logger.error(`Error generating ZSC candidates: ${error}`)
+    logger.error("Error generating ZSC candidates:", error)
     return []
   }
 }
@@ -148,49 +146,37 @@ async function generateZSCCandidates(text: string): Promise<InferredAttachment[]
  */
 async function generateNERCandidates(features: NlpFeatures): Promise<InferredAttachment[]> {
   try {
-    if (!features.entities || features.entities.length === 0) {
+    if (!features.entities?.length) {
       return []
     }
 
     return features.entities.map((entity) => {
-      // Map entity type to attachment type
       let attachmentType: AttachmentType = "CONCEPT"
       switch (entity.type) {
-        case "PERSON":
-          attachmentType = "IDENTITY"
-          break
-        case "ORGANIZATION":
-          attachmentType = "IDENTITY"
-          break
-        case "PRODUCT":
-          attachmentType = "INTEREST"
-          break
-        case "WORK_OF_ART":
-          attachmentType = "INTEREST"
-          break
-        case "EVENT":
-          attachmentType = "CONCEPT"
-          break
-        default:
-          attachmentType = "CONCEPT"
+        case "PERSON": attachmentType = "CONCEPT"; break
+        case "ORGANIZATION": attachmentType = "CONCEPT"; break
+        case "PRODUCT": attachmentType = "INTEREST"; break
+        case "WORK_OF_ART": attachmentType = "INTEREST"; break
+        case "EVENT": attachmentType = "CONCEPT"; break
+        default: attachmentType = "CONCEPT"
       }
 
-      // Initial estimates based on entity score
-      const estimatedPL = Math.min(10, Math.round(entity.score * 8))
-      const estimatedV = 5 // Neutral-positive by default for entities
+      const score = entity.score ?? 0.5
+      const estimatedPL = Math.max(0, Math.min(10, Math.round(score * 8)))
+      const estimatedV = 5
 
       return {
         name: entity.text,
         type: attachmentType,
         estimatedPL,
         estimatedV,
-        certainty: entity.score,
+        certainty: score,
         sourceText: entity.text,
-        inferenceMethod: "NER",
+        inferenceMethod: "NER" as const,
       }
-    })
+    }).filter(Boolean)
   } catch (error) {
-    logger.error(`Error generating NER candidates: ${error}`)
+    logger.error("Error generating NER candidates:", error)
     return []
   }
 }
@@ -206,22 +192,18 @@ function generateKeywordCandidates(features: NlpFeatures): InferredAttachment[] 
       return []
     }
 
-    // Only use top keywords (that aren't already covered by other methods)
     const topKeywords = features.keywords.slice(0, 5)
-
-    return topKeywords.map((keyword) => {
-      return {
-        name: keyword,
-        type: "INTEREST", // Default to INTEREST for keywords
-        estimatedPL: 5, // Medium power level
-        estimatedV: 5, // Neutral-positive valence
-        certainty: 0.5, // Medium certainty
-        sourceText: keyword,
-        inferenceMethod: "KEYWORD",
-      }
-    })
+    return topKeywords.map((keyword) => ({
+      name: keyword,
+      type: "INTEREST",
+      estimatedPL: 5,
+      estimatedV: 5,
+      certainty: 0.5,
+      sourceText: keyword,
+      inferenceMethod: "KEYWORD" as const,
+    }))
   } catch (error) {
-    logger.error(`Error generating keyword candidates: ${error}`)
+    logger.error(`Error generating keyword candidates:`, error)
     return []
   }
 }
@@ -234,33 +216,25 @@ function generateKeywordCandidates(features: NlpFeatures): InferredAttachment[] 
  */
 async function generateEmbeddingCandidates(embedding: EmbeddingVector, userId?: string): Promise<InferredAttachment[]> {
   try {
-    // This is a placeholder for future implementation
-    // In a real implementation, this would query a vector database or KG service
-    // to find semantically similar existing canonical Attachment nodes
+    if (!userId) return []
 
-    // For now, return an empty array
-    return []
+    const kgService = new KgService(getNeo4jDriver())
+    // MVP: Find similar attachments for the user using embedding similarity
+    const similarAttachments: any[] = [] // TODO: implement embedding similarity
 
-    // Future implementation would look something like:
-    /*
-    if (!userId) {
+    if (!Array.isArray(similarAttachments) || similarAttachments.length === 0) {
       return []
     }
 
-    // Get similar attachments from KG service
-    const similarAttachments = await kgService.findSimilarAttachments(userId, embedding, EMBEDDING_SIMILARITY_THRESHOLD)
-    
-    return similarAttachments.map(attachment => {
-      return {
-        name: attachment.name,
-        type: attachment.type as AttachmentType,
-        estimatedPL: attachment.powerLevel,
-        estimatedV: attachment.valence,
-        certainty: attachment.similarity, // Use similarity as certainty
-        inferenceMethod: "EMBEDDING",
-      }
-    })
-    */
+    return similarAttachments.map(attachment => ({
+      name: attachment.name,
+      type: (attachment.type as AttachmentType) ?? "CONCEPT",
+      estimatedPL: typeof attachment.powerLevel === "number" ? attachment.powerLevel : 5,
+      estimatedV: typeof attachment.valence === "number" ? attachment.valence : 0,
+      certainty: typeof attachment.similarity === "number" ? attachment.similarity : 0.5,
+      sourceText: attachment.name,
+      inferenceMethod: "EMBEDDING" as const,
+    }))
   } catch (error) {
     logger.error(`Error generating embedding candidates: ${error}`)
     return []
@@ -280,64 +254,27 @@ async function synthesizeWithLLM(
   candidates: InferredAttachment[],
 ): Promise<InferredAttachment[]> {
   try {
-    // Construct the prompt for the LLM
     const prompt = constructLLMPrompt(text, features, candidates)
+    const result = await callGenerateObject(DEFAULT_MODEL_ID, prompt, InferredAttachmentsSchema)
 
-    // Call the LLM to synthesize and refine candidates
-    const result = await callGenerateObject(DEFAULT_MODEL_ID, prompt, InferredAttachmentsSchema, {
-      temperature: 0.2,
-      maxTokens: 2000,
-      system:
-        "You are an expert in psychological analysis and identity mapping. Your task is to identify the most salient user attachments expressed or implied in text.",
-      telemetry: {
-        functionId: "pce.self_map_inference",
-        metadata: {
-          candidateCount: candidates.length,
-          textLength: text.length,
-        },
-      },
-    })
-
-    // Handle potential errors or null return
-    if (!result.success || !result.data) {
-      logger.warn("LLM synthesis failed, falling back to raw candidates")
-
-      // Fall back to the top candidates sorted by certainty
-      return candidates.sort((a, b) => b.certainty - a.certainty).slice(0, 5)
-    }
-
-    // Process the LLM output
-    const llmAttachments = result.data.map((attachment) => ({
-      ...attachment,
-      inferenceMethod: "LLM" as const,
-    }))
-
-    // Merge LLM results with high-certainty candidates
-    const highCertaintyCandidates = candidates.filter((c) => c.certainty > 0.8)
-
-    // Combine and deduplicate
-    const combined = [...llmAttachments]
-
-    // Add high certainty candidates that aren't already in the LLM results
-    for (const candidate of highCertaintyCandidates) {
-      const isDuplicate = combined.some(
-        (c) => c.name.toLowerCase() === candidate.name.toLowerCase() && c.type === candidate.type,
-      )
-
-      if (!isDuplicate) {
-        combined.push({
-          ...candidate,
-          inferenceMethod: "COMBINED",
-        })
+    if (result.success && result.data) {
+      const llmAttachments = result.data as Array<Omit<InferredAttachment, 'inferenceMethod'>>
+      if (Array.isArray(llmAttachments)) {
+        return llmAttachments.map((att) => ({
+          ...att,
+          inferenceMethod: "LLM" as const,
+        }))
+      } else {
+        logger.warn("LLM synthesis result data was not an array. Response: " + JSON.stringify(result.data))
+        return candidates
       }
+    } else {
+      logger.warn("LLM synthesis failed: reason=" + (result.success ? "Data was missing" : "API Error") + ", errorDetails=" + (result.success ? undefined : result.error))
+      return candidates
     }
-
-    return combined
   } catch (error) {
-    logger.error(`Error in LLM synthesis: ${error}`)
-
-    // Fall back to the raw candidates
-    return candidates.sort((a, b) => b.certainty - a.certainty).slice(0, 5)
+    logger.error(`Error during LLM synthesis:`, error)
+    return candidates
   }
 }
 
@@ -366,7 +303,7 @@ function constructLLMPrompt(text: string, features: NlpFeatures, candidates: Inf
       ? candidates
           .map(
             (c) =>
-              `- ${c.name} (Type: ${c.type}, PL: ${c.estimatedPL}, V: ${c.estimatedV}, Certainty: ${c.certainty.toFixed(2)}, Method: ${c.inferenceMethod})`,
+              `- ${c.name} (Type: ${c.type}, PL: ${c.estimatedPL}, V: ${c.estimatedV}, Certainty: ${c.certainty?.toFixed(2) ?? "?"}, Method: ${c.inferenceMethod})`,
           )
           .join("\n")
       : "No candidates detected"
@@ -416,56 +353,47 @@ export async function updateSelfMapWithInferences(
   inferredAttachments: InferredAttachment[],
   interactionId?: string,
 ): Promise<number> {
-  if (!inferredAttachments || inferredAttachments.length === 0) {
-    logger.info(`No attachments to update for user ${userId}`)
-    return 0
-  }
+  let updatedCount = 0
+  const kgService = new KgService(getNeo4jDriver())
 
-  try {
-    // Initialize Neo4j driver and KgService
-    const driver = getNeo4jDriver()
-    const kgService = new KgService(driver)
-
-    let successCount = 0
-
-    // Process each inferred attachment
-    for (const attachment of inferredAttachments) {
-      try {
-        // Find or create the attachment node
-        const attachmentNodeId = await kgService.findOrCreateAttachmentNode(attachment.name, attachment.type)
-
-        if (!attachmentNodeId) {
-          logger.warn(`Failed to find or create attachment node for ${attachment.name} (${attachment.type})`)
-          continue
-        }
-
-        // Link the user to the attachment node with the inferred properties
-        const success = await kgService.mergeUserAttachment(userId, attachmentNodeId, {
-          pl: attachment.estimatedPL,
-          v: attachment.estimatedV,
-          certainty: attachment.certainty,
-          inferenceMethod: attachment.inferenceMethod,
-          sourceInteractionId: interactionId,
-        })
-
-        if (success) {
-          successCount++
-          logger.info(
-            `Successfully linked user ${userId} to attachment ${attachment.name} (${attachment.type}) with PL=${attachment.estimatedPL}, V=${attachment.estimatedV}, certainty=${attachment.certainty}`,
-          )
-        } else {
-          logger.warn(`Failed to link user ${userId} to attachment ${attachment.name} (${attachment.type})`)
-        }
-      } catch (error) {
-        logger.error(`Error processing attachment ${attachment.name} (${attachment.type}) for user ${userId}: ${error}`)
-        // Continue with the next attachment
+  for (const attachment of inferredAttachments) {
+    try {
+      // Map internal type to KG type if necessary
+      let kgAttachmentType: "Value" | "Goal" | undefined
+      if (attachment.type === "VALUE") {
+        kgAttachmentType = "Value"
+      } else if (attachment.type === "GOAL") {
+        kgAttachmentType = "Goal"
+      } else {
+        // For MVP: skip non-core types, but log for future
+        logger.debug(`Skipping non-core attachment type: ${attachment.type}`)
+        continue
       }
-    }
 
-    logger.info(`Updated ${successCount}/${inferredAttachments.length} attachments for user ${userId}`)
-    return successCount
-  } catch (error) {
-    logger.error(`Error updating self-map with inferences for user ${userId}: ${error}`)
-    return 0
+      const attachmentNodeId = await kgService.findOrCreateAttachmentNode(attachment.name, kgAttachmentType)
+
+      if (!attachmentNodeId) {
+        logger.warn(`Failed to find or create attachment node: ${attachment.name} (${attachment.type})`)
+        continue
+      }
+
+      // MVP: Actually merge the user-attachment relationship in the KG
+      const success = await kgService.updateAttachmentProperties(userId, attachmentNodeId, {
+        powerLevel: attachment.estimatedPL,
+        valence: attachment.estimatedV,
+        certainty: attachment.certainty,
+      })
+
+      if (success) {
+        updatedCount++
+      } else {
+        logger.warn(`Failed to merge user attachment link for ${userId} -> ${attachment.name}`)
+      }
+    } catch (error) {
+      logger.error(`Error updating self-map for attachment ${attachment.name}:`, { userId, error })
+    }
   }
+
+  logger.info(`Updated ${updatedCount} attachments in self-map for user ${userId}`)
+  return updatedCount
 }

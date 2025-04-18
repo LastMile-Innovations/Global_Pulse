@@ -1,10 +1,14 @@
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import { getEngagementMode, setEngagementMode } from "@/lib/session/mode-manager"
 import { logger } from "@/lib/utils/logger"
 import { auth } from "@/lib/auth/auth-utils"
 import { SessionModePutPayloadSchema } from "@/lib/schemas/api"
 
-export async function GET(request: Request) {
+/**
+ * GET /api/session/mode?sessionId=...
+ * Returns the engagement mode for a session for the authenticated user.
+ */
+export async function GET(request: NextRequest) {
   try {
     // Authenticate the request
     const userId = await auth(request)
@@ -12,13 +16,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const url = new URL(request.url)
-    const sessionId = url.searchParams.get("sessionId")
-
+    // Get sessionId from query params
+    const sessionId = request.nextUrl.searchParams.get("sessionId")
     if (!sessionId) {
       return NextResponse.json({ error: "Missing sessionId parameter" }, { status: 400 })
     }
 
+    // Get the engagement mode
     const mode = await getEngagementMode(userId, sessionId)
     return NextResponse.json({ mode })
   } catch (error) {
@@ -27,7 +31,12 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+/**
+ * PUT /api/session/mode
+ * Body: { sessionId: string, mode: string }
+ * Sets the engagement mode for a session for the authenticated user.
+ */
+export async function PUT(request: NextRequest) {
   try {
     // Authenticate the request
     const userId = await auth(request)
@@ -36,7 +45,13 @@ export async function PUT(request: Request) {
     }
 
     // Parse the request body
-    const body = await request.json()
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch (err) {
+      logger.warn("Invalid JSON in PUT /api/session/mode")
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    }
 
     // Validate input using centralized schema
     const validationResult = SessionModePutPayloadSchema.safeParse(body)
@@ -50,7 +65,13 @@ export async function PUT(request: Request) {
     const { sessionId, mode } = validationResult.data
 
     // Update the mode
-    const success = await setEngagementMode(userId, sessionId, mode)
+    let success = false
+    try {
+      success = await setEngagementMode(userId, sessionId, mode)
+    } catch (err) {
+      logger.error(`Error in setEngagementMode: ${err}`)
+      return NextResponse.json({ error: "Failed to update engagement mode" }, { status: 500 })
+    }
 
     if (success) {
       return NextResponse.json({ success: true, mode })

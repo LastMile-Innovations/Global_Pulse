@@ -1,5 +1,5 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
   Bolt,
@@ -16,26 +16,24 @@ import {
   Lightbulb,
   Cpu,
   LineChart,
-} from "lucide-react"
+} from "lucide-react";
 
 export default function AboutPage() {
   return (
     <div className="relative overflow-hidden">
-      {/* Hero Section with Bold Gradient Background */}
+      {/* Hero Section */}
       <section className="relative py-24 md:py-32 bg-gradient-to-br from-primary/20 via-background to-background overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
-
-        {/* Animated particles/sparkles effect */}
-        <div className="absolute top-20 left-20 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
+        {/* Animated sparkles */}
+        <div className="absolute top-20 left-20 w-20 h-20 bg-primary/20 rounded-full blur-xl animate-pulse" />
         <div
           className="absolute bottom-20 right-40 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"
           style={{ animationDelay: "1s" }}
-        ></div>
+        />
         <div
           className="absolute top-40 right-20 w-16 h-16 bg-teal-500/20 rounded-full blur-xl animate-pulse"
           style={{ animationDelay: "2s" }}
-        ></div>
-
+        />
         <div className="container px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto">
             <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-8 border-transparent bg-primary/20 text-primary">
@@ -70,7 +68,6 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-
         {/* Decorative code snippet */}
         <div className="hidden lg:block absolute bottom-10 right-10 max-w-xs bg-black/80 backdrop-blur-sm rounded-lg border border-primary/20 shadow-xl p-4 font-mono text-xs text-green-400 transform rotate-2">
           <div className="flex items-center gap-2 mb-2 text-xs text-white/70">
@@ -116,7 +113,7 @@ export default function AboutPage() {
               { value: "10", label: "Days to Build", icon: <Clock className="h-5 w-5 text-primary" /> },
               { value: "1", label: "Developer", icon: <Code className="h-5 w-5 text-primary" /> },
               { value: "1", label: "Continent", icon: <Globe className="h-5 w-5 text-primary" /> },
-              { value: "&quot;∞&quot;", label: "Potential", icon: <Sparkles className="h-5 w-5 text-primary" /> },
+              { value: "∞", label: "Potential", icon: <Sparkles className="h-5 w-5 text-primary" /> },
             ].map((stat, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="bg-primary/20 rounded-full p-2">{stat.icon}</div>
@@ -130,7 +127,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* The Hackathon Story - Bold, Narrative Style */}
+      {/* The Hackathon Story */}
       <section className="py-20 md:py-28">
         <div className="container px-4 md:px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -155,25 +152,20 @@ export default function AboutPage() {
                   <div className="relative">
                     <div className="absolute -left-3 top-0 bottom-0 w-1 bg-primary/30 rounded-full"></div>
                     <blockquote className="pl-6 italic text-muted-foreground">
-                      &quot;We&apos;re not just participating in a hackathon. We&apos;re showing the world what&apos;s possible when you
-                      combine vision, talent, and modern tech.&quot;
+                      &quot;We&apos;re not just participating in a hackathon. We&apos;re showing the world what&apos;s possible when you combine vision, talent, and modern tech.&quot;
                     </blockquote>
                   </div>
                 </div>
               </div>
             </div>
-
             <div className="relative">
               <div className="absolute -z-10 inset-0 bg-gradient-to-tr from-primary/30 to-blue-500/20 rounded-3xl transform rotate-3"></div>
               <div className="relative rounded-2xl overflow-hidden border-2 border-primary/20 shadow-xl flex items-center justify-center min-h-[300px]">
-                {/* No image, just a simple text or icon */}
                 <div className="flex flex-col items-center justify-center w-full h-full p-8">
                   <Rocket className="h-16 w-16 text-primary mb-4" />
                   <div className="text-lg font-bold text-white">10 days. 1 developer. 1 vision.</div>
                 </div>
               </div>
-
-              {/* Timeline markers */}
               <div className="absolute -right-4 top-1/4 bg-background border-2 border-primary text-primary font-bold px-3 py-1 rounded-full shadow-lg transform transition-transform hover:scale-105 hover:-rotate-3">
                 Day 1: Concept
               </div>
@@ -198,7 +190,6 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl font-bold tracking-tighter mb-10">
               How Global Pulse was built in 10 days
             </h2>
-
             <div className="relative border-l-2 border-primary/30 pl-8 pb-8 space-y-10">
               {[
                 {
@@ -255,7 +246,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Team Section - Less about me, no picture */}
+      {/* Team Section */}
       <section className="py-20 md:py-28">
         <div className="container px-4 md:px-6">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -275,7 +266,6 @@ export default function AboutPage() {
       {/* Global Collaboration Section */}
       <section className="py-20 md:py-28 bg-muted/30 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
-        {/* World map background - stylized */}
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <svg width="100%" height="100%" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M200,100 Q400,150 600,100 T1000,100" stroke="currentColor" strokeWidth="2" fill="none" />
@@ -286,7 +276,6 @@ export default function AboutPage() {
             <path d="M200,600 Q500,650 800,600 T1000,600" stroke="currentColor" strokeWidth="2" fill="none" />
           </svg>
         </div>
-
         <div className="container px-4 md:px-6 relative z-10">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold mb-6 border-transparent bg-primary/20 text-primary">
@@ -299,7 +288,6 @@ export default function AboutPage() {
               Global Pulse was built in the US, with base colors and logo contributed by others. A solo effort with a global mindset.
             </p>
           </div>
-
           <div className="relative">
             <div className="bg-background rounded-2xl border shadow-lg p-8">
               <div className="grid md:grid-cols-1 gap-10 items-center">
@@ -313,7 +301,6 @@ export default function AboutPage() {
                       While the base colors and logo were contributed by others, every aspect of the technical architecture, user experience, and feature set was designed and implemented in-house.
                     </p>
                   </div>
-
                   <div className="mt-6 grid grid-cols-3 gap-4">
                     {[
                       { label: "Time Zones", value: "1", icon: <Clock className="h-5 w-5 text-primary" /> },
@@ -328,15 +315,11 @@ export default function AboutPage() {
                     ))}
                   </div>
                 </div>
-
                 <div className="relative">
                   <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-2xl blur-md"></div>
                   <div className="relative rounded-xl overflow-hidden border flex items-center justify-center min-h-[200px]">
-                    {/* No team image */}
                     <Globe className="h-20 w-20 text-primary" />
                   </div>
-
-                  {/* Connection lines */}
                   <div className="absolute top-1/4 -left-4 w-8 h-8 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-xs font-bold">
                     US
                   </div>
@@ -357,13 +340,12 @@ export default function AboutPage() {
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-10">
               What makes Global Pulse <span className="text-primary">hackathon-worthy</span>
             </h2>
-
             <div className="grid md:grid-cols-2 gap-10">
               {[
                 {
                   title: "Lightning-Fast Performance",
                   description:
-                    "Built with Next.js 15 and React 19, we&apos;ve optimized every aspect of the stack for instant loading and seamless interactions.",
+                    "Built with Next.js 15 and React 19, we've optimized every aspect of the stack for instant loading and seamless interactions.",
                   icon: <Bolt className="h-10 w-10 text-primary" />,
                   color: "from-primary/20 to-primary/5",
                 },
@@ -377,7 +359,7 @@ export default function AboutPage() {
                 {
                   title: "Revolutionary UX",
                   description:
-                    "We&apos;ve reimagined how users interact with surveys and opinion data, creating an experience that feels magical yet intuitive.",
+                    "We've reimagined how users interact with surveys and opinion data, creating an experience that feels magical yet intuitive.",
                   icon: <Sparkles className="h-10 w-10 text-teal-500" />,
                   color: "from-teal-500/20 to-teal-500/5",
                 },
@@ -401,7 +383,6 @@ export default function AboutPage() {
                 </div>
               ))}
             </div>
-
             <div className="mt-16 p-8 rounded-2xl bg-muted/30 border">
               <div className="flex flex-col md:flex-row gap-6 items-center">
                 <div className="md:w-1/4 flex justify-center">
@@ -418,8 +399,7 @@ export default function AboutPage() {
                 <div className="md:w-3/4">
                   <h3 className="text-2xl font-bold mb-3">Ready to judge? We&apos;re ready to impress.</h3>
                   <p className="text-lg text-muted-foreground mb-4">
-                    Global Pulse isn&apos;t just a hackathon project—it&apos;s a glimpse into the future of global opinion
-                    sharing. We&apos;ve pushed the boundaries of what&apos;s possible in 10 days, and we&apos;re just getting started.
+                    Global Pulse isn't just a hackathon project—it's a glimpse into the future of global opinion sharing. We've pushed the boundaries of what's possible in 10 days, and we're just getting started.
                   </p>
                   <Button size="lg" className="gap-2 group" asChild>
                     <Link href="/explore">
@@ -444,7 +424,6 @@ export default function AboutPage() {
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-10">
               Built with the <span className="text-primary">best tools</span> for the job
             </h2>
-
             <div className="grid md:grid-cols-2 gap-8 mb-12">
               <div className="bg-background rounded-xl p-6 border">
                 <h3 className="text-xl font-bold mb-4">Core Framework & Rendering</h3>
@@ -452,20 +431,17 @@ export default function AboutPage() {
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="font-medium">Next.js 15:</span> App Router, Server Components, Client Components,
-                      Route Handlers, Server Actions, Middleware
+                      <span className="font-medium">Next.js 15:</span> App Router, Server Components, Client Components, Route Handlers, Server Actions, Middleware
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="font-medium">React 19:</span> Server Component Architecture, Hooks (useState,
-                      useEffect, useContext, useOptimistic, useTransition)
+                      <span className="font-medium">React 19:</span> Server Component Architecture, Hooks (useState, useEffect, useContext, useOptimistic, useTransition)
                     </div>
                   </li>
                 </ul>
               </div>
-
               <div className="bg-background rounded-xl p-6 border">
                 <h3 className="text-xl font-bold mb-4">Frontend UI & Styling</h3>
                 <ul className="space-y-3">
@@ -489,22 +465,19 @@ export default function AboutPage() {
                   </li>
                 </ul>
               </div>
-
               <div className="bg-background rounded-xl p-6 border">
                 <h3 className="text-xl font-bold mb-4">Backend & Data</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="font-medium">Supabase:</span> Postgres Database, Auth, Realtime, Row Level
-                      Security
+                      <span className="font-medium">Supabase:</span> Postgres Database, Auth, Realtime, Row Level Security
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="font-medium">Upstash Redis:</span> High-speed caching, session management, rate
-                      limiting
+                      <span className="font-medium">Upstash Redis:</span> High-speed caching, session management, rate limiting
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
@@ -515,22 +488,19 @@ export default function AboutPage() {
                   </li>
                 </ul>
               </div>
-
               <div className="bg-background rounded-xl p-6 border">
                 <h3 className="text-xl font-bold mb-4">AI & Language Models</h3>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="font-medium">Vercel AI SDK:</span> Core library for LLM interactions and
-                      streaming UI updates
+                      <span className="font-medium">Vercel AI SDK:</span> Core library for LLM interactions and streaming UI updates
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="font-medium">Multi-Agent System:</span> Custom-built multi-agent, multi-tool
-                      engine
+                      <span className="font-medium">Multi-Agent System:</span> Custom-built multi-agent, multi-tool engine
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
@@ -548,12 +518,10 @@ export default function AboutPage() {
                 </ul>
               </div>
             </div>
-
             <div className="bg-background rounded-xl p-6 border">
               <h3 className="text-xl font-bold mb-4">What makes our architecture special</h3>
               <p className="mb-4">
-                Global Pulse is powered by a sophisticated multi-agent, multi-tool engine built using the Vercel AI SDK.
-                This system enables:
+                Global Pulse is powered by a sophisticated multi-agent, multi-tool engine built using the Vercel AI SDK. This system enables:
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
@@ -596,12 +564,11 @@ export default function AboutPage() {
               We&apos;ve shared Global Pulse with a select group of users during development. Here&apos;s what they think.
             </p>
           </div>
-
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {[
               {
                 quote:
-                  "I&apos;ve never seen opinion data visualized this beautifully. The real-time updates are mesmerizing to watch.",
+                  "I've never seen opinion data visualized this beautifully. The real-time updates are mesmerizing to watch.",
                 name: "Sarah K.",
                 role: "Data Scientist",
               },
@@ -618,14 +585,13 @@ export default function AboutPage() {
               },
               {
                 quote:
-                  "Hard to believe this was built in just 10 days. It feels more polished than products I&apos;ve used that took years to develop.",
+                  "Hard to believe this was built in just 10 days. It feels more polished than products I've used that took years to develop.",
                 name: "David L.",
                 role: "Software Engineer",
               },
             ].map((testimonial, index) => (
               <div key={index} className="bg-background rounded-xl p-6 border hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4">
-                  {/* No user image */}
                   <div>
                     <p className="italic text-muted-foreground mb-4">{testimonial.quote}</p>
                     <div>
@@ -646,8 +612,7 @@ export default function AboutPage() {
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6">Join us on this journey</h2>
             <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Global Pulse is more than a hackathon project—it&apos;s the beginning of a movement to transform how the world
-              shares opinions. Be part of it from day one.
+              Global Pulse is more than a hackathon project—it's the beginning of a movement to transform how the world shares opinions. Be part of it from day one.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="gap-2 h-12 text-base group relative overflow-hidden" asChild>
@@ -683,5 +648,5 @@ export default function AboutPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

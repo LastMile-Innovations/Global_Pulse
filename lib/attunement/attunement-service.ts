@@ -1,5 +1,5 @@
 import { getRedisClient } from "../db/redis/redis-client"
-import { getTemplatedResponse } from "../responses/template-filler"
+import { getTemplatedResponse, type TemplateContextParams } from "../responses/template-filler"
 import { generateLlmResponseViaSdk } from "../llm/llm-gateway"
 import { logger } from "../utils/logger"
 import {
@@ -252,7 +252,7 @@ export async function shouldTriggerCoherenceCheckin(
     const lastCheckinTurnStr = await redis.get(`${userId}:${sessionId}:${SESSION_KEY_LAST_CHECKIN}`)
 
     if (lastCheckinTurnStr) {
-      const lastCheckinTurn = Number.parseInt(lastCheckinTurnStr, 10)
+      const lastCheckinTurn = Number.parseInt(lastCheckinTurnStr as string, 10)
       const turnsSinceLastCheckin = currentTurn - lastCheckinTurn
 
       if (turnsSinceLastCheckin < MIN_TURNS_BETWEEN_CHECKINS) {
@@ -331,7 +331,7 @@ export async function wasLastTurnUncertaintyValidation(
       return false
     }
 
-    const lastUncertaintyTurn = Number.parseInt(lastUncertaintyTurnStr, 10)
+    const lastUncertaintyTurn = Number.parseInt(lastUncertaintyTurnStr as string, 10)
     return lastUncertaintyTurn === currentTurn - 1
   } catch (error) {
     logger.error(`Error in wasLastTurnUncertaintyValidation: ${error}`)
@@ -423,7 +423,7 @@ export async function generateAttunedResponse(
         templateParams.topic_or_feeling = uncertaintyResult.uncertaintyTopic
       }
 
-      response = await getTemplatedResponse(templateIntent, templateParams, { useLlmAssistance: true })
+      response = await getTemplatedResponse(templateIntent, templateParams as TemplateContextParams, { useLlmAssistance: true })
 
       // Record if this was an uncertainty validation
       if (templateIntent === "validate_uncertainty") {

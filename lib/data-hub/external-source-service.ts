@@ -44,7 +44,13 @@ export class ExternalSourceService {
         .from(externalConnections)
         .where(eq(externalConnections.userId, userId))
 
-      return connections
+      // Cast the status string to ConnectionStatus type
+      return connections.map(conn => ({
+        ...conn,
+        status: conn.status as ConnectionStatus,
+        // Parse metadata if it's a string
+        metadata: typeof conn.metadata === 'string' ? JSON.parse(conn.metadata) : conn.metadata
+      }));
     } catch (error) {
       logger.error(`Error fetching external connections for user ${userId}:`, error)
       throw new Error("Failed to fetch external connections")
@@ -70,7 +76,17 @@ export class ExternalSourceService {
         .where(and(eq(externalConnections.userId, userId), eq(externalConnections.sourceName, sourceName)))
         .limit(1)
 
-      return connection.length > 0 ? connection[0] : null
+      if (connection.length === 0) {
+        return null;
+      }
+      // Cast the status string to ConnectionStatus type
+      const resultConnection = connection[0];
+      return {
+        ...resultConnection,
+        status: resultConnection.status as ConnectionStatus,
+        // Parse metadata if it's a string
+        metadata: typeof resultConnection.metadata === 'string' ? JSON.parse(resultConnection.metadata) : resultConnection.metadata
+      };
     } catch (error) {
       logger.error(`Error fetching ${sourceName} connection for user ${userId}:`, error)
       throw new Error(`Failed to fetch ${sourceName} connection`)

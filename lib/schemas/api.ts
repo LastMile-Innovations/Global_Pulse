@@ -71,11 +71,10 @@ export type DataAccessRequestPayload = z.infer<typeof DataAccessRequestPayloadSc
 // Feedback Schemas
 // ==========================================
 
-// Find the CoherenceFeedbackPayloadSchema and ensure it includes the feedback field
 export const CoherenceFeedbackPayloadSchema = z.object({
   sessionId: z.string().min(1),
   messageId: z.string().min(1),
-  coherenceScore: z.enum(["Helpful", "Neutral", "FeltOff"]), // Update to use enum instead of number
+  coherenceScore: z.enum(["Helpful", "Neutral", "FeltOff"]),
   feedback: z.string().nullable().optional(),
 })
 export type CoherenceFeedbackPayload = z.infer<typeof CoherenceFeedbackPayloadSchema>
@@ -97,7 +96,12 @@ export type ResonanceFlagPayload = z.infer<typeof ResonanceFlagPayloadSchema>
 
 export const SessionPauseUpdatePayloadSchema = z.object({
   sessionId: z.string().min(1),
-  pauseChoice: z.enum(["Pause Both", "Continue Both", "Pause Insights Only", "Pause Training Only"]),
+  pauseChoice: z.enum([
+    "Pause Both",
+    "Continue Both",
+    "Pause Insights Only",
+    "Pause Training Only",
+  ]),
 })
 export type SessionPauseUpdatePayload = z.infer<typeof SessionPauseUpdatePayloadSchema>
 
@@ -106,14 +110,26 @@ export type SessionPauseUpdatePayload = z.infer<typeof SessionPauseUpdatePayload
 // ==========================================
 
 export const GenUIPayloadSchema = z.object({
-  targetSchemaName: z.enum(["slider", "multipleChoice", "confirmation", "infoCard", "formInput"]),
+  targetSchemaName: z.enum([
+    "slider",
+    "multipleChoice",
+    "confirmation",
+    "infoCard",
+    "formInput",
+  ]),
   context: z.record(z.any()),
   sessionId: z.string().optional(),
 })
 export type GenUIPayload = z.infer<typeof GenUIPayloadSchema>
 
 export const GenUISubmitPayloadSchema = z.object({
-  componentType: z.enum(["slider", "multipleChoice", "confirmation", "infoCard", "formInput"]),
+  componentType: z.enum([
+    "slider",
+    "multipleChoice",
+    "confirmation",
+    "infoCard",
+    "formInput",
+  ]),
   data: z.record(z.any()),
   sessionId: z.string().optional(),
   context: z.record(z.any()).optional(),
@@ -143,7 +159,6 @@ export type NlpAnalyzePayload = z.infer<typeof NlpAnalyzePayloadSchema>
 // Consent Schemas
 // ==========================================
 
-// Based on KgConsentProfile and isValidConsentUpdate function
 export const ConsentUpdatePayloadSchema = z
   .object({
     consentDataProcessing: z.boolean().optional(),
@@ -180,9 +195,14 @@ export const SessionPausePutPayloadSchema = z
     aggregationPaused: z.boolean().optional(),
     trainingPaused: z.boolean().optional(),
   })
-  .refine((data) => data.aggregationPaused !== undefined || data.trainingPaused !== undefined, {
-    message: "At least one of aggregationPaused or trainingPaused must be provided",
-  })
+  .refine(
+    (data) =>
+      typeof data.aggregationPaused === "boolean" ||
+      typeof data.trainingPaused === "boolean",
+    {
+      message: "At least one of aggregationPaused or trainingPaused must be provided",
+    }
+  )
 export type SessionPausePutPayload = z.infer<typeof SessionPausePutPayloadSchema>
 
 // ==========================================
@@ -195,7 +215,6 @@ export const SomaticTestPayloadSchema = z.object({
 })
 export type SomaticTestPayload = z.infer<typeof SomaticTestPayloadSchema>
 
-// VAD schema for somatic trigger test
 const VADSchema = z.object({
   v: z.number().min(-1).max(1),
   a: z.number().min(-1).max(1),
@@ -226,7 +245,7 @@ export const DataHubStatusSchema = z.object({
         lastSyncedAt: z.string().nullable(),
         errorMessage: z.string().nullable(),
       }),
-    }),
+    })
   ),
 })
 

@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { waitlist_activity_logs } from '@/lib/db/schema';
-import { isAdmin } from '@/lib/auth';
+import { waitlist_activity_logs } from '@/lib/db/schema/waitlist';
+import { isAdmin } from '@/lib/auth/auth-utils';
 import { count, desc, eq, and } from 'drizzle-orm';
 import { z } from 'zod';
+
+// --- waitlist.ts a ---
+// This endpoint returns waitlist activity logs for admins, with optional filtering by userId and action.
+// Supports pagination via limit and offset.
 
 const QuerySchema = z.object({
   userId: z.string().uuid().optional(),
@@ -13,7 +17,7 @@ const QuerySchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  if (!(await isAdmin())) {
+  if (!(await isAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -32,25 +36,27 @@ export async function GET(req: NextRequest) {
 
     const { userId, action, limit, offset } = parsedQuery.data;
 
+    // Compose where clause for filtering
     const whereClause = and(
       userId ? eq(waitlist_activity_logs.waitlistUserId, userId) : undefined,
       action ? eq(waitlist_activity_logs.action, action) : undefined
     );
 
-    const logs = await db.query.waitlist_activity_logs.findMany({
-      where: whereClause,
-      orderBy: [desc(waitlist_activity_logs.createdAt)],
-      limit,
-      offset,
-      // Optionally join with user data if needed
-      // with: {
-      //   waitlistUser: {
-      //     columns: { email: true }
-      //   }
-      // }
-    });
+    // Fetch logs with pagination and ordering
+    const logs = await db
+      .select()
+      .from(waitlist_activity_logs)
+      .where(whereClause)
+      .orderBy(desc(waitlist_activity_logs.createdAt))
+      .limit(limit)
+      .offset(offset);
 
-    const totalResult = await db.select({ value: count() }).from(waitlist_activity_logs).where(whereClause);
+    // Get total count for pagination
+    const totalResult = await db
+      .select({ value: count() })
+      .from(waitlist_activity_logs)
+      .where(whereClause);
+
     const total = totalResult[0]?.value ?? 0;
 
     return NextResponse.json({ logs, total });
@@ -59,4 +65,4 @@ export async function GET(req: NextRequest) {
     console.error('Admin get activity logs error:', error);
     return NextResponse.json({ error: 'An internal error occurred' }, { status: 500 });
   }
-} 
+}

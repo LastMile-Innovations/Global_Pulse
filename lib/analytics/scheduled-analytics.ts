@@ -1,8 +1,8 @@
 import { db } from "@/lib/db/drizzle"
-import { resonanceFlags } from "@/lib/db/schema/feedback"
+import { schema } from "@/lib/db/schema"
 import { resonanceAnalytics } from "./resonance-analytics-service"
 import { logger } from "@/lib/utils/logger"
-import { sql } from "drizzle-orm"
+import { sql, gte, lt, and } from "drizzle-orm"
 
 /**
  * Process analytics for the previous day
@@ -15,20 +15,37 @@ export async function processDailyAnalytics() {
 
     logger.info(`Processing daily analytics for ${dateStr}`)
 
-    // Get all flags from yesterday
     const startDate = new Date(dateStr)
     const endDate = new Date(dateStr)
     endDate.setDate(endDate.getDate() + 1)
 
-    const flags = await db.query.resonanceFlags.findMany({
-      where: sql`${resonanceFlags.createdAt} >= ${startDate} AND ${resonanceFlags.createdAt} < ${endDate}`,
-    })
+    const flags = await db
+      .select()
+      .from(schema.resonanceFlags)
+      .where(
+        and(
+          gte(schema.resonanceFlags.timestamp, startDate),
+          lt(schema.resonanceFlags.timestamp, endDate)
+        )
+      )
 
     logger.info(`Found ${flags.length} flags for ${dateStr}`)
 
-    // Process each flag
     for (const flag of flags) {
-      await resonanceAnalytics.processFlag(flag)
+      const flagForProcessing = {
+        ...flag,
+        flaggedInteractionID: flag.flaggedInteractionId,
+        precedingInteractionID: flag.precedingInteractionId,
+        createdAt: flag.timestamp,
+        flaggedInteractionId: undefined,
+        precedingInteractionId: undefined,
+        timestamp: undefined,
+      };
+      delete flagForProcessing.flaggedInteractionId;
+      delete flagForProcessing.precedingInteractionId;
+      delete flagForProcessing.timestamp;
+
+      await resonanceAnalytics.processFlag(flagForProcessing)
     }
 
     logger.info(`Completed daily analytics processing for ${dateStr}`)
@@ -52,18 +69,35 @@ export async function processWeeklyAnalytics() {
 
     logger.info(`Processing weekly analytics for ${weekStr}`)
 
-    // This will trigger a recalculation of the weekly aggregates
     const { startDate, endDate } = getPeriodDates("weekly", weekStr)
 
-    const flags = await db.query.resonanceFlags.findMany({
-      where: sql`${resonanceFlags.createdAt} >= ${startDate} AND ${resonanceFlags.createdAt} < ${endDate}`,
-    })
+    const flags = await db
+      .select()
+      .from(schema.resonanceFlags)
+      .where(
+        and(
+          gte(schema.resonanceFlags.timestamp, startDate),
+          lt(schema.resonanceFlags.timestamp, endDate)
+        )
+      )
 
     logger.info(`Found ${flags.length} flags for week ${weekStr}`)
 
-    // Process each flag to ensure weekly aggregates are updated
     for (const flag of flags) {
-      await resonanceAnalytics.processFlag(flag)
+      const flagForProcessing = {
+        ...flag,
+        flaggedInteractionID: flag.flaggedInteractionId,
+        precedingInteractionID: flag.precedingInteractionId,
+        createdAt: flag.timestamp,
+        flaggedInteractionId: undefined,
+        precedingInteractionId: undefined,
+        timestamp: undefined,
+      };
+      delete flagForProcessing.flaggedInteractionId;
+      delete flagForProcessing.precedingInteractionId;
+      delete flagForProcessing.timestamp;
+
+      await resonanceAnalytics.processFlag(flagForProcessing)
     }
 
     logger.info(`Completed weekly analytics processing for ${weekStr}`)
@@ -80,26 +114,42 @@ export async function processWeeklyAnalytics() {
 export async function processMonthlyAnalytics() {
   try {
     const now = new Date()
-    // Get previous month
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
     const monthStr = lastMonth.toISOString().substring(0, 7) // YYYY-MM
 
     logger.info(`Processing monthly analytics for ${monthStr}`)
 
-    // This will trigger a recalculation of the monthly aggregates
     const startDate = new Date(`${monthStr}-01`)
     const endDate = new Date(startDate)
     endDate.setMonth(endDate.getMonth() + 1)
 
-    const flags = await db.query.resonanceFlags.findMany({
-      where: sql`${resonanceFlags.createdAt} >= ${startDate} AND ${resonanceFlags.createdAt} < ${endDate}`,
-    })
+    const flags = await db
+      .select()
+      .from(schema.resonanceFlags)
+      .where(
+        and(
+          gte(schema.resonanceFlags.timestamp, startDate),
+          lt(schema.resonanceFlags.timestamp, endDate)
+        )
+      )
 
     logger.info(`Found ${flags.length} flags for month ${monthStr}`)
 
-    // Process each flag to ensure monthly aggregates are updated
     for (const flag of flags) {
-      await resonanceAnalytics.processFlag(flag)
+      const flagForProcessing = {
+        ...flag,
+        flaggedInteractionID: flag.flaggedInteractionId,
+        precedingInteractionID: flag.precedingInteractionId,
+        createdAt: flag.timestamp,
+        flaggedInteractionId: undefined,
+        precedingInteractionId: undefined,
+        timestamp: undefined,
+      };
+      delete flagForProcessing.flaggedInteractionId;
+      delete flagForProcessing.precedingInteractionId;
+      delete flagForProcessing.timestamp;
+
+      await resonanceAnalytics.processFlag(flagForProcessing)
     }
 
     logger.info(`Completed monthly analytics processing for ${monthStr}`)

@@ -1,5 +1,6 @@
 import { Suspense } from "react"
-import { db, schema } from "@/lib/db"
+import { db } from "@/lib/db"
+import { schema } from "@/lib/db/schema"
 import { asc } from "drizzle-orm"
 import { createClient } from "@/utils/supabase/server"
 import SurveyFeed from "@/components/survey/survey-feed"
@@ -35,25 +36,10 @@ export default async function SurveyPage() {
     )
   }
 
-  // Fetch available topics for filters with Drizzle and basic error handling
-  let topics: { id: string; name: string }[] = [];
-  try {
-    const dbTopics = await db
-      .select({ id: schema.topics.id, name: schema.topics.name })
-      .from(schema.topics)
-      .orderBy(asc(schema.topics.name))
-      .limit(20);
-    
-    // Map results to convert numeric ID to string
-    topics = dbTopics.map(topic => ({
-      ...topic,
-      id: topic.id.toString(), 
-    }));
-
-  } catch (error) {
-    console.error("Error fetching topics:", error);
-    // Fallback to empty array on error
-  }
+  // Fetch topics using correct schema reference
+  const topics = await db.select({ id: schema.topics.id, name: schema.topics.name })
+                       .from(schema.topics)
+                       .orderBy(asc(schema.topics.name))
 
   return (
     <div className="container max-w-4xl py-8">

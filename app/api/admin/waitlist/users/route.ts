@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { waitlist_users } from '@/lib/db/schema';
-import { isAdmin } from '@/lib/auth';
+import { waitlist_users } from '@/lib/db/schema/waitlist';
+import { isAdmin } from '@/lib/auth/auth-utils';
 import { count, asc, desc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
@@ -13,7 +13,7 @@ const QuerySchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  if (!(await isAdmin())) {
+  if (!(await isAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
 
     const users = await db.query.waitlist_users.findMany({
       where: whereClause,
-      orderBy: [orderByClause, asc(waitlist_users.createdAt)], // Secondary sort by created date
+      orderBy: [orderByClause, asc(waitlist_users.createdAt)],
       limit,
       offset,
     });
