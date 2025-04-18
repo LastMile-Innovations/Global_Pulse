@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm"
 import { db } from "@/lib/db/postgres/drizzle"
-import { profiles, userSessions } from "@/lib/db/schema"
+import { profiles } from "@/lib/db/schema"
 import { logger } from "../../../utils/logger"
 
 /**
@@ -8,19 +8,23 @@ import { logger } from "../../../utils/logger"
  */
 export class UserRepository {
   /**
-   * Create a new user
+   * Create a new user profile
    */
   async createUser(userData: {
-    userId: string
-    email: string
-    name: string
-    profileData?: string
+    id: string
+    firstName?: string | null
+    lastName?: string | null
   }) {
     try {
-      const result = await db.insert(profiles).values(userData).returning()
+      const insertData = {
+        id: userData.id,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+      };
+      const result = await db.insert(profiles).values(insertData).returning()
       return result[0]
     } catch (error) {
-      logger.error(`Error creating user: ${error}`)
+      logger.error(`Error creating user profile: ${error}`)
       throw error
     }
   }
@@ -42,30 +46,16 @@ export class UserRepository {
    * Create a new user session
    */
   async createSession(sessionData: { sessionId: string; userId: string }) {
-    try {
-      const result = await db.insert(userSessions).values(sessionData).returning()
-      return result[0]
-    } catch (error) {
-      logger.error(`Error creating session: ${error}`)
-      throw error
-    }
+    logger.error("createSession called, but userSessions schema is missing or not imported.")
+    throw new Error("User session functionality is not implemented.")
   }
 
   /**
    * Update a user session's last activity
    */
   async updateSessionActivity(sessionId: string) {
-    try {
-      const result = await db
-        .update(userSessions)
-        .set({ lastActivity: new Date() })
-        .where(eq(userSessions.sessionId, sessionId))
-        .returning()
-      return result[0]
-    } catch (error) {
-      logger.error(`Error updating session activity: ${error}`)
-      throw error
-    }
+    logger.error("updateSessionActivity called, but userSessions schema is missing or not imported.")
+    throw new Error("User session functionality is not implemented.")
   }
 }
 

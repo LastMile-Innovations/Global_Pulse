@@ -434,8 +434,6 @@ export default function WaitlistPage() {
             </div>
           </div>
         </section>
-
-        <ScrollToTopButton />
       </main>
     </div>
   )

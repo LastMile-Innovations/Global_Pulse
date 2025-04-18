@@ -34,13 +34,16 @@ const customComponents: Partial<Components> = {
     const language = match ? match[1] : 'text';
     const codeString = String(children).replace(/\n$/, '');
 
+    // Remove 'ref' from props to avoid type error
+    const { ref, ...restProps } = props;
+
     return (
       <SyntaxHighlighter
         style={dracula as any}
         language={language}
         PreTag="div"
         className="rounded-md my-4 text-sm"
-        {...props}
+        {...restProps}
       >
         {codeString}
       </SyntaxHighlighter>

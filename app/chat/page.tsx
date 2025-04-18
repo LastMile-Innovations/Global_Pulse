@@ -10,6 +10,14 @@ import TrendingTopics from "@/components/chat/trending-topics";
 import ChatList from "@/components/chat/chat-list";
 import { DatabaseErrorFallback } from "@/components/database-error-fallback";
 
+
+export const metadata = {
+  title: "AI Chatbot",
+}
+
+// Opt out of static generation
+export const dynamic = 'force-dynamic'
+
 export default async function ChatIndexPage() {
   let user;
   try {

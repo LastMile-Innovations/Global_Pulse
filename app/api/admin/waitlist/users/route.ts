@@ -37,15 +37,20 @@ export async function GET(req: NextRequest) {
       ? desc(waitlist_users.priorityScore)
       : asc(waitlist_users.createdAt);
 
-    const users = await db.query.waitlist_users.findMany({
-      where: whereClause,
-      orderBy: [orderByClause, asc(waitlist_users.createdAt)],
-      limit,
-      offset,
-    });
+    let usersQuery;
+    if (whereClause) {
+      usersQuery = db.select().from(waitlist_users).where(whereClause).orderBy(orderByClause, asc(waitlist_users.createdAt));
+    } else {
+      usersQuery = db.select().from(waitlist_users).orderBy(orderByClause, asc(waitlist_users.createdAt));
+    }
+    const users = await usersQuery;
 
-    // Use a separate query for the total count with the same filter
-    const totalResult = await db.select({ value: count() }).from(waitlist_users).where(whereClause);
+    let totalResult;
+    if (whereClause) {
+      totalResult = await db.select({ value: count() }).from(waitlist_users).where(whereClause);
+    } else {
+      totalResult = await db.select({ value: count() }).from(waitlist_users);
+    }
     const total = totalResult[0]?.value ?? 0;
 
     return NextResponse.json({ users, total });

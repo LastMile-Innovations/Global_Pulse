@@ -132,6 +132,9 @@ export function DynamicUIRenderer({ sessionId, onSubmit, onError, components }: 
                 minLabel={component.minLabel}
                 maxLabel={component.maxLabel}
                 showValue={component.showValue}
+                required={component.required ?? false}
+                disabled={component.disabled ?? false}
+                visible={component.visible ?? true}
                 onSubmit={(data) => handleComponentSubmit(index, data)}
               />
             )
@@ -146,6 +149,10 @@ export function DynamicUIRenderer({ sessionId, onSubmit, onError, components }: 
                 options={component.options}
                 allowMultiple={component.allowMultiple}
                 defaultSelected={component.defaultSelected}
+                required={component.required ?? false}
+                disabled={component.disabled ?? false}
+                visible={component.visible ?? true}
+                randomize={component.randomize ?? false}
                 onSubmit={(data) => handleComponentSubmit(index, data)}
               />
             )
@@ -160,6 +167,11 @@ export function DynamicUIRenderer({ sessionId, onSubmit, onError, components }: 
                 confirmLabel={component.confirmLabel}
                 denyLabel={component.denyLabel}
                 confirmStyle={component.confirmStyle}
+                required={component.required ?? false}
+                disabled={component.disabled ?? false}
+                visible={component.visible ?? true}
+                showDeny={component.showDeny ?? true}
+                autoClose={component.autoClose ?? false}
                 onSubmit={(data) => handleComponentSubmit(index, data)}
               />
             )
@@ -174,6 +186,9 @@ export function DynamicUIRenderer({ sessionId, onSubmit, onError, components }: 
                 imageUrl={component.imageUrl}
                 footer={component.footer}
                 variant={component.variant}
+                required={component.required ?? false}
+                disabled={component.disabled ?? false}
+                visible={component.visible ?? true}
                 // No onSubmit for InfoCard
               />
             )
@@ -187,7 +202,9 @@ export function DynamicUIRenderer({ sessionId, onSubmit, onError, components }: 
                 inputType={component.inputType}
                 placeholder={component.placeholder}
                 defaultValue={component.defaultValue}
-                required={component.required}
+                required={component.required ?? false}
+                disabled={component.disabled ?? false}
+                visible={component.visible ?? true}
                 description={component.description}
                 validation={component.validation}
                 onSubmit={(data) => handleComponentSubmit(index, data)}

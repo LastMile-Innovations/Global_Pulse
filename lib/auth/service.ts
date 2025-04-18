@@ -20,10 +20,19 @@ export async function isAdmin(): Promise<boolean> {
   // Fetch user role from your database
   const dbUser = await db.query.profiles.findFirst({
     where: eq(profiles.id, user.id),
-    columns: { role: true }
+    // columns: { role: true } // 'role' does not exist on profiles table
   });
 
-  return dbUser?.role === 'admin';
+  // Check if user exists in profiles, if not, they aren't an admin
+  if (!dbUser) {
+    return false;
+  }
+
+  // Admin status is not stored in profiles table. 
+  // Implement actual admin check logic here (e.g., via Supabase custom claims or a separate admin table).
+  // For now, returning false.
+  // return dbUser?.role === 'admin';
+  return false;
 }
 
 /**

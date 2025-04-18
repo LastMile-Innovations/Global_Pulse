@@ -157,10 +157,10 @@ export class GuardrailsService {
 
       // Minimal rule variables
       const ruleVariables: RuleVariables = {
-        source: "external",
-        perspective: "self",
-        timeframe: "present",
-        acceptanceState: "uncertain",
+        source: { value: "external", confidence: 1.0 },
+        perspective: { value: "self", confidence: 1.0 },
+        timeframe: { value: "present", confidence: 1.0 },
+        acceptanceState: { value: "uncertain", confidence: 0.5 },
       }
 
       // No bootstrapped EPs for MVP

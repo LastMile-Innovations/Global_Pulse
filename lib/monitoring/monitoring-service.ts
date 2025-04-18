@@ -134,8 +134,9 @@ export class MonitoringService {
     }
 
     // NER was successful, proceed with entities
-    const entities = nerResult; // Now type is narrowed to EntityRecognitionResult
-    result.entitiesExtracted = entities.length;
+    const entitiesResult = nerResult; // Type is EntityRecognitionResult
+    const entities = entitiesResult.entities; // Access the entities array
+    result.entitiesExtracted = entities.length; // Use the length of the array
 
     // Create information event in UIG
     const eventId = await this.kgService.createInformationEvent({
@@ -154,7 +155,7 @@ export class MonitoringService {
       result.eventsCreated = 1
 
       // Process each entity and link to the event
-      for (const entity of entities) {
+      for (const entity of entities) { // Iterate over the entities array
         try {
           // Find or create entity node
           const entityId = await this.kgService.findOrCreateTrackedEntity(entity.text, this.mapEntityType(entity.type))

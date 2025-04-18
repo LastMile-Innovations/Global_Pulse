@@ -31,7 +31,6 @@ export {
 export {
   determineWebbSeverityLabel,
   formatWebbSeverityCalculation,
-  determineWebbEmotion,
   SEVERITY_MAP,
   EP_POWER_WEIGHT,
   P_POWER_WEIGHT,
@@ -41,9 +40,11 @@ export {
 // Export Emotion Categorization components
 export {
   categorizeEmotion,
-  type EmotionCategoryProb,
   type EmotionCategorizationOutput,
 } from "./emotion-categorization"
+
+// Export Probability Normalization types
+export { type EmotionCategoryProb } from "./probability-normalization"
 
 // Export other PCE components as needed
 // export { ... } from './metacognition'

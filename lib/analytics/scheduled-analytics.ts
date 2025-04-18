@@ -24,8 +24,8 @@ export async function processDailyAnalytics() {
       .from(schema.resonanceFlags)
       .where(
         and(
-          gte(schema.resonanceFlags.timestamp, startDate),
-          lt(schema.resonanceFlags.timestamp, endDate)
+          gte(schema.resonanceFlags.clientTimestamp, startDate),
+          lt(schema.resonanceFlags.clientTimestamp, endDate)
         )
       )
 
@@ -35,15 +35,15 @@ export async function processDailyAnalytics() {
       const flagForProcessing = {
         ...flag,
         flaggedInteractionID: flag.flaggedInteractionId,
-        precedingInteractionID: flag.precedingInteractionId,
-        createdAt: flag.timestamp,
+        precedingInteractionID: flag.precedingInteractionId || "",
+        createdAt: flag.clientTimestamp,
         flaggedInteractionId: undefined,
         precedingInteractionId: undefined,
-        timestamp: undefined,
+        clientTimestamp: undefined,
       };
       delete flagForProcessing.flaggedInteractionId;
       delete flagForProcessing.precedingInteractionId;
-      delete flagForProcessing.timestamp;
+      delete flagForProcessing.clientTimestamp;
 
       await resonanceAnalytics.processFlag(flagForProcessing)
     }
@@ -76,8 +76,8 @@ export async function processWeeklyAnalytics() {
       .from(schema.resonanceFlags)
       .where(
         and(
-          gte(schema.resonanceFlags.timestamp, startDate),
-          lt(schema.resonanceFlags.timestamp, endDate)
+          gte(schema.resonanceFlags.clientTimestamp, startDate),
+          lt(schema.resonanceFlags.clientTimestamp, endDate)
         )
       )
 
@@ -87,15 +87,15 @@ export async function processWeeklyAnalytics() {
       const flagForProcessing = {
         ...flag,
         flaggedInteractionID: flag.flaggedInteractionId,
-        precedingInteractionID: flag.precedingInteractionId,
-        createdAt: flag.timestamp,
+        precedingInteractionID: flag.precedingInteractionId || "",
+        createdAt: flag.clientTimestamp,
         flaggedInteractionId: undefined,
         precedingInteractionId: undefined,
-        timestamp: undefined,
+        clientTimestamp: undefined,
       };
       delete flagForProcessing.flaggedInteractionId;
       delete flagForProcessing.precedingInteractionId;
-      delete flagForProcessing.timestamp;
+      delete flagForProcessing.clientTimestamp;
 
       await resonanceAnalytics.processFlag(flagForProcessing)
     }
@@ -128,8 +128,8 @@ export async function processMonthlyAnalytics() {
       .from(schema.resonanceFlags)
       .where(
         and(
-          gte(schema.resonanceFlags.timestamp, startDate),
-          lt(schema.resonanceFlags.timestamp, endDate)
+          gte(schema.resonanceFlags.clientTimestamp, startDate),
+          lt(schema.resonanceFlags.clientTimestamp, endDate)
         )
       )
 
@@ -139,15 +139,15 @@ export async function processMonthlyAnalytics() {
       const flagForProcessing = {
         ...flag,
         flaggedInteractionID: flag.flaggedInteractionId,
-        precedingInteractionID: flag.precedingInteractionId,
-        createdAt: flag.timestamp,
+        precedingInteractionID: flag.precedingInteractionId || "",
+        createdAt: flag.clientTimestamp,
         flaggedInteractionId: undefined,
         precedingInteractionId: undefined,
-        timestamp: undefined,
+        clientTimestamp: undefined,
       };
       delete flagForProcessing.flaggedInteractionId;
       delete flagForProcessing.precedingInteractionId;
-      delete flagForProcessing.timestamp;
+      delete flagForProcessing.clientTimestamp;
 
       await resonanceAnalytics.processFlag(flagForProcessing)
     }

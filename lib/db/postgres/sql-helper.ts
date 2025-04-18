@@ -7,7 +7,7 @@ import { logger } from "../../utils/logger"
  */
 export async function executeRawQuery<T = any>(query: string, params: any[] = []): Promise<T[]> {
   try {
-    const result = await db.execute(sql.raw(query, params))
+    const result = await db.execute(sql.raw(query))
     return result as T[]
   } catch (error) {
     logger.error(`Error executing raw query: ${error}`)
@@ -19,20 +19,13 @@ export async function executeRawQuery<T = any>(query: string, params: any[] = []
  * Execute a transaction with multiple queries
  */
 export async function executeTransaction<T = any>(callback: (tx: any) => Promise<T>): Promise<T> {
-  const pool = db.driver
-
-  const client = await pool.connect()
-
-  try {
-    await client.query("BEGIN")
-    const result = await callback(client)
-    await client.query("COMMIT")
-    return result
-  } catch (error) {
-    await client.query("ROLLBACK")
-    logger.error(`Transaction error: ${error}`)
-    throw error
-  } finally {
-    client.release()
-  }
+  return db.transaction(async (tx) => {
+    try {
+      const result = await callback(tx)
+      return result
+    } catch (error) {
+      logger.error(`Transaction error: ${error}`)
+      throw error
+    }
+  })
 }

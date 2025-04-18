@@ -401,7 +401,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <ScrollToTopButton />
+        {/* <ScrollToTopButton /> */}
       </main>
     </div>
   )

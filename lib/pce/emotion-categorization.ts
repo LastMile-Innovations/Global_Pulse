@@ -5,7 +5,7 @@ import { findAlternativeEmotions } from "./alternative-emotions"
 import {
   normalizeProbabilities,
   capAndRedistributeProbabilities,
-  type EmotionCategoryProb,
+  EmotionCategoryProb,
 } from "./probability-normalization"
 import { getTypicalVADProfile } from "./vad-profiles"
 import { logger } from "../utils/logger"

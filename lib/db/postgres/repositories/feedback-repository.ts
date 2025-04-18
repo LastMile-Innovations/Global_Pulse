@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm"
 import { db } from "@/lib/db/postgres/drizzle"
-import { coherenceFeedback, distressRecords } from "@/lib/db/schema/feedback"
+import { coherenceFeedback, resonanceFlags } from "@/lib/db/schema/feedback"
 import { logger } from "../../../utils/logger"
 
 /**
@@ -13,11 +13,9 @@ export class FeedbackRepository {
   async createCoherenceFeedback(feedbackData: {
     userId: string
     sessionId: string
-    interactionId: string
-    feedbackType: string
-    feedbackScore?: number
-    feedbackText?: string
-    metadata?: any
+    messageId: string
+    coherenceScore: string
+    feedback?: string
   }) {
     try {
       const result = await db.insert(coherenceFeedback).values(feedbackData).returning()
@@ -52,26 +50,16 @@ export class FeedbackRepository {
     triggerContext?: string
     responseProvided?: string
   }) {
-    try {
-      const result = await db.insert(distressRecords).values(distressData).returning()
-      return result[0]
-    } catch (error) {
-      logger.error(`Error creating distress record: ${error}`)
-      throw error
-    }
+    logger.error("createDistressRecord called, but distressRecords schema is missing or not imported.")
+    throw new Error("Distress record functionality is not implemented.")
   }
 
   /**
    * Get distress records by user ID
    */
   async getDistressRecordsByUserId(userId: string) {
-    try {
-      const result = await db.select().from(distressRecords).where(eq(distressRecords.userId, userId))
-      return result
-    } catch (error) {
-      logger.error(`Error getting distress records by user ID: ${error}`)
-      throw error
-    }
+    logger.error("getDistressRecordsByUserId called, but distressRecords schema is missing or not imported.")
+    throw new Error("Distress record functionality is not implemented.")
   }
 }
 

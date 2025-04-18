@@ -7,8 +7,8 @@ import { ScrollToTop } from "@/components/scroll-to-top";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { inter, poppins } from "./fonts";
+import { Suspense } from "react";
 
-// MVP: Remove explicit Metadata/Viewport exports (handled by Next.js app directory conventions)
 
 export const metadata = {
   title: {
@@ -70,7 +70,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
-            <ScrollToTop />
+            <Suspense fallback={null}>
+              <ScrollToTop />
+            </Suspense>
             <Toaster />
           </div>
         </ThemeProvider>

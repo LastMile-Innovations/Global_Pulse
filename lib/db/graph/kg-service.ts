@@ -1112,4 +1112,28 @@ export class KgService {
       return []
     }
   }
+
+  /**
+   * Stub: Get a user's cultural context profile (not implemented)
+   */
+  async getCulturalContextProfile(userID: string, sessionID?: string): Promise<any | null> {
+    logger.warn('getCulturalContextProfile is not implemented.');
+    return null;
+  }
+
+  /**
+   * Stub: Get a user's personality profile (not implemented)
+   */
+  async getPersonalityProfile(userID: string, sessionID?: string): Promise<any | null> {
+    logger.warn('getPersonalityProfile is not implemented.');
+    return null;
+  }
+
+  /**
+   * Stub: Get a user's developmental stage profile (not implemented)
+   */
+  async getDevelopmentalStageProfile(userID: string, sessionID?: string): Promise<any | null> {
+    logger.warn('getDevelopmentalStageProfile is not implemented.');
+    return null;
+  }
 }

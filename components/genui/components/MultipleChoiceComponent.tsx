@@ -22,24 +22,24 @@ export function MultipleChoiceComponent({
 }: MultipleChoiceComponentProps) {
   // For multiple selection (checkboxes)
   const [selectedOptions, setSelectedOptions] = useState<string[]>(
-    defaultSelected.map((index) => options[index]).filter(Boolean),
+    defaultSelected
   )
 
   // For single selection (radio buttons)
   const [selectedOption, setSelectedOption] = useState<string | undefined>(
-    defaultSelected.length > 0 ? options[defaultSelected[0]] : undefined,
+    defaultSelected.length > 0 ? defaultSelected[0] : undefined
   )
 
-  const handleCheckboxChange = (option: string, checked: boolean) => {
+  const handleCheckboxChange = (optionValue: string, checked: boolean) => {
     if (checked) {
-      setSelectedOptions((prev) => [...prev, option])
+      setSelectedOptions((prev) => [...prev, optionValue])
     } else {
-      setSelectedOptions((prev) => prev.filter((item) => item !== option))
+      setSelectedOptions((prev) => prev.filter((item) => item !== optionValue))
     }
   }
 
-  const handleRadioChange = (option: string) => {
-    setSelectedOption(option)
+  const handleRadioChange = (optionValue: string) => {
+    setSelectedOption(optionValue)
   }
 
   const handleSubmit = () => {
@@ -63,10 +63,11 @@ export function MultipleChoiceComponent({
               <div key={index} className="flex items-center space-x-2">
                 <Checkbox
                   id={`option-${index}`}
-                  checked={selectedOptions.includes(option)}
-                  onCheckedChange={(checked) => handleCheckboxChange(option, checked === true)}
+                  checked={selectedOptions.includes(option.value)}
+                  onCheckedChange={(checked) => handleCheckboxChange(option.value, checked === true)}
+                  disabled={option.disabled}
                 />
-                <Label htmlFor={`option-${index}`}>{option}</Label>
+                <Label htmlFor={`option-${index}`}>{option.label}</Label>
               </div>
             ))}
           </div>
@@ -75,8 +76,8 @@ export function MultipleChoiceComponent({
             <div className="space-y-4">
               {options.map((option, index) => (
                 <div key={index} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option} id={`option-${index}`} />
-                  <Label htmlFor={`option-${index}`}>{option}</Label>
+                  <RadioGroupItem value={option.value} id={`option-${index}`} disabled={option.disabled} />
+                  <Label htmlFor={`option-${index}`}>{option.label}</Label>
                 </div>
               ))}
             </div>

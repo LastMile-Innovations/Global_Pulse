@@ -3,6 +3,7 @@ import { getAllPosts } from "@/lib/blog/posts";
 import PostCard from "@/components/blog/PostCard";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import NewsletterSignup from "@/components/blog/NewsletterSignup";
 
 // Static metadata for the page
 export const metadata: Metadata = {
@@ -99,27 +100,7 @@ export default async function BlogIndexPage() {
                 <p className="text-muted-foreground mb-6">
                   Subscribe to our newsletter to receive the latest updates and insights directly in your inbox.
                 </p>
-                <form
-                  className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-                  // MVP: No actual submission logic yet
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    alert("Thank you for subscribing! (MVP placeholder)");
-                  }}
-                >
-                  <input
-                    type="email"
-                    placeholder="Your email address"
-                    className="rounded-md px-3 py-2 border border-border bg-background flex-grow"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-md px-4 py-2 font-medium transition-colors"
-                  >
-                    Subscribe
-                  </button>
-                </form>
+                <NewsletterSignup />
               </div>
             </section>
           </div>

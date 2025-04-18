@@ -1,4 +1,5 @@
 import FrameworksTheoriesClientPage from "./FrameworksTheoriesClientPage"
+import { Suspense } from 'react'
 
 export const metadata = {
   title: "Frameworks & Theories | Global Pulse",
@@ -6,5 +7,9 @@ export const metadata = {
 }
 
 export default function FrameworksTheoriesPage() {
-  return <FrameworksTheoriesClientPage />
+  return (
+    <Suspense fallback={<div>Loading frameworks...</div>}>
+      <FrameworksTheoriesClientPage />
+    </Suspense>
+  )
 }

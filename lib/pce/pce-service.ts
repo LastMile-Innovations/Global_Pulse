@@ -17,7 +17,7 @@ import {
   processBootstrapResponse,
 } from "@/lib/bootstrap/bootstrap-service";
 import type { EWEFAnalysisOutput, BootstrappedEP, RuleVariables, PInstanceData } from "../types/pce-types";
-import { analyzeSentiment } from "../utils/sentiment-analysis";
+import { analyzeSentiment } from "../transformers/sentiment-service";
 import { conditionallyLogDetailedAnalysis } from "./conditional-logging";
 import { getCoreNlpFeatures } from "../nlp/nlp-features";
 import { inferSelfMapAttachments, updateSelfMapWithInferences } from "./self-map-inference";
@@ -31,6 +31,7 @@ import { categorizeEmotion } from "./emotion-categorization";
 import { generateExplanation } from "./metacognition";
 import { generateInteractionGuidance } from "./interaction-guidance";
 import { calculateLinearVad } from "./ewef-core-engine/linear-model";
+import type { NlpFeatures, SentimentLabel } from "../types/nlp-types";
 
 // Redis key for tracking turn count
 const REDIS_KEY_TURN_COUNT = "session:turn_count:";
@@ -271,4 +272,22 @@ async function performEwefAnalysis(
     base.activeEPs = activeBootstrappedEPs;
   }
   return base;
+}
+
+/**
+ * Map sentiment label from the sentiment-service to the canonical SentimentLabel type.
+ * Handles lowercase/uppercase and fallback.
+ */
+function normalizeSentimentLabel(label: string | undefined): SentimentLabel {
+  if (!label) return "NEUTRAL"; // Handle undefined case
+  switch (label.toLowerCase()) {
+    case "positive":
+      return "POSITIVE";
+    case "negative":
+      return "NEGATIVE";
+    case "neutral":
+      return "NEUTRAL";
+    default:
+      return "NEUTRAL"; // Fallback to neutral
+  }
 }

@@ -1,10 +1,18 @@
 export const logger = {
-  info: (message: string) => {
-    console.log(`[INFO] ${message}`)
+  info: (message: string, details?: any) => {
+    if (details !== undefined) {
+      console.log(`[INFO] ${message}`, details)
+    } else {
+      console.log(`[INFO] ${message}`)
+    }
   },
 
-  warn: (message: string) => {
-    console.warn(`[WARN] ${message}`)
+  warn: (message: string, details?: any) => {
+    if (details !== undefined) {
+      console.warn(`[WARN] ${message}`, details)
+    } else {
+      console.warn(`[WARN] ${message}`)
+    }
   },
 
   error: (message: string, details?: any) => {
@@ -15,9 +23,13 @@ export const logger = {
     }
   },
 
-  debug: (message: string) => {
+  debug: (message: string, details?: any) => {
     if (process.env.NODE_ENV !== "production") {
-      console.debug(`[DEBUG] ${message}`)
+      if (details !== undefined) {
+        console.debug(`[DEBUG] ${message}`, details)
+      } else {
+        console.debug(`[DEBUG] ${message}`)
+      }
     }
   },
 }

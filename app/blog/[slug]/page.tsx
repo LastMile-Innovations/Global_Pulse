@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Share2, Twitter, Facebook, Linkedin, ArrowLeft, ArrowRight } from "lucide-react";
 import PostBody from "@/components/blog/PostBody";
+import ShareButtons from "@/components/blog/ShareButtons";
 
 type Props = {
   params: { slug: string };
@@ -158,54 +159,7 @@ export default async function BlogPostPage({ params }: Props) {
                   Share this article
                 </h3>
                 <div className="flex gap-2">
-                  <a
-                    href={twitterShare}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="rounded-full h-10 w-10"
-                    >
-                      <Twitter className="h-4 w-4" />
-                    </Button>
-                  </a>
-                  <a
-                    href={facebookShare}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="rounded-full h-10 w-10"
-                    >
-                      <Facebook className="h-4 w-4" />
-                    </Button>
-                  </a>
-                  <a
-                    href={linkedinShare}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="rounded-full h-10 w-10"
-                    >
-                      <Linkedin className="h-4 w-4" />
-                    </Button>
-                  </a>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rounded-full h-10 w-10"
-                    onClick={handleCopyLink}
-                    type="button"
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </Button>
+                  <ShareButtons twitterShare={twitterShare} facebookShare={facebookShare} linkedinShare={linkedinShare} />
                 </div>
               </div>
 

@@ -3,13 +3,11 @@ import type { Message as AIMessage } from "ai"
 import { User, Bot } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Icons } from "@/components/shared/icons"
 import { Separator } from "@/components/ui/separator"
-import { type Message } from "ai/react"
+import { type Message as VercelAIMessage } from "ai/react"
 import MultipleChoiceInput from "../genui/multiple-choice-input"
 import SliderInput from "../genui/slider-input"
 import ButtonsInput from "../genui/buttons-input"
-import { CoherenceCheck } from "./coherence-check"
 
 // Define the structure of parts within message.content when it's an array
 // Based on usage within the component
@@ -18,7 +16,7 @@ type MessagePart =
   | { type: 'tool_call'; tool_call: { id: string; name: string; parameters: Record<string, unknown> } };
 
 // Extend the Message type from the AI package to support our custom content format
-type Message = Omit<AIMessage, 'content'> & {
+type Message = Omit<VercelAIMessage, 'content'> & {
   content: string | MessagePart[]
 };
 

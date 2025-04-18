@@ -2,32 +2,20 @@ import { logger } from "../utils/logger"
 import { generateObject } from "ai"
 import { z } from "zod"
 
-// Advanced: Use Vercel AI SDK for LLM-powered sentiment analysis, with fallback to improved rule-based logic
-
 /**
- * Sentiment analysis result
+ * Sentiment analysis result interface.
+ * - score: -1.0 (very negative) to 1.0 (very positive)
+ * - magnitude: 0.0 (neutral/weak) to 1.0 (very strong)
+ * - label: "positive", "negative", or "neutral"
  */
 export interface SentimentResult {
-  /**
-   * Sentiment score (-1.0 to 1.0)
-   * Negative values indicate negative sentiment, positive values indicate positive sentiment
-   */
   score: number
-
-  /**
-   * Sentiment magnitude (0.0 to 1.0)
-   * Higher values indicate stronger sentiment
-   */
   magnitude: number
-
-  /**
-   * Sentiment label (positive, negative, neutral)
-   */
   label: "positive" | "negative" | "neutral"
 }
 
 /**
- * Zod schema for LLM output validation
+ * Zod schema for validating LLM output.
  */
 const SentimentResultSchema = z.object({
   score: z.number().min(-1).max(1),
@@ -35,7 +23,7 @@ const SentimentResultSchema = z.object({
   label: z.enum(["positive", "negative", "neutral"]),
 })
 
-type LLMSentimentResult = z.infer<typeof SentimentResultSchema>;
+type LLMSentimentResult = z.infer<typeof SentimentResultSchema>
 
 /**
  * Analyze sentiment of text using LLM (Vercel AI SDK) with fallback to advanced rule-based logic.
@@ -43,9 +31,8 @@ type LLMSentimentResult = z.infer<typeof SentimentResultSchema>;
  * @returns Sentiment analysis result
  */
 export async function analyzeSentiment(text: string): Promise<SentimentResult> {
-  // Try LLM-based analysis first for best accuracy
+  // --- LLM-based analysis ---
   try {
-    // Use generateObject for structured, robust output
     const prompt = `
 Analyze the sentiment of the following text. 
 Return a JSON object with:
@@ -55,14 +42,12 @@ Return a JSON object with:
 
 Text: """${text}"""
 `
-    // Only pass a model if the API key is set, otherwise omit the model property
     const generateObjectArgs: any = {
       schema: SentimentResultSchema,
       prompt,
       maxTokens: 128,
       temperature: 0.0,
       experimental_telemetry: { isEnabled: true, functionId: "sentiment" },
-      // Optionally, add repairText for robustness
       experimental_repairText: async ({ text, error }: { text: string; error: any }) => {
         logger?.warn?.(`[Sentiment] LLM output repair triggered: ${error}`)
         // Try to extract JSON from malformed output
@@ -77,7 +62,7 @@ Text: """${text}"""
     const { object, usage, warnings } = await generateObject(generateObjectArgs)
     const llmResult = object as LLMSentimentResult
 
-    if (llmResult) {
+    if (llmResult && typeof llmResult.score === "number" && typeof llmResult.magnitude === "number" && typeof llmResult.label === "string") {
       logger?.debug?.(
         `[Sentiment][LLM] text="${text}" score=${llmResult.score} mag=${llmResult.magnitude} label=${llmResult.label} usage=${JSON.stringify(
           usage
@@ -90,28 +75,28 @@ Text: """${text}"""
     // Continue to rule-based fallback
   }
 
-  // --- Advanced Rule-Based Fallback (improved) ---
+  // --- Rule-Based Fallback ---
   try {
     // Expanded lexicons and negation handling
-    const positiveWords = [
+    const positiveWords = new Set([
       "good", "great", "excellent", "amazing", "wonderful", "fantastic", "terrific", "outstanding", "superb",
       "brilliant", "awesome", "happy", "joy", "love", "like", "enjoy", "pleased", "delighted", "grateful",
       "thankful", "excited", "hopeful", "optimistic", "positive", "confident", "satisfied", "impressed", "blessed",
       "cheerful", "glad", "enthusiastic", "marvelous", "spectacular", "fabulous", "charming", "admirable"
-    ]
-    const negativeWords = [
+    ])
+    const negativeWords = new Set([
       "bad", "terrible", "horrible", "awful", "poor", "disappointing", "frustrating", "annoying", "irritating",
       "unpleasant", "sad", "unhappy", "angry", "upset", "worried", "anxious", "stressed", "depressed",
       "miserable", "hate", "dislike", "fear", "scared", "afraid", "concerned", "negative", "unsatisfied",
       "disgusted", "dismal", "pathetic", "regret", "resent", "unimpressed", "hopeless", "unfortunate"
-    ]
-    const intensifiers = [
+    ])
+    const intensifiers = new Set([
       "very", "extremely", "incredibly", "really", "absolutely", "completely", "totally", "utterly", "deeply",
       "highly", "strongly", "especially", "particularly", "exceptionally", "remarkably", "so", "super", "mega"
-    ]
-    const negations = [
+    ])
+    const negations = new Set([
       "not", "never", "no", "none", "hardly", "barely", "scarcely", "neither", "nor", "without", "cannot", "isn't", "wasn't", "aren't", "don't", "doesn't", "didn't", "won't", "wouldn't", "shouldn't", "can't"
-    ]
+    ])
 
     // Tokenize and keep track of negation context
     const tokens = text
@@ -128,40 +113,26 @@ Text: """${text}"""
     // Sliding window for negation (negates next 2 tokens)
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i]
-      if (negations.includes(token)) {
+      if (negations.has(token)) {
         negationWindow = 2
         continue
       }
-      let isNegated = negationWindow > 0
-      if (positiveWords.includes(token)) {
-        if (isNegated) {
-          negativeCount++
-        } else {
-          positiveCount++
-        }
+      const isNegated = negationWindow > 0
+      if (positiveWords.has(token)) {
+        isNegated ? negativeCount++ : positiveCount++
       }
-      if (negativeWords.includes(token)) {
-        if (isNegated) {
-          positiveCount++
-        } else {
-          negativeCount++
-        }
+      if (negativeWords.has(token)) {
+        isNegated ? positiveCount++ : negativeCount++
       }
-      if (intensifiers.includes(token)) intensifierCount++
+      if (intensifiers.has(token)) intensifierCount++
       if (negationWindow > 0) negationWindow--
     }
 
     // Exclamation and ALL CAPS boost
-    let exclamationBoost = 0
     const exclamations = (text.match(/!/g) || []).length
-    if (exclamations > 0) {
-      exclamationBoost = Math.min(exclamations * 0.05, 0.2)
-    }
-    let capsBoost = 0
+    const exclamationBoost = Math.min(exclamations * 0.05, 0.2)
     const capsWords = (text.match(/\b[A-Z]{3,}\b/g) || []).length
-    if (capsWords > 0) {
-      capsBoost = Math.min(capsWords * 0.03, 0.15)
-    }
+    const capsBoost = Math.min(capsWords * 0.03, 0.15)
 
     // Calculate sentiment score (-1.0 to 1.0)
     const totalSentimentWords = positiveCount + negativeCount
