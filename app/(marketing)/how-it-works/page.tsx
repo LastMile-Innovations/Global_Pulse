@@ -1,5 +1,6 @@
 "use client"
 
+import "@/app/globals.css"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -20,7 +21,6 @@ import {
 import Link from "next/link"
 import Image from "next/image"
 import { useState, Suspense } from "react"
-import "./styles.css"
 
 export default function HowItWorks() {
   const [activeStep, setActiveStep] = useState(1)

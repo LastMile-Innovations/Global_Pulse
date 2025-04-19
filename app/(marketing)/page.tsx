@@ -46,18 +46,16 @@ export default function Page() {
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8])
   const y = useTransform(scrollYProgress, [0, 0.5], [0, 100])
 
-  // Update active section based on scroll position
+  // Track active section for floating nav
   useEffect(() => {
     const sections = document.querySelectorAll("section[id]")
 
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 100
-
       sections.forEach((section) => {
         const sectionTop = (section as HTMLElement).offsetTop
         const sectionHeight = section.clientHeight
         const sectionId = section.getAttribute("id") || ""
-
         if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
           setActiveSection(sectionId)
         }
@@ -71,20 +69,20 @@ export default function Page() {
   return (
     <div className="relative bg-background text-foreground overflow-hidden">
       {/* Floating Navigation */}
-      <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 hidden md:block">
-        <nav className="bg-background/80 backdrop-blur-md rounded-full border border-border px-2 py-1 shadow-lg">
+      <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden md:block">
+        <nav className="bg-background/90 backdrop-blur-lg rounded-full border border-primary/20 px-2 py-1 shadow-2xl ring-1 ring-primary/10">
           <ul className="flex items-center space-x-1">
             {["challenge", "approach", "vision", "demo", "join"].map((section) => (
               <li key={section}>
                 <Link
                   href={`#${section}`}
                   className={cn(
-                    "px-4 py-2 rounded-full text-sm font-medium transition-colors",
+                    "px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
                     activeSection === section
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                      ? "bg-primary text-primary-foreground shadow-md scale-105"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                   )}
-                  onClick={(e) => {
+                  onClick={e => {
                     e.preventDefault()
                     document.querySelector(`#${section}`)?.scrollIntoView({ behavior: "smooth" })
                   }}
@@ -101,7 +99,9 @@ export default function Page() {
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-t border-border p-2 flex items-center justify-center">
         <div className="flex items-center text-xs md:text-sm text-muted-foreground">
           <AlertCircle className="h-3 w-3 mr-2 text-primary" />
-          <span>Prototype Status: This page describes the vision behind Global Pulse, an early-stage prototype.</span>
+          <span>
+            Prototype Status: This page describes the vision behind Global Pulse, an early-stage prototype.
+          </span>
         </div>
       </div>
 
@@ -127,7 +127,9 @@ export default function Page() {
             The World is Speaking
           </h1>
 
-          <p className="text-2xl md:text-3xl lg:text-4xl font-medium text-primary mb-8">Are We Listening Deeply?</p>
+          <p className="text-2xl md:text-3xl lg:text-4xl font-medium text-primary mb-8">
+            Are We Listening Deeply?
+          </p>
 
           <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
             We're building the world's real-time barometer of human perspective by listening differently.
@@ -135,7 +137,6 @@ export default function Page() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
             <PulseButton href="#challenge">Explore Our Mission</PulseButton>
-
             <Button variant="outline" size="lg" className="rounded-full group" asChild>
               <Link href="#approach">
                 <span>Our Approach</span>
@@ -146,8 +147,8 @@ export default function Page() {
 
           <motion.div
             animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
-            className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2"
           >
             <ChevronDown className="h-8 w-8 text-primary/60" />
           </motion.div>
@@ -159,24 +160,20 @@ export default function Page() {
         <div className="absolute inset-0 z-0">
           <div className="absolute right-0 top-1/4 w-1/3 h-2/3 bg-gradient-to-l from-primary/5 to-transparent"></div>
         </div>
-
         <div className="container px-4 md:px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <Badge variant="outline" className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-1.5">
                 The Challenge
               </Badge>
-
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
                 Drowning in Data, <br />
                 <span className="text-primary">Starved for Understanding</span>
               </h2>
-
               <p className="text-lg text-muted-foreground mb-6">
                 Traditional methods fail to capture the nuance and speed of human perspective. We're navigating our
                 inner lives and the chaotic world with flimsy maps.
               </p>
-
               <ul className="space-y-3 mb-8">
                 {[
                   "Polls miss the 'why' behind opinions",
@@ -197,13 +194,11 @@ export default function Page() {
                   </motion.li>
                 ))}
               </ul>
-
               <div className="flex items-center">
                 <div className="h-px flex-grow bg-border"></div>
                 <span className="px-4 text-sm text-muted-foreground">Our Origin</span>
                 <div className="h-px flex-grow bg-border"></div>
               </div>
-
               <blockquote className="mt-6 border-l-2 border-primary pl-6 italic">
                 <p className="text-lg">
                   "Global Pulse wasn't born in a boardroom; it began as a rapid-prototype hackathon project fueled by a
@@ -211,7 +206,6 @@ export default function Page() {
                 </p>
               </blockquote>
             </div>
-
             <div className="relative">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-primary/5 rounded-3xl blur-xl opacity-50"></div>
               <div className="relative bg-card border border-border rounded-2xl overflow-hidden shadow-xl">
@@ -222,37 +216,21 @@ export default function Page() {
                     </div>
                     <h3 className="text-xl font-semibold">The Insight Gap</h3>
                   </div>
-
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span>Traditional Polls</span>
-                      <div className="w-32 h-3 bg-muted rounded-full overflow-hidden">
-                        <div className="w-1/4 h-full bg-primary"></div>
+                    {[
+                      { label: "Traditional Polls", width: "w-1/4" },
+                      { label: "Social Media Analysis", width: "w-2/5" },
+                      { label: "Focus Groups", width: "w-1/2" },
+                      { label: "Global Pulse Approach", width: "w-11/12" },
+                    ].map(({ label, width }, i) => (
+                      <div className="flex items-center justify-between" key={label}>
+                        <span>{label}</span>
+                        <div className="w-32 h-3 bg-muted rounded-full overflow-hidden">
+                          <div className={`${width} h-full bg-primary`}></div>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span>Social Media Analysis</span>
-                      <div className="w-32 h-3 bg-muted rounded-full overflow-hidden">
-                        <div className="w-2/5 h-full bg-primary"></div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span>Focus Groups</span>
-                      <div className="w-32 h-3 bg-muted rounded-full overflow-hidden">
-                        <div className="w-1/2 h-full bg-primary"></div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span>Global Pulse Approach</span>
-                      <div className="w-32 h-3 bg-muted rounded-full overflow-hidden">
-                        <div className="w-11/12 h-full bg-primary"></div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-
                   <div className="mt-6 pt-6 border-t border-border">
                     <p className="text-sm text-muted-foreground">
                       Standard tools fail us. Sentiment analysis? Skin deep. Surveys? Stale snapshots. We saw this
@@ -271,23 +249,19 @@ export default function Page() {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-[url('/grid-pattern.png')] opacity-5"></div>
         </div>
-
-        <div className="container px-4 md:px-6 relative z-10">
+        <div className="container px-4 md:px-6 relative z-10 mt-16">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <Badge variant="outline" className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-1.5">
               Our Approach
             </Badge>
-
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               Amplify Authentic Voice. <br />
               <span className="text-primary">Illuminate Real-Time Understanding.</span>
             </h2>
-
             <p className="text-lg text-muted-foreground">
               We're building a dynamic mirror for human perspective, grounded in transparency and respect.
             </p>
           </div>
-
           <Tabs defaultValue="conversational" className="w-full max-w-4xl mx-auto">
             <TabsList className="grid grid-cols-4 mb-10">
               <TabsTrigger value="conversational">Conversational</TabsTrigger>
@@ -295,11 +269,10 @@ export default function Page() {
               <TabsTrigger value="ethical">Ethical</TabsTrigger>
               <TabsTrigger value="open">Open Source</TabsTrigger>
             </TabsList>
-
             <div className="relative">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-3xl blur-xl opacity-30"></div>
-
               <div className="relative bg-card border border-border rounded-2xl overflow-hidden shadow-xl">
+                {/* Conversational Tab */}
                 <TabsContent value="conversational" className="p-0 m-0">
                   <div className="grid md:grid-cols-5 min-h-[400px]">
                     <div className="md:col-span-3 p-6 md:p-8 flex flex-col">
@@ -309,31 +282,26 @@ export default function Page() {
                         </div>
                         <h3 className="text-xl font-semibold">Conversational Depth</h3>
                       </div>
-
                       <p className="text-muted-foreground mb-6">
                         Instead of static questions, our AI engages in nuanced, respectful dialogue to capture the 'why'
                         behind the 'what', revealing insights lost in traditional methods.
                       </p>
-
                       <div className="mt-auto">
                         <h4 className="font-medium mb-2">Key Benefits:</h4>
                         <ul className="space-y-2">
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Captures nuance and context</span>
-                          </li>
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Adapts to individual communication styles</span>
-                          </li>
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Reveals underlying values and needs</span>
-                          </li>
+                          {[
+                            "Captures nuance and context",
+                            "Adapts to individual communication styles",
+                            "Reveals underlying values and needs",
+                          ].map((benefit, i) => (
+                            <li className="flex items-center" key={benefit}>
+                              <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                              <span>{benefit}</span>
+                            </li>
+                          ))}
                         </ul>
                       </div>
                     </div>
-
                     <div className="md:col-span-2 bg-muted/50 p-6 border-t md:border-t-0 md:border-l border-border">
                       <div className="rounded-lg bg-background p-4 shadow-sm border border-border mb-4">
                         <div className="flex items-start space-x-3">
@@ -345,7 +313,6 @@ export default function Page() {
                           </div>
                         </div>
                       </div>
-
                       <div className="rounded-lg bg-primary/10 p-4 shadow-sm border border-primary/20 mb-4">
                         <div className="flex items-start space-x-3">
                           <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
@@ -356,7 +323,6 @@ export default function Page() {
                           </div>
                         </div>
                       </div>
-
                       <div className="rounded-lg bg-background p-4 shadow-sm border border-border">
                         <div className="flex items-start space-x-3">
                           <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
@@ -364,8 +330,7 @@ export default function Page() {
                           </div>
                           <div>
                             <p className="text-sm">
-                              That's a powerful concern. What specific aspects of their future environment worry you
-                              most?
+                              That's a powerful concern. What specific aspects of their future environment worry you most?
                             </p>
                           </div>
                         </div>
@@ -373,7 +338,7 @@ export default function Page() {
                     </div>
                   </div>
                 </TabsContent>
-
+                {/* Real-Time Tab */}
                 <TabsContent value="realtime" className="p-0 m-0">
                   <div className="grid md:grid-cols-5 min-h-[400px]">
                     <div className="md:col-span-3 p-6 md:p-8 flex flex-col">
@@ -383,31 +348,26 @@ export default function Page() {
                         </div>
                         <h3 className="text-xl font-semibold">Real-Time Pulse</h3>
                       </div>
-
                       <p className="text-muted-foreground mb-6">
                         See individual perspectives contribute to the collective understanding instantly. No waiting
                         weeks for reports – experience the dynamic global sentiment as it forms.
                       </p>
-
                       <div className="mt-auto">
                         <h4 className="font-medium mb-2">Key Benefits:</h4>
                         <ul className="space-y-2">
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Instant feedback on emerging issues</span>
-                          </li>
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Track sentiment changes in real-time</span>
-                          </li>
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Identify trends before they become mainstream</span>
-                          </li>
+                          {[
+                            "Instant feedback on emerging issues",
+                            "Track sentiment changes in real-time",
+                            "Identify trends before they become mainstream",
+                          ].map((benefit, i) => (
+                            <li className="flex items-center" key={benefit}>
+                              <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                              <span>{benefit}</span>
+                            </li>
+                          ))}
                         </ul>
                       </div>
                     </div>
-
                     <div className="md:col-span-2 bg-muted/50 p-6 border-t md:border-t-0 md:border-l border-border">
                       <div className="h-full flex flex-col justify-center">
                         <div className="relative h-40 mb-4">
@@ -421,12 +381,10 @@ export default function Page() {
                             ))}
                           </div>
                         </div>
-
                         <div className="flex justify-between text-xs text-muted-foreground mb-6">
                           <span>1 hour ago</span>
                           <span>Now</span>
                         </div>
-
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Concern</span>
@@ -451,7 +409,7 @@ export default function Page() {
                     </div>
                   </div>
                 </TabsContent>
-
+                {/* Ethical Tab */}
                 <TabsContent value="ethical" className="p-0 m-0">
                   <div className="grid md:grid-cols-5 min-h-[400px]">
                     <div className="md:col-span-3 p-6 md:p-8 flex flex-col">
@@ -461,29 +419,24 @@ export default function Page() {
                         </div>
                         <h3 className="text-xl font-semibold">Ethical Architecture</h3>
                       </div>
-
                       <p className="text-muted-foreground mb-6">
                         Privacy isn't an afterthought; it's coded in. Granular consent, rigorous anonymization, AI
                         neutrality, and active safety guardrails are non-negotiable foundations.
                       </p>
-
                       <div className="mt-auto">
                         <h4 className="font-medium mb-2">Key Principles:</h4>
                         <ul className="space-y-2">
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>User control over personal data</span>
-                          </li>
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Transparent data usage policies</span>
-                          </li>
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Bias mitigation in AI systems</span>
-                          </li>
+                          {[
+                            "User control over personal data",
+                            "Transparent data usage policies",
+                            "Bias mitigation in AI systems",
+                          ].map((principle, i) => (
+                            <li className="flex items-center" key={principle}>
+                              <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                              <span>{principle}</span>
+                            </li>
+                          ))}
                         </ul>
-
                         <div className="mt-4">
                           <Link
                             href="/ethics"
@@ -495,45 +448,35 @@ export default function Page() {
                         </div>
                       </div>
                     </div>
-
                     <div className="md:col-span-2 bg-muted/50 p-6 border-t md:border-t-0 md:border-l border-border">
                       <div className="space-y-4">
-                        <div className="bg-background rounded-lg p-4 border border-border">
-                          <h4 className="font-medium text-sm mb-2 flex items-center">
-                            <Shield className="h-4 w-4 mr-2 text-green-500" />
-                            Privacy Protection
-                          </h4>
-                          <p className="text-xs text-muted-foreground">
-                            All personal identifiers are removed before analysis. Your data is never sold or shared with
-                            third parties.
-                          </p>
-                        </div>
-
-                        <div className="bg-background rounded-lg p-4 border border-border">
-                          <h4 className="font-medium text-sm mb-2 flex items-center">
-                            <Shield className="h-4 w-4 mr-2 text-green-500" />
-                            Consent Controls
-                          </h4>
-                          <p className="text-xs text-muted-foreground">
-                            Granular permissions let you decide exactly what data you share and how it's used.
-                          </p>
-                        </div>
-
-                        <div className="bg-background rounded-lg p-4 border border-border">
-                          <h4 className="font-medium text-sm mb-2 flex items-center">
-                            <Shield className="h-4 w-4 mr-2 text-green-500" />
-                            AI Neutrality
-                          </h4>
-                          <p className="text-xs text-muted-foreground">
-                            Our systems are designed to avoid leading questions or imposing viewpoints during
-                            conversations.
-                          </p>
-                        </div>
+                        {[
+                          {
+                            title: "Privacy Protection",
+                            desc: "All personal identifiers are removed before analysis. Your data is never sold or shared with third parties.",
+                          },
+                          {
+                            title: "Consent Controls",
+                            desc: "Granular permissions let you decide exactly what data you share and how it's used.",
+                          },
+                          {
+                            title: "AI Neutrality",
+                            desc: "Our systems are designed to avoid leading questions or imposing viewpoints during conversations.",
+                          },
+                        ].map(({ title, desc }) => (
+                          <div className="bg-background rounded-lg p-4 border border-border" key={title}>
+                            <h4 className="font-medium text-sm mb-2 flex items-center">
+                              <Shield className="h-4 w-4 mr-2 text-green-500" />
+                              {title}
+                            </h4>
+                            <p className="text-xs text-muted-foreground">{desc}</p>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
                 </TabsContent>
-
+                {/* Open Source Tab */}
                 <TabsContent value="open" className="p-0 m-0">
                   <div className="grid md:grid-cols-5 min-h-[400px]">
                     <div className="md:col-span-3 p-6 md:p-8 flex flex-col">
@@ -543,29 +486,24 @@ export default function Page() {
                         </div>
                         <h3 className="text-xl font-semibold">Open & Collaborative</h3>
                       </div>
-
                       <p className="text-muted-foreground mb-6">
                         Critical technology requires scrutiny. Our core engine logic is open source (AGPLv3). We invite
                         the community to inspect, challenge, and help us build responsibly.
                       </p>
-
                       <div className="mt-auto">
                         <h4 className="font-medium mb-2">Key Benefits:</h4>
                         <ul className="space-y-2">
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Transparent development process</span>
-                          </li>
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Community-driven improvements</span>
-                          </li>
-                          <li className="flex items-center">
-                            <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
-                            <span>Accountable design decisions</span>
-                          </li>
+                          {[
+                            "Transparent development process",
+                            "Community-driven improvements",
+                            "Accountable design decisions",
+                          ].map((benefit, i) => (
+                            <li className="flex items-center" key={benefit}>
+                              <CheckCircle2 className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                              <span>{benefit}</span>
+                            </li>
+                          ))}
                         </ul>
-
                         <div className="mt-4">
                           <Link
                             href="https://github.com/LastMile-Innovations/Global_Pulse.git"
@@ -579,7 +517,6 @@ export default function Page() {
                         </div>
                       </div>
                     </div>
-
                     <div className="md:col-span-2 bg-muted/50 p-6 border-t md:border-t-0 md:border-l border-border">
                       <div className="bg-background rounded-lg p-4 border border-border font-mono text-xs overflow-hidden">
                         <div className="flex items-center justify-between mb-2 text-muted-foreground">
@@ -588,7 +525,7 @@ export default function Page() {
                         </div>
                         <ScrollArea className="h-[300px] w-full rounded">
                           <pre className="text-xs text-muted-foreground">
-                            {`/**
+{`/**
  * Global Pulse Dialogue Engine
  * Core conversation processing module
  */
@@ -643,24 +580,21 @@ export class DialogueEngine {
         <div className="absolute inset-0 z-0">
           <div className="absolute left-0 top-1/4 w-1/3 h-2/3 bg-gradient-to-r from-primary/5 to-transparent"></div>
         </div>
-
         <div className="container px-4 md:px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <Badge variant="outline" className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-1.5">
               Our Vision
             </Badge>
-
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               A World <span className="text-primary">Potentially</span> Connected <br />
               by Deeper Understanding
             </h2>
-
             <p className="text-lg text-muted-foreground">
               We envision tools for insight – personal and collective – moving beyond surface-level data.
             </p>
           </div>
-
           <div className="grid md:grid-cols-2 gap-12 items-stretch max-w-5xl mx-auto">
+            {/* Individual Vision */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -679,48 +613,40 @@ export class DialogueEngine {
                       For Individuals: The <span className="text-primary">Potential</span> Self-Awareness Engine
                     </h3>
                   </div>
-
                   <p className="text-muted-foreground mb-6 flex-grow">
                     Imagine a dashboard for your <strong>internal operating system</strong>. It <em>could</em> help
                     visualize how your core{" "}
                     <code className="bg-muted/70 px-1.5 py-0.5 rounded text-primary">Values</code>,{" "}
-                    <code className="bg-muted/70 px-1.5 py-0.5 rounded text-primary">Needs</code>, and hidden{" "}
-                    <code className="bg-muted/70 px-1.5 py-0.5 rounded text-primary">Beliefs</code> interact with daily
-                    life.
+                    <code className="bg-muted/70 px-1.5 py-0.5 rounded text-primary">Needs</code>, and{" "}
+                    <code className="bg-muted/70 px-1.5 py-0.5 rounded text-primary">Beliefs</code> interact with daily life.
                   </p>
-
                   <div className="bg-muted/30 rounded-xl p-4 mb-6">
                     <p className="text-sm italic">
                       "This isn't therapy; it's <em>potentially</em> a user manual to your mind, fostering conscious
                       responses over autopilot reactions."
                     </p>
                   </div>
-
                   <ul className="space-y-3 text-muted-foreground">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 mr-3 text-primary flex-shrink-0 mt-0.5" />
-                      <span>
-                        <span className="text-foreground font-medium">Potential</span> to understand personal triggers
-                        and reactions
-                      </span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 mr-3 text-primary flex-shrink-0 mt-0.5" />
-                      <span>
-                        <span className="text-foreground font-medium">Potential</span> to align actions with core values
-                      </span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 mr-3 text-primary flex-shrink-0 mt-0.5" />
-                      <span>
-                        <span className="text-foreground font-medium">Potential</span> to navigate emotions with clarity
-                      </span>
-                    </li>
+                    {[
+                      "Potential to understand personal triggers and reactions",
+                      "Potential to align actions with core values",
+                      "Potential to navigate emotions with clarity",
+                    ].map((item, i) => (
+                      <li className="flex items-start" key={item}>
+                        <CheckCircle2 className="h-5 w-5 mr-3 text-primary flex-shrink-0 mt-0.5" />
+                        <span>
+                          <span className="text-foreground font-medium">
+                            {item.split(" ")[0]}
+                          </span>{" "}
+                          {item.slice(item.indexOf(" ") + 1)}
+                        </span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
             </motion.div>
-
+            {/* Collective Vision */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -739,45 +665,37 @@ export class DialogueEngine {
                       For the World: A <span className="text-primary">Potential</span> Collective Barometer
                     </h3>
                   </div>
-
                   <p className="text-muted-foreground mb-6 flex-grow">
                     Imagine leaders <em>potentially</em> accessing real-time public concern, researchers{" "}
                     <em>potentially</em> understanding societal trends with rich context, and businesses{" "}
                     <em>potentially</em> aligning with genuine human needs.
                   </p>
-
                   <div className="bg-muted/30 rounded-xl p-4 mb-6">
                     <p className="text-sm italic">
                       "The goal is to <em>potentially</em> provide the shared heartbeat – anonymously and ethically."
                     </p>
                   </div>
-
                   <ul className="space-y-3 text-muted-foreground">
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 mr-3 text-primary flex-shrink-0 mt-0.5" />
-                      <span>
-                        <span className="text-foreground font-medium">Could</span> inform better public policy decisions
-                      </span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 mr-3 text-primary flex-shrink-0 mt-0.5" />
-                      <span>
-                        <span className="text-foreground font-medium">Could</span> foster empathy across cultural
-                        divides
-                      </span>
-                    </li>
-                    <li className="flex items-start">
-                      <CheckCircle2 className="h-5 w-5 mr-3 text-primary flex-shrink-0 mt-0.5" />
-                      <span>
-                        <span className="text-foreground font-medium">Could</span> enable responsible innovation
-                      </span>
-                    </li>
+                    {[
+                      "Could inform better public policy decisions",
+                      "Could foster empathy across cultural divides",
+                      "Could enable responsible innovation",
+                    ].map((item, i) => (
+                      <li className="flex items-start" key={item}>
+                        <CheckCircle2 className="h-5 w-5 mr-3 text-primary flex-shrink-0 mt-0.5" />
+                        <span>
+                          <span className="text-foreground font-medium">
+                            {item.split(" ")[0]}
+                          </span>{" "}
+                          {item.slice(item.indexOf(" ") + 1)}
+                        </span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
             </motion.div>
           </div>
-
           <div className="mt-16 text-center">
             <p className="text-center italic text-muted-foreground text-lg bg-card/50 backdrop-blur-sm inline-block px-6 py-3 rounded-full shadow-sm border border-border">
               That's the potential we are exploring with Global Pulse.
@@ -793,22 +711,18 @@ export class DialogueEngine {
           <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-primary/5 to-transparent"></div>
           <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-primary/5 to-transparent"></div>
         </div>
-
         <div className="container px-4 md:px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <Badge variant="outline" className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-1.5">
               Interactive Demo
             </Badge>
-
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               Experience <span className="text-primary">Global Pulse</span> in Action
             </h2>
-
             <p className="text-lg text-muted-foreground">
               Try our interactive demo to see how Global Pulse captures perspectives and generates insights.
             </p>
           </div>
-
           <InteractiveDemo />
         </div>
       </section>
@@ -818,28 +732,23 @@ export class DialogueEngine {
         <div className="absolute inset-0 z-0">
           <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-background to-transparent"></div>
         </div>
-
         <div className="container px-4 md:px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <Badge variant="outline" className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-1.5">
               Get Involved
             </Badge>
-
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               Shape the Future of <span className="text-primary">Understanding</span>
             </h2>
-
             <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
               The journey to deeper understanding requires collective effort. Join us in building a more informed,
               empathetic world.
             </p>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <PulseButton href="/waitlist">
                 <Sparkles className="mr-2 h-5 w-5" />
                 Join the Waitlist
               </PulseButton>
-
               <Button
                 variant="outline"
                 size="lg"
@@ -852,7 +761,6 @@ export class DialogueEngine {
                 </Link>
               </Button>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl mx-auto">
               <div className="group bg-card/50 backdrop-blur-sm rounded-2xl p-6 border border-border shadow-md hover:shadow-lg hover:border-primary/20 transition-all duration-300 text-left flex flex-col">
                 <div className="flex items-center mb-3">
@@ -878,7 +786,6 @@ export class DialogueEngine {
                   </Link>
                 </Button>
               </div>
-
               <div className="group bg-card/50 backdrop-blur-sm rounded-2xl p-6 border border-border shadow-md hover:shadow-lg hover:border-primary/20 transition-all duration-300 text-left flex flex-col">
                 <div className="flex items-center mb-3">
                   <HeartHandshake className="h-6 w-6 text-primary mr-3 flex-shrink-0" />
@@ -949,7 +856,6 @@ function InteractiveDemo() {
   // Predefined responses based on user input
   const getResponse = (input: string) => {
     const inputLower = input.toLowerCase()
-
     if (inputLower.includes("worry") || inputLower.includes("concern")) {
       return "That's a valid concern. What specific aspects worry you the most about climate change?"
     } else if (inputLower.includes("future") || inputLower.includes("children") || inputLower.includes("kids")) {
@@ -968,36 +874,33 @@ function InteractiveDemo() {
     e.preventDefault()
     if (!inputValue.trim()) return
 
-    // Add user message
     const newMessages = [...messages, { role: "user", content: inputValue }]
     setMessages(newMessages)
     setInputValue("")
     setIsTyping(true)
 
-    // Simulate AI response after a delay
     setTimeout(() => {
       const response = getResponse(inputValue)
       setMessages([...newMessages, { role: "system", content: response }])
       setIsTyping(false)
 
-      // Update insights after 2 messages
+      // Update insights after 2 user messages
       if (newMessages.length >= 3 && !isGeneratingInsights) {
         setIsGeneratingInsights(true)
         setTimeout(() => {
-          // Simulate insight generation
-          setInsights({
-            ...insights,
+          setInsights(prev => ({
+            ...prev,
             values: {
-              ...insights.values,
-              harmony: Math.min(95, insights.values.harmony + 10),
-              security: Math.min(95, insights.values.security + 15),
+              ...prev.values,
+              harmony: Math.min(95, prev.values.harmony + 10),
+              security: Math.min(95, prev.values.security + 15),
             },
             sentiment: {
-              ...insights.sentiment,
-              concern: Math.min(95, insights.sentiment.concern + 7),
-              hope: Math.max(5, insights.sentiment.hope - 5),
+              ...prev.sentiment,
+              concern: Math.min(95, prev.sentiment.concern + 7),
+              hope: Math.max(5, prev.sentiment.hope - 5),
             },
-          })
+          }))
           setIsGeneratingInsights(false)
         }, 2000)
       }
@@ -1038,7 +941,6 @@ function InteractiveDemo() {
     <div className="max-w-5xl mx-auto">
       <div className="relative">
         <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-3xl blur-xl opacity-30"></div>
-
         <div className="relative bg-card border border-border rounded-2xl overflow-hidden shadow-xl">
           <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] min-h-[600px]">
             {/* Left Panel: Conversation */}
@@ -1058,7 +960,6 @@ function InteractiveDemo() {
                   <RefreshCw className="h-4 w-4" />
                 </Button>
               </div>
-
               <div className="flex-grow overflow-y-auto p-4 space-y-4">
                 <AnimatePresence initial={false}>
                   {messages.map((message, index) => (
@@ -1074,7 +975,7 @@ function InteractiveDemo() {
                           "max-w-[80%] rounded-lg p-3",
                           message.role === "user"
                             ? "bg-primary text-primary-foreground"
-                            : "bg-muted border border-border",
+                            : "bg-muted border border-border"
                         )}
                       >
                         <p className="text-sm">{message.content}</p>
@@ -1082,7 +983,6 @@ function InteractiveDemo() {
                     </motion.div>
                   ))}
                 </AnimatePresence>
-
                 {isTyping && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -1104,15 +1004,16 @@ function InteractiveDemo() {
                     </div>
                   </motion.div>
                 )}
-
                 <div ref={messagesEndRef} />
               </div>
-
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-border flex gap-2 bg-background sticky bottom-0 z-10">
+              <form
+                onSubmit={handleSendMessage}
+                className="p-4 border-t border-border flex gap-2 bg-background sticky bottom-0 z-10"
+              >
                 <Input
                   placeholder="Share your perspective on climate change..."
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={e => setInputValue(e.target.value)}
                   className="flex-grow"
                   disabled={isTyping}
                 />
@@ -1121,7 +1022,6 @@ function InteractiveDemo() {
                 </Button>
               </form>
             </div>
-
             {/* Right Panel: Insights */}
             <div className="flex flex-col min-w-[260px] bg-background/90 backdrop-blur-sm">
               <div className="sticky top-0 z-10 p-4 border-b border-border bg-muted/40 flex items-center justify-between">
@@ -1135,7 +1035,6 @@ function InteractiveDemo() {
                   )}
                 </div>
               </div>
-
               <div className="flex-grow p-4 overflow-y-auto">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                   <TabsList className="grid grid-cols-3 h-8 mb-6 bg-muted/30 rounded-lg">
@@ -1149,13 +1048,12 @@ function InteractiveDemo() {
                       Topics
                     </TabsTrigger>
                   </TabsList>
-
+                  {/* Values Tab */}
                   <TabsContent value="conversation" className="mt-0 space-y-4">
                     <div className="text-center mb-2">
                       <h4 className="text-sm font-medium">Core Values Detected</h4>
                       <p className="text-xs text-muted-foreground">Based on conversation analysis</p>
                     </div>
-
                     {Object.entries(insights.values).map(([key, value]) => (
                       <div key={key} className="space-y-1">
                         <div className="flex items-center justify-between">
@@ -1165,7 +1063,6 @@ function InteractiveDemo() {
                         <Progress value={value} className="h-2" />
                       </div>
                     ))}
-
                     <div className="bg-muted/30 rounded-lg p-3 mt-6">
                       <p className="text-xs text-muted-foreground">
                         Values reflect underlying motivations and priorities detected in your conversation. They help
@@ -1173,13 +1070,12 @@ function InteractiveDemo() {
                       </p>
                     </div>
                   </TabsContent>
-
+                  {/* Sentiment Tab */}
                   <TabsContent value="sentiment" className="mt-0 space-y-4">
                     <div className="text-center mb-2">
                       <h4 className="text-sm font-medium">Emotional Sentiment</h4>
                       <p className="text-xs text-muted-foreground">Emotional tone analysis</p>
                     </div>
-
                     {Object.entries(insights.sentiment).map(([key, value]) => (
                       <div key={key} className="space-y-1">
                         <div className="flex items-center justify-between">
@@ -1189,7 +1085,6 @@ function InteractiveDemo() {
                         <Progress value={value} className="h-2" />
                       </div>
                     ))}
-
                     <div className="bg-muted/30 rounded-lg p-3 mt-6">
                       <p className="text-xs text-muted-foreground">
                         Sentiment analysis reveals emotional dimensions of perspectives, helping understand not just
@@ -1197,13 +1092,12 @@ function InteractiveDemo() {
                       </p>
                     </div>
                   </TabsContent>
-
+                  {/* Topics Tab */}
                   <TabsContent value="topics" className="mt-0 space-y-4">
                     <div className="text-center mb-2">
                       <h4 className="text-sm font-medium">Key Topics</h4>
                       <p className="text-xs text-muted-foreground">Prominent themes in conversation</p>
                     </div>
-
                     {insights.topics.map((topic, index) => (
                       <div key={index} className="space-y-1">
                         <div className="flex items-center justify-between">
@@ -1213,7 +1107,6 @@ function InteractiveDemo() {
                         <Progress value={topic.value} className="h-2" />
                       </div>
                     ))}
-
                     <div className="bg-muted/30 rounded-lg p-3 mt-6">
                       <p className="text-xs text-muted-foreground">
                         Topic analysis identifies key themes and their relative importance, revealing what aspects of an
@@ -1223,7 +1116,6 @@ function InteractiveDemo() {
                   </TabsContent>
                 </Tabs>
               </div>
-
               <div className="p-4 border-t border-border bg-muted/10 flex justify-between items-center">
                 <div className="text-xs text-muted-foreground">
                   <span className="inline-flex items-center">
@@ -1242,7 +1134,6 @@ function InteractiveDemo() {
           </div>
         </div>
       </div>
-
       <div className="mt-8 text-center">
         <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
           This interactive demo simulates how Global Pulse engages in meaningful conversation to understand perspectives
