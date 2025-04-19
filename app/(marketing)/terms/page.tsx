@@ -127,20 +127,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        {/* Remove border from last section */}
-        <section id="contact-us" className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">7. Contact Us</h2>
-          <p>If you have any questions about these Terms, please contact us at:</p>
-          <p className="mt-2">
-            Global Pulse, Inc.
-            <br />
-            1234 Innovation Way
-            <br />
-            San Francisco, CA 94103
-            <br />
-            legal@globalpulse.app
-          </p>
-        </section>
+      
       </div>
     </div>
   )

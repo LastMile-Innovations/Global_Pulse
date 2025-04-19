@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { MessageSquareIcon } from "lucide-react"
 import { memo } from "react"
+import { ThemeLogo } from "./header-client"
 
 // Memoize the Footer component to prevent unnecessary re-renders
 export const Footer = memo(function Footer() {
@@ -43,8 +44,7 @@ export const Footer = memo(function Footer() {
           {/* Brand column */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
-              <MessageSquareIcon className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">Global Pulse</span>
+              <ThemeLogo />
             </Link>
             <p className="text-muted-foreground max-w-xs mb-6">
               Instantly see what the world thinks. Participate in AI-led conversations and surveys, explore live global

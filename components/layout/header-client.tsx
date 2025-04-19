@@ -19,6 +19,7 @@ import { LogOut, User as UserIcon, Moon, Sun } from "lucide-react"
 import { createClient } from "@/utils/supabase/client"
 import { logout } from "@/actions/auth"
 import { Header } from "./header"
+import Image from "next/image"
 
 // ThemeLogo - Uses Tailwind + globals.css color system
 export function ThemeLogo() {
@@ -29,44 +30,19 @@ export function ThemeLogo() {
       className="flex items-center gap-3 group select-none"
       aria-label="Global Pulse Home"
     >
-      <span className="inline-flex items-center justify-center rounded-standard-full bg-gradient-to-br from-primary/80 to-secondary/80 shadow-glow p-1 transition-transform group-hover:scale-110">
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 64 64"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-12 w-12 drop-shadow-lg transition-transform"
-          aria-hidden="true"
-        >
-          {/* Globe */}
-          <circle
-            cx="32"
-            cy="32"
-            r="28"
-            fill="url(#pulseGradient)"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            opacity="0.95"
-          />
-          {/* Heartbeat */}
-          <path
-            d="M10 36 H22 L26 28 L30 44 L34 20 L38 44 L42 32 H54"
-            stroke="white"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-            className="animate-pulse"
-          />
-          <defs>
-            <radialGradient id="pulseGradient" cx="0.5" cy="0.5" r="0.7">
-              <stop offset="0%" stopColor="hsl(var(--primary))" />
-              <stop offset="100%" stopColor="hsl(var(--secondary))" />
-            </radialGradient>
-          </defs>
-        </svg>
-      </span>
+      <Image
+        src="/glbalpulselogo1.png"
+        alt="Global Pulse Logo"
+        width={48}
+        height={48}
+        className="h-12 w-12 drop-shadow-lg transition-transform object-contain group-hover:scale-110"
+        priority
+        quality={90}
+        sizes="(max-width: 768px) 40px, 48px"
+        placeholder="blur"
+        blurDataURL="/glbalpulselogo1.png"
+        loading="eager"
+      />
       <span className="font-extrabold text-2xl md:text-3xl tracking-tight text-foreground drop-shadow-sm">
         Global Pulse
       </span>

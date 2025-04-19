@@ -2,13 +2,51 @@
 
 import type React from "react"
 import { useState, useEffect, useRef, useCallback, useTransition } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
 import { Bot, User, SendHorizontal, CheckCircle, Sparkles, Loader2, AlertCircle, Link as LinkIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { joinWaitlist, type JoinWaitlistResult } from "@/actions/waitlist"
+
+// Zod Schema for Validation
+const waitlistFormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  name: z.string().optional(),
+  interest: z.string().optional(),
+  referralCode: z.string().optional(),
+  privacyAccepted: z.boolean().refine(value => value === true, {
+    message: "You must accept the Privacy Policy and Terms.",
+  }),
+  emailPreferences: z.object({
+    newsletter: z.boolean(),
+    productUpdates: z.boolean(),
+    earlyAccess: z.boolean(),
+  }).optional(),
+})
+
+type WaitlistFormData = z.infer<typeof waitlistFormSchema>
 
 // Types
 type ChatRole = "user" | "assistant"
@@ -19,28 +57,33 @@ interface ChatMessage {
   role: ChatRole
   content: string
   stage?: ChatStage
-}
-
-interface WaitlistFormData {
-  email: string
-  name?: string
-  interest?: string
-  referralCode?: string
-  privacyAccepted: boolean
-  emailPreferences?: {
-    newsletter?: boolean
-    productUpdates?: boolean
-    earlyAccess?: boolean
-  }
+  options?: string[]
+  optionsDisabled?: boolean
+  selectedOption?: string
 }
 
 export default function WaitlistChatSignup() {
-  // Form state
-  const [email, setEmail] = useState("")
-  const [privacyAccepted, setPrivacyAccepted] = useState(false)
-  const [formError, setFormError] = useState<string | null>(null)
+  // Form state using react-hook-form
+  const form = useForm<WaitlistFormData>({
+    resolver: zodResolver(waitlistFormSchema),
+    defaultValues: {
+      email: "",
+      name: "",
+      interest: "",
+      referralCode: "",
+      privacyAccepted: false,
+      emailPreferences: {
+        newsletter: false,
+        productUpdates: false,
+        earlyAccess: false,
+      },
+    },
+  })
+
+  // Component State
+  const [formError, setFormError] = useState<string | null>(null) // For server-side errors or general errors
   const [formSuccess, setFormSuccess] = useState<string | null>(null)
-  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false)
+  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false) // For the initial email/privacy form
   const [isSubmittingFinal, setIsSubmittingFinal] = useState(false)
   const [pending, startTransition] = useTransition()
 
@@ -52,15 +95,6 @@ export default function WaitlistChatSignup() {
   const [isAssistantTyping, setIsAssistantTyping] = useState(false)
 
   // Data state
-  const [waitlistData, setWaitlistData] = useState<WaitlistFormData>({
-    email: "",
-    privacyAccepted: false,
-    emailPreferences: {
-      newsletter: false,
-      productUpdates: false,
-      earlyAccess: false,
-    },
-  })
   const [referralLink, setReferralLink] = useState<string | null>(null)
 
   // Refs
@@ -90,167 +124,198 @@ export default function WaitlistChatSignup() {
       }
       assistantTimeoutRef.current = setTimeout(() => {
         let response = ""
+        const currentName = form.getValues("name") // Get name from form state
+        const currentEmail = form.getValues("email") // Get email from form state
+        let messageOptions: string[] | undefined
+
         switch (nextStage) {
           case "ask_name":
             response = "Thanks! If you're comfortable sharing, could you let me know your name? (Optional)"
             break
           case "ask_interest":
-            response = `Got it, ${waitlistData.name || 'friend'}. We're exploring ways AI might aid self-reflection. What about that idea interests you most? (e.g., understanding emotions, AI ethics, the tech itself... Optional)`
+            response = `Got it, ${currentName || 'friend'}. We're exploring ways AI might aid self-reflection. What about that idea interests you most? You can click an option or type your own.`
+            messageOptions = ["Self-Reflection", "AI Ethics", "The Technology", "Other"]
             break
           case "ask_referral":
             response = "That's helpful, thank you. Just one last optional question: If someone referred you, you can enter their code here."
             break
           case "confirm_referral":
             response = `Okay, noted that referral code. Thanks!`
+            // Short delay before triggering final thanks message + submission
             setTimeout(() => handleAssistantResponse("final_thanks"), 50)
             break
           case "final_thanks":
-            response = `Perfect, you're all set! We've added ${waitlistData.email} to the list. We'll be in touch with updates as we continue building and exploring. Thank you for joining our journey! 🙏`
+            response = `Perfect, you're all set! We've added ${currentEmail} to the list. We'll be in touch with updates as we continue building and exploring. Thank you for joining our journey! 🙏`
+            // Final submission is triggered by useEffect hook listening for this stage
             break
           default:
+            console.warn("Unhandled chat stage for assistant response:", nextStage)
             response = "Okay, noted."
         }
         addMessage("assistant", response, nextStage)
+        if (messageOptions) {
+          setChatMessages(prev => prev.map(msg => msg.id === `msg-${Date.now()}-${prev.length -1}` ? { ...msg, options: messageOptions } : msg ))
+        }
         setCurrentStage(nextStage)
         setIsAssistantTyping(false)
-      }, 1300)
+      }, 1300) // Simulate typing delay
     },
-    [addMessage, waitlistData.name, waitlistData.email],
+    [addMessage, form], // Depend on `form` to get latest values
   )
 
-  // --- User Input Handling ---
+  // --- User Input Handling (Chat Phase) ---
   const handleUserInput = useCallback(() => {
-    if (!userInput.trim() || isAssistantTyping) return
+    if (!userInput.trim() || isAssistantTyping || currentStage === 'final_thanks') return
+
     const userMessageContent = userInput.trim()
     addMessage("user", userMessageContent)
     setUserInput("")
+
     let nextStage: ChatStage = currentStage
+
     switch (currentStage) {
       case "ask_name":
-        setWaitlistData((prev) => ({ ...prev, name: userMessageContent }))
+        form.setValue("name", userMessageContent) // Update form state
         nextStage = "ask_interest"
         break
       case "ask_interest":
-        setWaitlistData((prev) => ({ ...prev, interest: userMessageContent }))
+        form.setValue("interest", userMessageContent) // Update form state
         nextStage = "ask_referral"
         break
       case "ask_referral":
+        // Basic check if input seems like a code (not 'no', 'skip', etc.)
         if (userMessageContent.toLowerCase() !== 'no' && userMessageContent.length > 3 && !userMessageContent.toLowerCase().includes('skip') ) {
-          setWaitlistData((prev) => ({ ...prev, referralCode: userMessageContent }))
+          form.setValue("referralCode", userMessageContent) // Update form state
           nextStage = "confirm_referral"
         } else {
+          form.setValue("referralCode", undefined) // Ensure it's not set if skipped
           nextStage = "final_thanks"
         }
         break
       case "confirm_referral":
-        nextStage = "final_thanks"
-        break
-      case "final_thanks":
-        setIsChatActive(false)
-        return
+        // This stage automatically transitions to final_thanks via handleAssistantResponse
+        return // Don't trigger another response here
       default:
-        addMessage("assistant", "Understood.", "final_thanks")
-        setIsChatActive(false)
-        return
+        console.warn("Unhandled chat stage for user input:", currentStage)
+        nextStage = "final_thanks" // Default to ending if stage is unexpected
     }
-    if (nextStage !== "final_thanks") {
-      handleAssistantResponse(nextStage)
-    } else {
-      if (currentStage === 'ask_referral' && (userMessageContent.toLowerCase() === 'no' || userMessageContent.toLowerCase().includes('skip') || userMessageContent.length <= 3) ) {
-        handleAssistantResponse("final_thanks")
-      }
+
+    // Trigger the appropriate assistant response or the final sequence
+    handleAssistantResponse(nextStage)
+
+  }, [userInput, currentStage, addMessage, handleAssistantResponse, isAssistantTyping, form])
+
+  // --- Handle Clicking a Predefined Option Button ---
+  const handleOptionClick = useCallback((option: string, messageId: string) => {
+    if (isAssistantTyping || currentStage !== 'ask_interest') return; // Only allow clicks during the interest stage for now
+
+    // 1. Visually disable buttons for this message
+    setChatMessages(prev =>
+      prev.map(msg => (msg.id === messageId ? { ...msg, optionsDisabled: true, selectedOption: option } : msg))
+    );
+
+    // 2. Set form value
+    form.setValue("interest", option === "Other" ? "" : option); // Set empty if 'Other' to encourage typing
+
+    // 3. Add user message reflecting the choice
+    addMessage("user", `Selected: ${option}`);
+
+    // 4. If 'Other' was clicked, keep input enabled and don't advance yet
+    if (option === "Other") {
+       addMessage("assistant", "Okay, please specify your interest.", currentStage);
+       return;
     }
-  }, [userInput, currentStage, addMessage, handleAssistantResponse, isAssistantTyping])
+
+    // 5. Trigger next assistant response
+    handleAssistantResponse("ask_referral");
+
+  }, [addMessage, form, handleAssistantResponse, isAssistantTyping, currentStage]);
+
+  // --- Handle Skip & Submit ---
+  const handleSkipSubmit = useCallback(() => {
+    if (isSubmittingFinal) return;
+    const finalData = form.getValues();
+    submitWaitlistData(finalData, 'final');
+  }, [form, isSubmittingFinal]);
 
   // --- Auto-scroll chat ---
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [chatMessages, isAssistantTyping])
 
-  // --- Email Form Submission (calls server action) ---
-  const handleEmailSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setFormError("Please enter a valid email address.")
-      return
-    }
-    if (!privacyAccepted) {
-      setFormError("Please agree to the Privacy Policy and Terms.")
-      return
-    }
-    setIsSubmittingEmail(true)
-    setFormError(null)
-    setFormSuccess(null)
-    setReferralLink(null)
-    startTransition(async () => {
-      try {
-        const result: JoinWaitlistResult = await joinWaitlist({
-          email,
-          privacyAccepted,
-          emailPreferences: waitlistData.emailPreferences,
-        })
-        if (!result.success) {
-          setFormError(result.error)
-          setIsSubmittingEmail(false)
-          return
-        }
-        setWaitlistData((prev) => ({ ...prev, email, privacyAccepted }))
-        setFormSuccess("Got it! Let's chat briefly (entirely optional)...")
-        setIsChatActive(true)
-        setReferralLink(result.referralLink)
-        handleAssistantResponse("ask_name")
-      } catch (err) {
-        setFormError(err instanceof Error ? err.message : "An unknown error occurred.")
-      } finally {
-        setIsSubmittingEmail(false)
-      }
-    })
-  }
 
-  // --- Final Data Submission (calls server action) ---
-  const submitWaitlistData = async () => {
-    setIsSubmittingFinal(true)
+  // --- Final Data Submission (Server Action Call) ---
+  const submitWaitlistData = async (data: WaitlistFormData, submissionType: 'initial' | 'final') => {
+    // Set appropriate loading state based on submission type
+    if (submissionType === 'initial') {
+      setIsSubmittingEmail(true)
+    } else {
+      setIsSubmittingFinal(true)
+    }
     setFormError(null)
     setFormSuccess(null)
-    setReferralLink(null)
+    setReferralLink(null) // Clear previous link if any
+
     startTransition(async () => {
       try {
-        const result: JoinWaitlistResult = await joinWaitlist({
-          email: waitlistData.email,
-          name: waitlistData.name,
-          interest: waitlistData.interest,
-          referralCode: waitlistData.referralCode,
-          privacyAccepted: waitlistData.privacyAccepted,
-          emailPreferences: waitlistData.emailPreferences,
-        })
+        console.log(`Submitting ${submissionType} data:`, data)
+        const result: JoinWaitlistResult = await joinWaitlist(data)
+
         if (!result.success) {
           setFormError(result.error)
           setFormSuccess(null)
+          if (submissionType === 'final') {
+              setIsChatActive(false) // Stop chat on error during final save
+          }
         } else {
-          setFormSuccess("Thanks! We've saved your spot and will keep you updated at " + waitlistData.email)
-          setFormError(null)
-          setReferralLink(result.referralLink)
-          setIsChatActive(false)
-          setWaitlistData((prev) => ({ ...prev }))
+          if (submissionType === 'initial') {
+              setFormSuccess("Joined! Starting optional chat...")
+              setIsChatActive(true) // Start chat on successful initial submission
+              handleAssistantResponse("ask_name") // Trigger first chat question
+              // Keep referral link null for initial success message
+          } else { // final submission success
+              setFormSuccess(`Thanks! We've saved your spot and will keep you updated at ${data.email}`)
+              setFormError(null)
+              setReferralLink(result.referralLink) // Set referral link on final success
+              setIsChatActive(false) // End chat interaction visually
+          }
         }
       } catch (error) {
-        setFormError("Failed to save final details. Please try again later.")
+        console.error("Submission error:", error)
+        setFormError(`Failed to save details (${submissionType}). Please try again later.`)
         setFormSuccess(null)
+        if (submissionType === 'final') {
+            setIsChatActive(false) // Stop chat on catch during final save
+        }
       } finally {
-        setIsSubmittingFinal(false)
+        // Reset appropriate loading state
+        if (submissionType === 'initial') {
+          setIsSubmittingEmail(false)
+        } else {
+          setIsSubmittingFinal(false)
+        }
       }
     })
   }
 
-  // --- Auto-submit when chat ends ---
+  // --- Initial Email/Privacy Form Submission ---
+  const handleInitialSubmit = (data: WaitlistFormData) => {
+    // Called by react-hook-form's handleSubmit, data is validated
+    // Now call the submission function with type 'initial'
+    submitWaitlistData(data, 'initial');
+  }
+
+  // --- Auto-submit when chat reaches 'final_thanks' stage ---
   useEffect(() => {
-    if (currentStage === 'final_thanks' && !isAssistantTyping && isChatActive) {
-      const timer = setTimeout(() => {
-        submitWaitlistData()
-      }, 1500)
-      return () => clearTimeout(timer)
+    if (currentStage === 'final_thanks' && !isAssistantTyping && isChatActive && !isSubmittingFinal) {
+      // Trigger the final submission using the data collected in the form
+      const finalData = form.getValues();
+      console.log("Auto-submitting data from useEffect:", finalData)
+      submitWaitlistData(finalData, 'final'); // Specify final submission
     }
-  }, [currentStage, isAssistantTyping, isChatActive])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStage, isAssistantTyping, isChatActive, isSubmittingFinal, form]); // Add form to dependencies if getValues causes issues
+
 
   // --- Component Render ---
   return (
@@ -266,117 +331,146 @@ export default function WaitlistChatSignup() {
       </CardHeader>
       <CardContent className="p-6">
         {!isChatActive ? (
-          <form onSubmit={handleEmailSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="waitlist-email" className="font-medium mb-1 block">Email Address <span className="text-destructive">*</span></Label>
-              <Input
-                id="waitlist-email"
-                type="email"
-                placeholder="your.email@example.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  setFormError(null)
-                }}
-                required
-                disabled={isSubmittingEmail || !!formSuccess}
-                className="text-base"
-                aria-required="true"
+          <Form {...form}>
+            {/* Use form.handleSubmit for the initial email/privacy check */}
+            <form onSubmit={form.handleSubmit(handleInitialSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email Address <span className="text-destructive">*</span></FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="your.email@example.com"
+                        {...field}
+                        disabled={isSubmittingEmail || isChatActive}
+                        className="text-base"
+                        aria-required="true"
+                        autoComplete="email"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="flex items-start space-x-2 mt-3">
-              <input
-                type="checkbox"
-                id="privacy-check-initial"
-                checked={privacyAccepted}
-                onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                required
-                className="mt-1 accent-primary focus:ring-primary"
-                disabled={isSubmittingEmail || !!formSuccess}
+
+              <FormField
+                control={form.control}
+                name="privacyAccepted"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow-sm bg-background/50">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isSubmittingEmail || isChatActive}
+                        aria-required="true"
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="text-xs">
+                        I agree to the <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">Privacy Policy</a> and <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">Terms</a>.*
+                      </FormLabel>
+                      <FormMessage className="text-xs" />
+                    </div>
+                  </FormItem>
+                )}
               />
-              <Label htmlFor="privacy-check-initial" className="text-xs text-muted-foreground">
-                I agree to the <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">Privacy Policy</a> and <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">Terms</a>.*
-              </Label>
-            </div>
-            <div>
-              <Label htmlFor="waitlist-email-preferences" className="font-medium mb-1 block">Email Preferences (optional)</Label>
-              <div className="flex flex-col gap-2 pl-2">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={waitlistData.emailPreferences?.newsletter || false}
-                    onChange={e => setWaitlistData(prev => ({
-                      ...prev,
-                      emailPreferences: {
-                        ...prev.emailPreferences,
-                        newsletter: e.target.checked,
-                      },
-                    }))}
-                    disabled={isSubmittingEmail || !!formSuccess}
-                  />
-                  <span>Subscribe to newsletter</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={waitlistData.emailPreferences?.productUpdates || false}
-                    onChange={e => setWaitlistData(prev => ({
-                      ...prev,
-                      emailPreferences: {
-                        ...prev.emailPreferences,
-                        productUpdates: e.target.checked,
-                      },
-                    }))}
-                    disabled={isSubmittingEmail || !!formSuccess}
-                  />
-                  <span>Product updates</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={waitlistData.emailPreferences?.earlyAccess || false}
-                    onChange={e => setWaitlistData(prev => ({
-                      ...prev,
-                      emailPreferences: {
-                        ...prev.emailPreferences,
-                        earlyAccess: e.target.checked,
-                      },
-                    }))}
-                    disabled={isSubmittingEmail || !!formSuccess}
-                  />
-                  <span>Early access invites</span>
-                </label>
-              </div>
-            </div>
-            {formError && (
-              <div className="flex items-center gap-2 text-destructive text-sm mt-2" aria-live="polite">
-                <AlertCircle className="h-4 w-4" /> {formError}
-              </div>
-            )}
-            {formSuccess && !isChatActive && (
-              <div className="flex items-center gap-2 text-green-600 text-sm mt-2" aria-live="polite">
-                <CheckCircle className="h-4 w-4" /> {formSuccess}
-              </div>
-            )}
-            {referralLink && !isChatActive && (
-              <div className="flex items-center gap-2 text-primary text-xs mt-2" aria-live="polite">
-                <LinkIcon className="h-4 w-4" />
-                <span>Your referral link: <a href={referralLink} className="underline break-all" target="_blank" rel="noopener noreferrer">{referralLink}</a></span>
-              </div>
-            )}
-            <Button type="submit" className="w-full font-semibold" disabled={isSubmittingEmail || !!formSuccess}>
-              {isSubmittingEmail ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
-              ) : !!formSuccess ? (
-                "Email Confirmed!"
-              ) : (
-                "Join & Start Optional Chat"
+
+              <FormField
+                control={form.control}
+                name="emailPreferences"
+                render={() => (
+                  <FormItem>
+                     <div className="mb-2">
+                        <FormLabel className="text-base font-medium">Email Preferences (optional)</FormLabel>
+                        <FormDescription className="text-xs">Choose what emails you'd like to receive.</FormDescription>
+                     </div>
+                    <div className="space-y-2 pl-1">
+                      <FormField
+                          control={form.control}
+                          name="emailPreferences.newsletter"
+                          render={({ field }) => (
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                  <FormControl>
+                                      <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={isSubmittingEmail || isChatActive}/>
+                                  </FormControl>
+                                  <FormLabel className="text-sm font-normal">Subscribe to newsletter</FormLabel>
+                              </FormItem>
+                          )}
+                      />
+                      <FormField
+                          control={form.control}
+                          name="emailPreferences.productUpdates"
+                          render={({ field }) => (
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                  <FormControl>
+                                      <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={isSubmittingEmail || isChatActive}/>
+                                  </FormControl>
+                                  <FormLabel className="text-sm font-normal">Product updates</FormLabel>
+                              </FormItem>
+                          )}
+                      />
+                      <FormField
+                          control={form.control}
+                          name="emailPreferences.earlyAccess"
+                          render={({ field }) => (
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                  <FormControl>
+                                      <Checkbox checked={field.value} onCheckedChange={field.onChange} disabled={isSubmittingEmail || isChatActive}/>
+                                  </FormControl>
+                                  <FormLabel className="text-sm font-normal">Early access invites</FormLabel>
+                              </FormItem>
+                          )}
+                      />
+                    </div>
+                    <FormMessage /> {/* For potential errors related to the 'emailPreferences' object itself */}
+                  </FormItem>
+                )}
+              />
+
+              {/* Display general/server errors */}
+              {formError && (
+                <div className="flex items-center gap-2 text-destructive text-sm mt-2 p-2 bg-destructive/10 rounded" aria-live="polite">
+                  <AlertCircle className="h-4 w-4" /> {formError}
+                </div>
               )}
-            </Button>
-          </form>
+               {/* Display general success message (post-final submission) */}
+              {formSuccess && !isChatActive && (
+                 <div className="flex items-center gap-2 text-green-600 text-sm mt-2 p-2 bg-green-500/10 rounded" aria-live="polite">
+                    <CheckCircle className="h-4 w-4" /> {formSuccess}
+                </div>
+              )}
+              {/* Display referral link if available (post-final submission) */}
+              {referralLink && !isChatActive && (
+                <div className="flex items-center gap-2 text-primary text-xs mt-2 p-2 bg-primary/10 rounded" aria-live="polite">
+                    <LinkIcon className="h-4 w-4" />
+                    <span>Your referral link: <a href={referralLink} className="underline break-all" target="_blank" rel="noopener noreferrer">{referralLink}</a></span>
+                </div>
+              )}
+
+              <Button type="submit" className="w-full font-semibold" disabled={isSubmittingEmail || isChatActive}>
+                {isSubmittingEmail ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing...</>
+                ) : isChatActive ? (
+                   "Joined! See Chat Below..."
+                ) : (
+                  "Join Waitlist"
+                )}
+              </Button>
+            </form>
+          </Form>
         ) : (
+          // --- Chat Interface ---
           <div className="flex flex-col h-[350px]">
-            <div className="flex-1 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30">
+            {/* Chat description */}
+            <div className="mb-2 text-xs text-muted-foreground text-center">
+              This chat is optional. You can answer, skip, or submit at any time.
+            </div>
+            {/* Chat messages display area */}
+            <div className="flex-1 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-muted-foreground/30" aria-live="polite">
               {chatMessages.map((message) => (
                 <div
                   key={message.id}
@@ -400,6 +494,24 @@ export default function WaitlistChatSignup() {
                   >
                     {message.content}
                   </div>
+                  {/* Render Options if available and not disabled */}
+                  {message.role === 'assistant' && message.options && !message.optionsDisabled && (
+                    <div className="flex flex-wrap gap-2 mt-2 pl-9">
+                      {message.options.map((option) => (
+                        <Button
+                          key={option}
+                          variant={message.selectedOption === option ? "default" : "outline"}
+                          size="sm"
+                          className={cn("text-xs h-7", message.selectedOption === option && "ring-2 ring-primary")}
+                          onClick={() => handleOptionClick(option, message.id)}
+                          disabled={isAssistantTyping || message.optionsDisabled}
+                          aria-disabled={isAssistantTyping || message.optionsDisabled}
+                        >
+                          {option}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
                   {message.role === "user" && (
                     <div className="flex-shrink-0 bg-foreground/5 text-foreground h-7 w-7 rounded-full flex items-center justify-center border border-border mt-1">
                       <User className="h-4 w-4" />
@@ -421,36 +533,78 @@ export default function WaitlistChatSignup() {
               )}
               <div ref={chatEndRef} />
             </div>
-            {currentStage !== "final_thanks" as ChatStage && (
-              <div className="mt-4 flex gap-2 border-t pt-4">
-                <Input
-                  type="text"
-                  placeholder={
-                    currentStage === 'ask_name' ? "Your name (optional)..." :
-                    currentStage === 'ask_interest' ? "What interests you? (optional)..." :
-                    currentStage === 'ask_referral' ? "Referral code (optional)..." :
-                    "Type your response..."
-                  }
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleUserInput()}
-                  disabled={isAssistantTyping || currentStage === 'final_thanks' || isSubmittingFinal}
-                  className="flex-1"
-                />
-                <Button
-                  size="icon"
-                  onClick={handleUserInput}
-                  disabled={isAssistantTyping || !userInput.trim() || currentStage === 'final_thanks' || isSubmittingFinal}
-                >
-                  <SendHorizontal className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-            {isSubmittingFinal && (
-              <div className="mt-4 text-sm text-muted-foreground flex items-center justify-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" /> Saving your spot...
-              </div>
-            )}
+            {/* Divider above input */}
+            <div className="border-t border-border my-2" />
+            {/* Chat input area and skip button */}
+            {(() => {
+              if (currentStage === "final_thanks") {
+                if (isSubmittingFinal) {
+                  return (
+                    <div className="mt-4 text-sm text-muted-foreground flex items-center justify-center gap-2 border-t pt-4">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Finishing up...
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="mt-4 border-t pt-4 text-center text-sm text-green-600">
+                      <CheckCircle className="h-5 w-5 inline mr-1" /> All set! Thanks for joining.
+                    </div>
+                  );
+                }
+              }
+              // Otherwise, render the input and skip button
+              let inputPlaceholder = "Type your response...";
+              let inputAutoComplete = "off";
+              if (currentStage === "ask_name") {
+                inputPlaceholder = "Your name (optional)...";
+                inputAutoComplete = "name";
+              } else if (currentStage === "ask_interest") {
+                inputPlaceholder = "Click an option above or type here...";
+              } else if (currentStage === "ask_referral") {
+                inputPlaceholder = "Referral code (optional)...";
+              }
+              return (
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      value={userInput}
+                      onChange={(e) => setUserInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey && userInput.trim()) { e.preventDefault(); handleUserInput(); } }}
+                      disabled={isAssistantTyping || isSubmittingFinal}
+                      className="flex-1"
+                      aria-label="Chat input"
+                      autoComplete={inputAutoComplete}
+                      placeholder={inputPlaceholder}
+                    />
+                    <Button
+                      size="icon"
+                      type="button"
+                      onClick={handleUserInput}
+                      disabled={isAssistantTyping || !userInput.trim() || isSubmittingFinal}
+                      aria-label="Send message"
+                      aria-disabled={isAssistantTyping || !userInput.trim() || isSubmittingFinal}
+                    >
+                      <SendHorizontal className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full text-xs mt-1"
+                    onClick={handleSkipSubmit}
+                    disabled={isSubmittingFinal}
+                    aria-disabled={isSubmittingFinal}
+                  >
+                    {isSubmittingFinal ? (
+                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>
+                    ) : (
+                      "Skip & Submit"
+                    )}
+                  </Button>
+                </div>
+              );
+            })()}
           </div>
         )}
       </CardContent>

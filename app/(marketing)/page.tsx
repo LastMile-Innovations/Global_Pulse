@@ -33,6 +33,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
+import WaitlistChatSignup from "@/components/waitlist/WaitlistChatSignup"
 
 export default function Page() {
   const [activeSection, setActiveSection] = useState("challenge")
@@ -106,51 +107,125 @@ export default function Page() {
       </div>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden">
-        <motion.div style={{ opacity, scale, y }} className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-background/0"></div>
-          <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-primary/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-1/3 h-1/3 bg-primary/10 rounded-full blur-3xl"></div>
+      <section
+        ref={heroRef}
+        className="relative h-screen flex items-center justify-center overflow-hidden"
+        aria-label="Global Pulse Hero"
+      >
+        {/* Animated Background */}
+        <motion.div style={{ opacity, scale, y }} className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-primary/5 to-background/0" />
+          <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 bg-primary/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-1/3 h-1/3 bg-primary/10 rounded-full blur-3xl" />
+          {/* Subtle animated pulse rings */}
+          <motion.div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            initial={{ scale: 1, opacity: 0.25 }}
+            animate={{ scale: [1, 1.15, 1], opacity: [0.25, 0.15, 0.25] }}
+            transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+          >
+            <div className="w-[420px] h-[420px] rounded-full border-4 border-primary/20" />
+          </motion.div>
         </motion.div>
 
+        {/* Hero Content */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="container relative z-10 px-4 md:px-6 text-center"
+          transition={{ duration: 1, delay: 0.15 }}
+          className="container relative z-10 px-4 md:px-6 text-center flex flex-col items-center"
         >
-          <Badge variant="outline" className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-1.5">
+          <Badge
+            variant="outline"
+            className="mb-6 bg-primary/10 text-primary border-primary/20 px-4 py-1.5 text-base md:text-lg tracking-wide"
+            aria-label="Global Pulse"
+          >
             Global Pulse
           </Badge>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/80">
-            The World is Speaking
-          </h1>
+          <motion.h1
+            className="text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-primary to-foreground/80 drop-shadow-lg"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+          >
+            The World is Speaking.
+          </motion.h1>
 
-          <p className="text-2xl md:text-3xl lg:text-4xl font-medium text-primary mb-8">
+          <motion.p
+            className="text-2xl md:text-3xl lg:text-4xl font-semibold text-primary mb-6 md:mb-8"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
             Are We Listening Deeply?
-          </p>
+          </motion.p>
 
-          <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
-            We're building the world's real-time barometer of human perspective by listening differently.
-          </p>
+          <motion.p
+            className="text-lg md:text-xl text-muted-foreground mb-10 md:mb-12 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.7 }}
+          >
+            <span className="inline-block">
+              We're building the world's real-time barometer of human perspective.<br className="hidden md:inline" />
+              <span className="text-primary font-medium"> By listening differently.</span>
+            </span>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <PulseButton href="#challenge">Explore Our Mission</PulseButton>
-            <Button variant="outline" size="lg" className="rounded-full group" asChild>
+          {/* Quick Value Props */}
+          <motion.div
+            className="flex flex-wrap justify-center gap-2 mb-8"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.85 }}
+            aria-hidden="true"
+          >
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20">
+              <Sparkles className="h-4 w-4" /> Real Conversations
+            </span>
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20">
+              <Shield className="h-4 w-4" /> Privacy-First
+            </span>
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20">
+              <Code2 className="h-4 w-4" /> Open Source
+            </span>
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20">
+              <Zap className="h-4 w-4" /> Real-Time Insights
+            </span>
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1.05 }}
+          >
+            <PulseButton href="#challenge" className="text-lg px-8 py-3">
+              Explore Our Mission
+            </PulseButton>
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-full group text-lg px-8 py-3 border-primary/30 hover:bg-primary/10 hover:text-primary transition"
+              asChild
+            >
               <Link href="#approach">
                 <span>Our Approach</span>
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-          </div>
+          </motion.div>
 
+          {/* Animated Down Arrow */}
           <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
+            animate={{ y: [0, 12, 0] }}
+            transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
             className="absolute bottom-8 left-1/2 -translate-x-1/2"
+            aria-hidden="true"
           >
-            <ChevronDown className="h-8 w-8 text-primary/60" />
+            <ChevronDown className="h-10 w-10 text-primary/60 drop-shadow" />
           </motion.div>
         </motion.div>
       </section>
@@ -806,6 +881,9 @@ export class DialogueEngine {
                   </Link>
                 </Button>
               </div>
+            </div>
+            <div className="mt-16 flex justify-center">
+              <WaitlistChatSignup />
             </div>
           </div>
         </div>
