@@ -13,12 +13,12 @@ interface GlobalMapProps {
 
 // Predefined regions with data for visualization
 const REGIONS = [
-  { id: "na", name: "North America", code: "NA", x: 30, y: 20, size: 16, color: "primary", sentiment: 85 },
-  { id: "eu", name: "Europe", code: "EU", x: 55, y: 25, size: 14, color: "blue-500", sentiment: 72 },
-  { id: "as", name: "Asia", code: "AS", x: 70, y: 35, size: 16, color: "teal-500", sentiment: 68 },
-  { id: "af", name: "Africa", code: "AF", x: 50, y: 45, size: 12, color: "amber-500", sentiment: 63 },
-  { id: "sa", name: "South America", code: "SA", x: 35, y: 60, size: 14, color: "purple-500", sentiment: 77 },
-  { id: "oc", name: "Oceania", code: "OC", x: 80, y: 60, size: 12, color: "red-500", sentiment: 81 },
+  { id: "na", name: "North America", code: "NA", x: 30, y: 20, size: 16, themeColor: "primary", sentiment: 85 },
+  { id: "eu", name: "Europe", code: "EU", x: 55, y: 25, size: 14, themeColor: "secondary", sentiment: 72 },
+  { id: "as", name: "Asia", code: "AS", x: 70, y: 35, size: 16, themeColor: "accent", sentiment: 68 },
+  { id: "af", name: "Africa", code: "AF", x: 50, y: 45, size: 12, themeColor: "accent-orange", sentiment: 63 },
+  { id: "sa", name: "South America", code: "SA", x: 35, y: 60, size: 14, themeColor: "primary", sentiment: 77 },
+  { id: "oc", name: "Oceania", code: "OC", x: 80, y: 60, size: 12, themeColor: "destructive", sentiment: 81 },
 ]
 
 // Memoize the component to prevent unnecessary re-renders
@@ -162,13 +162,13 @@ const GlobalMap = memo(function GlobalMap({
         <path d="M180,180 C200,170 220,165 240,170" className="text-primary/30" />
         
         {/* Europe detail */}
-        <path d="M520,140 C540,130 560,125 580,130" className="text-blue-500/30" />
-        <path d="M500,160 C520,150 540,145 560,150" className="text-blue-500/30" />
+        <path d="M520,140 C540,130 560,125 580,130" className="text-secondary/30" />
+        <path d="M500,160 C520,150 540,145 560,150" className="text-secondary/30" />
         
         {/* Asia detail */}
-        <path d="M620,160 C640,150 660,145 680,150" className="text-teal-500/30" />
-        <path d="M640,180 C660,170 680,165 700,170" className="text-teal-500/30" />
-        <path d="M660,200 C680,190 700,185 720,190" className="text-teal-500/30" />
+        <path d="M620,160 C640,150 660,145 680,150" className="text-accent/30" />
+        <path d="M640,180 C660,170 680,165 700,170" className="text-accent/30" />
+        <path d="M660,200 C680,190 700,185 720,190" className="text-accent/30" />
 
         {/* Ocean currents with animation */}
         <path d="M100,150 Q150,180 100,220" className="opacity-30 animate-flow-slow" />
@@ -191,12 +191,12 @@ const GlobalMap = memo(function GlobalMap({
         activePoints.map((point, i) => {
           // Determine color based on position (rough continent mapping)
           let bgColor = "bg-primary"
-          if (point.x < 40 && point.y < 40) bgColor = "bg-primary" // North America
-          else if (point.x > 40 && point.x < 60 && point.y < 40) bgColor = "bg-blue-500" // Europe
-          else if (point.x > 60 && point.y < 50) bgColor = "bg-teal-500" // Asia
-          else if (point.x > 30 && point.x < 60 && point.y > 30 && point.y < 60) bgColor = "bg-amber-500" // Africa
-          else if (point.x < 40 && point.y > 40) bgColor = "bg-purple-500" // South America
-          else if (point.x > 70 && point.y > 50) bgColor = "bg-red-500" // Oceania
+          if (point.x < 40 && point.y < 40) bgColor = "bg-primary"        // North America
+          else if (point.x > 40 && point.x < 60 && point.y < 40) bgColor = "bg-secondary"     // Europe
+          else if (point.x > 60 && point.y < 50) bgColor = "bg-accent"       // Asia
+          else if (point.x > 30 && point.x < 60 && point.y > 30 && point.y < 60) bgColor = "bg-accent-orange" // Africa
+          else if (point.x < 40 && point.y > 40) bgColor = "bg-primary/80"   // South America (reuse primary)
+          else if (point.x > 70 && point.y > 50) bgColor = "bg-destructive"    // Oceania
           
           return (
             <div
@@ -223,14 +223,14 @@ const GlobalMap = memo(function GlobalMap({
         const isActive = activeRegion === region.id
         const scale = isActive ? 'scale-125' : 'scale-100'
         const opacity = isActive ? '1' : '0.8'
-        const bgOpacity = isActive ? '40' : '20'
+        const bgOpacity = isActive ? 'bg-opacity-40' : 'bg-opacity-20' // Use Tailwind opacity classes
         
         return (
           <div 
             key={region.id}
-            className={`absolute rounded-full bg-${region.color}/${bgOpacity} flex items-center justify-center 
-                      text-${region.color} font-medium border border-${region.color}/30 shadow-lg 
-                      hover:bg-${region.color}/30 ${scale} transition-all cursor-pointer z-10`}
+            className={`absolute rounded-full bg-${region.themeColor} ${bgOpacity} flex items-center justify-center 
+                      text-${region.themeColor} font-medium border border-${region.themeColor}/30 shadow-lg 
+                      hover:bg-${region.themeColor}/30 ${scale} transition-all cursor-pointer z-10`}
             style={{
               top: `${region.y}%`,
               left: `${region.x}%`,

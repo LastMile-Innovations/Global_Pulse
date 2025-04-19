@@ -86,7 +86,7 @@ export default function MobileNav() {
             <UserAuth />
             <Button
               asChild
-              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-standard shadow-glow"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-standard shadow-glow"
               size="lg"
             >
               <Link href="/waitlist" onClick={() => setOpen(false)}>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import type { MultipleChoiceComponent as MultipleChoiceComponentType } from "@/ai-sdk/schemas/ui_components"
+import type { MultipleChoiceComponent as MultipleChoiceComponentType } from "@/lib/ai-sdk/schemas/ui_components"
 
 interface MultipleChoiceComponentProps extends MultipleChoiceComponentType {
   onSubmit: (data: any) => void

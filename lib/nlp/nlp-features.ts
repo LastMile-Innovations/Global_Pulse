@@ -8,10 +8,10 @@ import type {
 } from "../types/nlp-types"
 import { extractKeywords } from "./keyword-extraction"
 import { analyzeSentiment } from "../transformers/sentiment-service"
-import { NerService } from "../../ai-sdk/ner-service"
-import { classifyConceptsZSC_LLM } from "../../ai-sdk/zsc-service"
-import { embeddingService } from "../../ai-sdk/embedding-service"
-import type { EmbeddingVector } from "../../ai-sdk/types"
+import { NerService } from "../ai-sdk/ner-service"
+import { classifyConceptsZSC_LLM } from "../ai-sdk/zsc-service"
+import { embeddingService } from "../ai-sdk/embedding-service"
+import type { EmbeddingVector } from "../ai-sdk/types"
 
 /**
  * Map sentiment label from the sentiment-service to the canonical SentimentLabel type.

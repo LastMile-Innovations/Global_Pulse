@@ -1,5 +1,5 @@
 import { callGenerateText, callGenerateJson } from "./gateway"
-import { logger } from "../lib/utils/logger"
+import { logger } from "../utils/logger"
 // NOTE: LlmGenerationOptions is not exported from ./types, so we define it here for MVP production robustness
 export interface LlmGenerationOptions {
   modelId?: string

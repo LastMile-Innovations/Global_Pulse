@@ -1,6 +1,6 @@
 import { generateLlmJson } from "./llm-interaction"
-import { logger } from "../lib/utils/logger"
-import type { Entity, EntityType, EntityRecognitionResult, EntityRecognitionError } from "../lib/types/nlp-types"
+import { logger } from "../utils/logger"
+import type { Entity, EntityType, EntityRecognitionResult, EntityRecognitionError } from "../types/nlp-types"
 
 // Default empty entities array for fallbacks
 const DEFAULT_ENTITIES: Entity[] = []

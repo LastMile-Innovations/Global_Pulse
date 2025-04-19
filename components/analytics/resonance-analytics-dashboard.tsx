@@ -21,7 +21,15 @@ import {
 } from "recharts"
 import { Loader2 } from "lucide-react"
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8", "#82CA9D"]
+// Use theme colors
+const COLORS = [
+  "hsl(200, 90%, 45%)", // chart-1
+  "hsl(162, 80%, 38%)", // chart-2
+  "hsl(291, 75%, 58%)", // chart-3
+  "hsl(43, 95%, 50%)",  // chart-4
+  "hsl(24, 95%, 55%)",   // chart-5
+  "hsl(173, 70%, 40%)", // secondary as fallback
+]
 
 export function ResonanceAnalyticsDashboard() {
   const [periodType, setPeriodType] = useState("daily")
@@ -199,7 +207,7 @@ export function ResonanceAnalyticsDashboard() {
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        <Bar dataKey="totalFlags" fill="#8884d8" name="Total Flags" />
+                        <Bar dataKey="totalFlags" fill="hsl(291, 75%, 58%)" name="Total Flags" />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
@@ -222,7 +230,7 @@ export function ResonanceAnalyticsDashboard() {
                           labelLine={true}
                           label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                           outerRadius={80}
-                          fill="#8884d8"
+                          fill={COLORS[0]}
                           dataKey="value"
                         >
                           {getAggregatedTagDistribution().map((entry, index) => (
@@ -253,7 +261,7 @@ export function ResonanceAnalyticsDashboard() {
                       <YAxis />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="value" fill="#8884d8" name="Count" />
+                      <Bar dataKey="value" fill={COLORS[0]} name="Count" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -279,7 +287,7 @@ export function ResonanceAnalyticsDashboard() {
                           labelLine={true}
                           label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                           outerRadius={80}
-                          fill="#8884d8"
+                          fill={COLORS[1]}
                           dataKey="value"
                         >
                           {getAggregatedModeDistribution().map((entry, index) => (
@@ -309,7 +317,7 @@ export function ResonanceAnalyticsDashboard() {
                           labelLine={true}
                           label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                           outerRadius={80}
-                          fill="#8884d8"
+                          fill={COLORS[2]}
                           dataKey="value"
                         >
                           {getAggregatedResponseTypeDistribution().map((entry, index) => (
@@ -340,7 +348,7 @@ export function ResonanceAnalyticsDashboard() {
                       <YAxis />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="value" fill="#82ca9d" name="Count" />
+                      <Bar dataKey="value" fill={COLORS[3]} name="Count" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

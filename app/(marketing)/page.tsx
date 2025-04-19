@@ -5,6 +5,7 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import AnimatedCTAButton from "@/components/marketing/animated-cta-button";
 import MarketingChatDemo from "@/components/marketing/MarketingChatDemo";
 import HeroGlobe from "@/components/marketing/HeroGlobe";
@@ -35,22 +36,32 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <main className="flex-1">
+        {/* Add Prototype Disclaimer */}
+        <div className="container px-4 md:px-6 pt-12">
+          <Alert variant="default" className="mb-8 bg-primary/5 border-primary/20">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Prototype Status</AlertTitle>
+            <AlertDescription>
+              Global Pulse is currently an early-stage prototype born from a 10-day hackathon. Some features described represent our design goals and may not be fully interactive in the current demo. We are building transparently and prioritize safety and user control.
+            </AlertDescription>
+          </Alert>
+        </div>
+
         {/* Hero Section */}
-        <section className="relative py-32 md:py-48 overflow-hidden bg-background text-foreground">
+        <section className="relative py-20 md:pt-24 md:pb-32 overflow-hidden bg-background text-foreground">
           <div className="container px-4 md:px-6 relative z-10">
-            <div className="grid gap-14 lg:grid-cols-2 lg:gap-24 items-center min-h-[500px]">
+            <div className="grid gap-14 lg:grid-cols-2 lg:gap-24 items-center min-h-[450px]">
               {/* Left: Text & CTAs */}
               <div className="flex flex-col justify-center items-center lg:items-start text-center lg:text-left space-y-8">
                 <div className="inline-flex items-center rounded-full border border-primary/40 px-5 py-2 text-base font-semibold text-primary bg-primary/10 mb-2 backdrop-blur">
                   <Sparkles className="mr-2 h-5 w-5 text-primary" />
-                  From Hackathon to Professional-Grade Ethical AI
+                  From Hackathon Idea to Ethical AI Exploration
                 </div>
                 <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tight">
-                  Discover Your Inner World.<br />
-                  <span className="text-primary">AI, Reimagined for You.</span>
+                  Navigating Our Inner World. <br className="hidden md:inline" /> Can AI Help, Ethically?
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-normal">
-                  Global Pulse is a next-generation AI companion, designed for self-discovery and personal growth. Built transparently, with privacy, agency, and dignity at its core.
+                  Global Pulse is an exploration—born in a 10-day hackathon—into creating an AI companion for self-discovery. We're building openly, prioritizing your privacy, control, and dignity above all else.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
                   <AnimatedCTAButton
@@ -58,7 +69,7 @@ export default function HomePage() {
                     prefetch
                     className="text-lg px-10 py-5 rounded-full font-semibold"
                   >
-                    Join the Waitlist
+                    Join the Waitlist & Our Journey
                   </AnimatedCTAButton>
                   <Button
                     asChild
@@ -66,7 +77,7 @@ export default function HomePage() {
                     size="lg"
                     className="h-14 border-border text-foreground hover:bg-primary/10 hover:text-primary rounded-full font-semibold"
                   >
-                    <Link href="/ethics">Ethical Framework</Link>
+                    <Link href="/ethics">Our Ethical Framework</Link>
                   </Button>
                 </div>
                 <div className="flex flex-wrap justify-center lg:justify-start gap-3 pt-4">
@@ -100,14 +111,14 @@ export default function HomePage() {
           <div className="container px-4 md:px-6">
             <div className="max-w-4xl mx-auto mb-16">
               <h2 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl mb-8 text-center">
-                Navigating Complexity.<br className="hidden md:block" /> Seeking Clarity in a Noisy World.
+                The Noise Within and Without. <br className="hidden md:block" /> Can We Find Clarity?
               </h2>
               <div className="space-y-6 text-muted-foreground text-center">
                 <p className="text-lg">
-                  Human experience is nuanced. Traditional sentiment analysis is shallow, and surveys are outdated. We live with intricate emotions and shifting contexts—yet our digital tools rarely reflect this depth.
+                  We often react without fully understanding why. Surface-level sentiment analysis misses the depth, while traditional surveys offer lagging snapshots.
                 </p>
-                <p className="text-lg font-medium text-primary">
-                  Global Pulse is committed to building a more insightful, ethical compass—grounded in psychology and respect for the individual.
+                <p className="text-lg">
+                  We navigate complex inner lives and a noisy external world with incomplete maps. Global Pulse is an attempt to build a better compass, grounded in psychological principles and a commitment to ethical exploration, starting with the individual.
                 </p>
               </div>
             </div>
@@ -117,9 +128,9 @@ export default function HomePage() {
                   <div className="bg-primary/10 p-3 rounded-full mb-5">
                     <Zap className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2">Superficial Signals</h3>
+                  <h3 className="text-xl font-bold mb-2">Shallow Signals</h3>
                   <p className="text-muted-foreground text-base">
-                    Binary sentiment misses the richness of human thought and feeling. We need more than just "positive" or "negative".
+                    Simple 'Positive'/'Negative' labels don't capture the complexity of human feeling or thought.
                   </p>
                 </CardContent>
               </Card>
@@ -130,7 +141,7 @@ export default function HomePage() {
                   </div>
                   <h3 className="text-xl font-bold mb-2">Missing Context</h3>
                   <p className="text-muted-foreground text-base">
-                    Generic analysis ignores your unique values, needs, and state. True understanding requires context.
+                    Generic analysis ignores the unique personal context (values, needs, state) that shapes our perspective.
                   </p>
                 </CardContent>
               </Card>
@@ -139,9 +150,9 @@ export default function HomePage() {
                   <div className="bg-primary/10 p-3 rounded-full mb-5">
                     <Lock className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2">Lack of Agency</h3>
+                  <h3 className="text-xl font-bold mb-2">Lack of Control</h3>
                   <p className="text-muted-foreground text-base">
-                    Data is often used without clear consent or transparency. Professional standards demand user control and trust.
+                    Often, our data is used in ways we don't understand or consent to. Transparency and control are essential.
                   </p>
                 </CardContent>
               </Card>
@@ -154,13 +165,19 @@ export default function HomePage() {
           <div className="container px-4 md:px-6">
             <div className="max-w-3xl mx-auto text-center mb-16">
               <h2 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl mb-4">
-                Experience <span className="text-primary">Reflective Dialogue</span>
+                A Glimpse into <span className="text-primary">Reflective Dialogue</span>
               </h2>
               <p className="text-xl md:text-2xl text-muted-foreground">
-                Explore a simulated conversation that demonstrates the thoughtful, context-aware approach of the Pulse agent.
+                See a <em>simulated</em> interaction demonstrating the intended thoughtful and context-aware style of the Pulse agent. <strong>(Note: Live chat is not yet functional).</strong>
               </p>
             </div>
+            <p className="text-center text-muted-foreground mb-4 italic">
+              This is a simulated glimpse of Pulse — a companion designed for reflection, not prediction. Every insight is yours to accept, reject, or reshape.
+            </p>
             <MarketingChatDemo />
+            <p className="text-center text-muted-foreground mt-6 text-lg">
+              💬 This is not a chatbot trying to keep you talking. Pulse listens, reflects, and steps back. What you do next is up to you.
+            </p>
           </div>
         </section>
 
@@ -169,10 +186,10 @@ export default function HomePage() {
           <div className="container px-4 md:px-6 relative z-10">
             <div className="max-w-5xl mx-auto">
               <h2 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl mb-8 text-center">
-                The Pulse Engine: <span className="text-primary">A Professional Approach</span>
+                Building the Engine: <span className="text-primary">Our Approach</span>
               </h2>
               <p className="text-xl md:text-2xl text-muted-foreground text-center mb-14">
-                At the heart of Global Pulse is the <strong>Pulse Context Engine (PCE)</strong>: a robust, evolving framework that fuses psychological science with advanced AI.
+                Global Pulse is centered around the <strong>Pulse Context Engine (PCE)</strong> – a conceptual framework we are actively building, integrating psychological principles with AI.
               </p>
               <div className="space-y-12">
                 <div className="flex flex-col md:flex-row gap-10 items-center bg-card rounded-lg p-8 border border-border shadow-md">
@@ -182,9 +199,9 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="md:w-2/3">
-                    <h3 className="text-2xl font-bold mb-3 text-primary">Unified Identity Graph (UIG)</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-primary">Unified Identity Graph (UIG Concept)</h3>
                     <p className="text-muted-foreground text-lg">
-                      We're developing a dynamic, private model of your core values, goals, beliefs, and needs—an evolving map of your inner landscape, not a static profile.
+                      We're <strong>designing</strong> a way to represent what matters to <em>you</em> – your core Values, Goals, Beliefs, Needs – privately and dynamically. This isn't a static profile; it's <strong>designed</strong> as an evolving map of your inner landscape, open for scrutiny and refinement.
                     </p>
                   </div>
                 </div>
@@ -195,9 +212,9 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="md:w-2/3">
-                    <h3 className="text-2xl font-bold mb-3 text-primary">Emotion Framework (EWEF)</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-primary">Emotion Framework (EWEF Concept)</h3>
                     <p className="text-muted-foreground text-lg">
-                      Our system interprets interactions through psychological principles, mapping perceptions against your unique UIG to illuminate the <em>why</em> behind emotional responses.
+                      Our aim is to analyze interactions not just for surface sentiment, but based on psychological principles – comparing perceptions against your unique UIG map to understand the potential <em>reasons</em> behind emotional responses. This framework is open-source and built for collaboration.
                     </p>
                   </div>
                 </div>
@@ -211,9 +228,10 @@ export default function HomePage() {
                   className="object-contain transition-transform duration-500 hover:scale-105 mx-auto"
                   priority
                 />
+                <p className="text-center text-sm text-muted-foreground mt-4">Conceptual System Diagram</p>
               </div>
               <p className="text-xl md:text-2xl font-semibold text-primary mt-8 text-center">
-                Our mission: illuminate the mechanics of subjective experience—never to predict or manipulate behavior.
+                Our focus is on illuminating the mechanics of subjective experience, not predicting behavior.
               </p>
             </div>
           </div>
@@ -228,47 +246,47 @@ export default function HomePage() {
                   <HeartHandshake className="mr-2 h-5 w-5" /> Our Core Commitments
                 </div>
                 <h2 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl mb-4">
-                  Professional Ethics, <span className="text-primary">Built In.</span>
+                  Our Foundational <span className="text-primary">Commitments</span>
                 </h2>
                 <p className="text-xl md:text-2xl text-muted-foreground">
-                  These principles are the foundation of Global Pulse—defining every decision, every feature.
+                  These aren't just features; they are the core principles guiding Global Pulse's development.
                 </p>
               </div>
               <div className="grid md:grid-cols-3 gap-8">
                 <FeatureCard
                   icon={<Lock className="h-10 w-10 text-primary" />}
                   title="Radical Privacy & Security"
-                  description="Your data remains yours. We implement end-to-end encryption, secure infrastructure, and never sell personal information. Anonymization is standard for any aggregate insights."
+                  description="Your data is yours. We employ encryption, secure infrastructure, and will never sell your personal information. Anonymization is key for any collective patterns."
                   className="bg-card border border-border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 hover:border-primary/30 hover:-translate-y-1"
                 />
                 <FeatureCard
                   icon={<Users className="h-10 w-10 text-primary" />}
                   title="User Sovereignty & Control"
-                  description="You decide how your data is used. Consent is explicit, granular, and opt-in. Privacy is the default. Access, manage, or delete your data at any time."
+                  description="Explicit, granular, opt-in consent for all non-essential data use. Defaults prioritize privacy. You have the right to access, manage, and delete your data."
                   className="bg-card border border-border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 hover:border-primary/30 hover:-translate-y-1"
                 />
                 <FeatureCard
                   icon={<MessageCircle className="h-10 w-10 text-primary" />}
                   title="Space for Reflection"
-                  description="Pulse is a tool for self-discovery, not a data-mining engine. Our focus is on facilitating understanding, not providing answers or therapy."
+                  description="Designed to be a companion for self-discovery, not just data extraction. Pulse aims to facilitate understanding, not provide answers or therapy."
                   className="bg-card border border-border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 hover:border-primary/30 hover:-translate-y-1"
                 />
                 <FeatureCard
                   icon={<Shield className="h-10 w-10 text-primary" />}
-                  title="Safety by Design"
-                  description="Robust guardrails are built into the AI to prevent harmful, manipulative, or biased outputs—reinforced by our ethical guidelines."
+                  title="Safety via Guardrails"
+                  description="We are building safety checks directly into the AI's logic (V1 implemented) to prevent harmful, manipulative, or biased outputs, complementing our ethical guidelines."
                   className="bg-card border border-border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 hover:border-primary/30 hover:-translate-y-1"
                 />
                 <FeatureCard
                   icon={<Eye className="h-10 w-10 text-primary" />}
                   title="Transparency & Openness"
-                  description="We are committed to open-sourcing our analytical logic (EWEF/UIG) and providing clear, accessible explanations (XAI) for all users."
+                  description="Commitment to open-sourcing core analytical logic (EWEF/UIG). Clear policies and accessible explanations (XAI - future goal) are key."
                   className="bg-card border border-border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 hover:border-primary/30 hover:-translate-y-1"
                 />
                 <FeatureCard
                   icon={<Github className="h-10 w-10 text-primary" />}
                   title="Building in Public"
-                  description="From hackathon roots to professional product, our journey is open. We welcome feedback, collaboration, and community insight."
+                  description="This started as a hackathon project. We're sharing our journey, challenges, and progress openly, inviting feedback and collaboration."
                   className="bg-card border border-border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 hover:border-primary/30 hover:-translate-y-1"
                 />
               </div>
@@ -281,10 +299,10 @@ export default function HomePage() {
           <div className="container px-4 md:px-6">
             <div className="max-w-5xl mx-auto">
               <h2 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl mb-8 text-center">
-                Advanced Technology Requires <span className="text-secondary">Uncompromising Ethics</span>
+                Powerful Tech Demands <span className="text-secondary">Radical Responsibility.</span>
               </h2>
               <p className="text-xl md:text-2xl text-muted-foreground text-center mb-14">
-                Modeling identity and emotion is a profound responsibility. Ethics are not an afterthought—they are architected into every layer of Global Pulse.
+                Modeling identity and emotion is serious business. Ethics aren't an afterthought; they're architected in.
               </p>
               <div className="grid md:grid-cols-2 gap-8">
                 <Card className="bg-card border border-green-500/30 shadow-md hover:shadow-lg transition-shadow duration-300 hover:border-green-500/50 hover:-translate-y-1 rounded-lg">
@@ -294,7 +312,7 @@ export default function HomePage() {
                       <h3 className="text-xl font-bold text-green-400">Your Data, Your Rules</h3>
                     </div>
                     <p className="text-muted-foreground text-lg">
-                      Consent is granular and opt-in for all non-essential uses. You control access, analysis depth, and data use. Revoke consent at any time. <strong>Your data is never sold.</strong>
+                      Granular, opt-in consent. You control access, analysis depth, data use. <strong>Individual data is NEVER sold.</strong>
                     </p>
                   </CardContent>
                 </Card>
@@ -302,10 +320,10 @@ export default function HomePage() {
                   <CardContent className="p-8">
                     <div className="flex gap-4 mb-5 items-center">
                       <Lock className="h-10 w-10 text-green-500 flex-shrink-0" />
-                      <h3 className="text-xl font-bold text-green-400">Privacy & Security by Default</h3>
+                      <h3 className="text-xl font-bold text-green-400">Privacy & Security Baked In</h3>
                     </div>
                     <p className="text-muted-foreground text-lg">
-                      Encryption at rest and in transit. Strict access controls. Secure infrastructure. Pseudonymization for any aggregate analysis.
+                      Encryption. Strict access controls. Secure infrastructure. Pseudonymization for future aggregate analysis.
                     </p>
                   </CardContent>
                 </Card>
@@ -316,7 +334,7 @@ export default function HomePage() {
                       <h3 className="text-xl font-bold text-green-400">Ethical Guardrails in Code</h3>
                     </div>
                     <p className="text-muted-foreground text-lg">
-                      Active modules monitor for manipulation and block responses likely to cause distress. These are not just policies—they are enforced in code.
+                      Active modules aim to prevent manipulation and block responses predicted to cause significant distress.
                     </p>
                   </CardContent>
                 </Card>
@@ -327,7 +345,7 @@ export default function HomePage() {
                       <h3 className="text-xl font-bold text-green-400">Not a Medical Service</h3>
                     </div>
                     <p className="text-muted-foreground text-lg">
-                      Global Pulse is a tool for self-awareness and insight. It is <em>not</em> a substitute for professional mental health care.
+                      A tool for self-awareness, <em>not</em> a replacement for professional mental health diagnosis or treatment.
                     </p>
                   </CardContent>
                 </Card>
@@ -354,10 +372,10 @@ export default function HomePage() {
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-16">
                 <h2 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl mb-4">
-                  Join the Global Pulse Community
+                  Join Our Exploration
                 </h2>
                 <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-                  Be part of our journey from the start. Join the waitlist to receive updates, share your feedback, and help shape the future of ethical, professional AI.
+                  Global Pulse is in its early stages. Join the waitlist to follow our progress, provide feedback, and be among the first to experience the platform as it evolves.
                 </p>
                 <WaitlistChatSignup />
               </div>

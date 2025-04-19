@@ -31,7 +31,7 @@ export function ChatSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-gray-900 text-white transition-transform duration-300 md:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar text-sidebar-foreground transition-transform duration-300 md:translate-x-0",
           isMobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -39,7 +39,7 @@ export function ChatSidebar() {
           {/* Logo and new chat */}
           <div className="flex items-center justify-between p-4">
             <Link href="/" className="flex items-center gap-2">
-              <Brain className="h-6 w-6 text-purple-400" />
+              <Brain className="h-6 w-6 text-sidebar-primary" />
               <span className="text-lg font-bold">Global Pulse</span>
             </Link>
           </div>
@@ -48,7 +48,7 @@ export function ChatSidebar() {
           <div className="px-3 py-2">
             <Button
               variant="outline"
-              className="w-full justify-start gap-2 border-white/20 bg-white/10 text-white hover:bg-white/20"
+              className="w-full justify-start gap-2 border-sidebar-border bg-sidebar-primary/10 text-sidebar-primary-foreground/80 hover:bg-sidebar-primary/20 hover:text-sidebar-primary-foreground"
               onClick={() => {
                 // Clear chat history logic would go here
                 setIsMobileOpen(false)
@@ -65,8 +65,8 @@ export function ChatSidebar() {
               <Button
                 variant="ghost"
                 className={cn(
-                  "w-full justify-start gap-2 text-white/70 hover:text-white",
-                  pathname === "/chat" && "bg-white/10 text-white",
+                  "w-full justify-start gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground",
+                  pathname === "/chat" && "bg-sidebar-primary/10 text-sidebar-foreground",
                 )}
                 asChild
               >
@@ -80,15 +80,15 @@ export function ChatSidebar() {
           </div>
 
           {/* Bottom links */}
-          <div className="border-t border-white/20 p-3">
+          <div className="border-t border-sidebar-border p-3">
             <div className="space-y-1">
-              <Button variant="ghost" className="w-full justify-start gap-2 text-white/70 hover:text-white" asChild>
+              <Button variant="ghost" className="w-full justify-start gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground" asChild>
                 <Link href="/settings" onClick={() => setIsMobileOpen(false)}>
                   <Settings className="h-4 w-4" />
                   Settings
                 </Link>
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-2 text-white/70 hover:text-white">
+              <Button variant="ghost" className="w-full justify-start gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground">
                 <LogOut className="h-4 w-4" />
                 Sign out
               </Button>

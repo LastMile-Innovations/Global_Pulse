@@ -1,7 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai"
 import { createAnthropic } from "@ai-sdk/anthropic"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
-import { logger } from "../lib/utils/logger"
+import { logger } from "../utils/logger"
 
 /**
  * Supported model providers for MVP production.

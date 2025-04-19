@@ -100,10 +100,10 @@ export function SessionConsentControls({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <Alert variant="default" className="bg-blue-50 border-blue-200">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertTitle className="text-blue-800">Session-Level Controls</AlertTitle>
-          <AlertDescription className="text-blue-700">
+        <Alert variant="default" className="bg-primary/10 border-primary/30">
+          <Info className="h-4 w-4 text-primary" />
+          <AlertTitle className="text-primary">Session-Level Controls</AlertTitle>
+          <AlertDescription className="text-primary/90">
             These temporary controls allow you to pause contributions for your current session only, without changing
             your permanent consent settings.
           </AlertDescription>
@@ -115,7 +115,7 @@ export function SessionConsentControls({
               <Label htmlFor="sessionPauseAggregation" className="text-base font-medium">
                 Pause Contributions to Aggregate Insights
               </Label>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Temporarily stop your data from being included in anonymized aggregate insights
               </p>
             </div>
@@ -128,9 +128,9 @@ export function SessionConsentControls({
           </div>
 
           {!consentAggregation && (
-            <Alert variant="default" className="bg-gray-50 border-gray-200 mt-1">
-              <AlertCircle className="h-4 w-4 text-gray-600" />
-              <AlertDescription className="text-gray-700 text-xs">
+            <Alert variant="default" className="bg-muted border-border mt-1">
+              <AlertCircle className="h-4 w-4 text-muted-foreground" />
+              <AlertDescription className="text-muted-foreground text-xs">
                 This control is inactive because you have not enabled Aggregate Insights in your main consent settings.
               </AlertDescription>
             </Alert>
@@ -141,7 +141,7 @@ export function SessionConsentControls({
               <Label htmlFor="sessionPauseTraining" className="text-base font-medium">
                 Pause Contributions to AI Training
               </Label>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Temporarily stop your data from being used for anonymized pattern training
               </p>
             </div>
@@ -154,9 +154,9 @@ export function SessionConsentControls({
           </div>
 
           {!consentAnonymizedPatternTraining && (
-            <Alert variant="default" className="bg-gray-50 border-gray-200 mt-1">
-              <AlertCircle className="h-4 w-4 text-gray-600" />
-              <AlertDescription className="text-gray-700 text-xs">
+            <Alert variant="default" className="bg-muted border-border mt-1">
+              <AlertCircle className="h-4 w-4 text-muted-foreground" />
+              <AlertDescription className="text-muted-foreground text-xs">
                 This control is inactive because you have not enabled AI Training in your main consent settings.
               </AlertDescription>
             </Alert>

@@ -186,7 +186,7 @@ export function ConditionalLoggingTester() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium">Insight Mode</h3>
-              <p className="text-xs text-gray-500">Controls whether detailed analysis is stored</p>
+              <p className="text-xs text-muted-foreground">Controls whether detailed analysis is stored</p>
             </div>
             <Switch checked={insightMode} onCheckedChange={toggleInsightMode} disabled={loading} />
           </div>
@@ -194,7 +194,7 @@ export function ConditionalLoggingTester() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium">Detailed Analysis Logging</h3>
-              <p className="text-xs text-gray-500">Consent to store detailed EWEF analysis</p>
+              <p className="text-xs text-muted-foreground">Consent to store detailed EWEF analysis</p>
             </div>
             <Switch
               checked={detailedLoggingConsent}
@@ -206,7 +206,7 @@ export function ConditionalLoggingTester() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium">Anonymized Pattern Training</h3>
-              <p className="text-xs text-gray-500">Consent to use data for training</p>
+              <p className="text-xs text-muted-foreground">Consent to use data for training</p>
             </div>
             <Switch
               checked={trainingConsent}
@@ -228,7 +228,7 @@ export function ConditionalLoggingTester() {
         </div>
 
         {result && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-md">
+          <div className="mt-4 p-4 bg-muted/50 rounded-md">
             <h3 className="text-sm font-medium mb-2">Processing Result</h3>
             <div className="text-xs overflow-auto max-h-[200px]">
               <pre>{JSON.stringify(result, null, 2)}</pre>

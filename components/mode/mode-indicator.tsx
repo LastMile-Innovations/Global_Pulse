@@ -13,8 +13,8 @@ export function ModeIndicator({ mode }: ModeIndicatorProps) {
       variant="outline"
       className={`flex items-center gap-1 ${
         mode === "insight"
-          ? "bg-purple-100 text-purple-800 border-purple-200"
-          : "bg-blue-100 text-blue-800 border-blue-200"
+          ? "bg-primary/10 text-primary border-primary/20"
+          : "bg-secondary/10 text-secondary border-secondary/20"
       }`}
       aria-label={`Current mode: ${mode === "insight" ? "Insight" : "Listening"}`}
     >

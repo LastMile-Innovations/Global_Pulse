@@ -58,8 +58,8 @@ export function MoodChart({ data, timeRange }: MoodChartProps) {
           <YAxis domain={[-1, 1]} ticks={[-1, -0.5, 0, 0.5, 1]} tickFormatter={(value) => value.toFixed(1)} />
           <Tooltip formatter={(value: number) => [value.toFixed(2), ""]} labelFormatter={formatPeriod} />
           <Legend />
-          <Line type="monotone" dataKey="avgMood" name="Mood" stroke="#4ade80" activeDot={{ r: 8 }} strokeWidth={2} />
-          <Line type="monotone" dataKey="avgStress" name="Stress" stroke="#f43f5e" strokeWidth={2} />
+          <Line type="monotone" dataKey="avgMood" name="Mood" stroke="hsl(var(--chart-2))" activeDot={{ r: 8 }} strokeWidth={2} />
+          <Line type="monotone" dataKey="avgStress" name="Stress" stroke="hsl(var(--destructive))" strokeWidth={2} />
         </LineChart>
       </ResponsiveContainer>
     </div>

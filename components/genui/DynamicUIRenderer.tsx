@@ -1,7 +1,7 @@
 "use client"
 
 import { experimental_useObject } from "ai/react"
-import { UIComponentSchema } from "@/ai-sdk/schemas/ui_components"
+import { UIComponentSchema } from "@/lib/ai-sdk/schemas/ui_components"
 import { useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -18,7 +18,7 @@ import type {
   ConfirmationComponent as ConfirmationProps,
   InfoCardComponent as InfoCardProps,
   FormInputComponent as FormInputProps,
-} from "@/ai-sdk/schemas/ui_components"
+} from "@/lib/ai-sdk/schemas/ui_components"
 
 interface DynamicUIRendererProps {
   sessionId?: string

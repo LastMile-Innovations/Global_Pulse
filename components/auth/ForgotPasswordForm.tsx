@@ -95,7 +95,7 @@ export default function ForgotPasswordForm() {
         </Form>
       ) : (
         <CardContent>
-          <p className="text-center text-green-600">
+          <p className="text-center text-secondary">
             Instructions sent! Please check your email (including spam folder).
           </p>
         </CardContent>

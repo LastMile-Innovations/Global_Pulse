@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { FormInputComponent as FormInputComponentType } from "@/ai-sdk/schemas/ui_components"
+import type { FormInputComponent as FormInputComponentType } from "@/lib/ai-sdk/schemas/ui_components"
 
 interface FormInputComponentProps extends FormInputComponentType {
   onSubmit: (data: any) => void
@@ -84,7 +84,7 @@ export function FormInputComponent({
       <CardContent>
         <div className="space-y-2">
           <Label htmlFor="input-field" className="text-sm font-medium">
-            {required ? <span className="text-red-500">*</span> : null} {label}
+            {required ? <span className="text-destructive">*</span> : null} {label}
           </Label>
           <Input
             id="input-field"
@@ -94,7 +94,7 @@ export function FormInputComponent({
             onChange={handleChange}
             required={required}
           />
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-destructive">{error}</p>}
         </div>
       </CardContent>
       <CardFooter>

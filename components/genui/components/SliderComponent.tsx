@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import type { SliderComponent as SliderComponentType } from "@/ai-sdk/schemas/ui_components"
+import type { SliderComponent as SliderComponentType } from "@/lib/ai-sdk/schemas/ui_components"
 
 interface SliderComponentProps extends SliderComponentType {
   onSubmit: (data: any) => void
@@ -55,7 +55,7 @@ export function SliderComponent({
             aria-label={label}
           />
 
-          <div className="flex justify-between text-sm text-gray-500">
+          <div className="flex justify-between text-sm text-muted-foreground">
             <span>{minLabel || min}</span>
             {showValue && <span className="font-medium text-primary">{value}</span>}
             <span>{maxLabel || max}</span>

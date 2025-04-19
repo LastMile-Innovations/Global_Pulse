@@ -70,7 +70,7 @@ export default function AiConversation() {
           <span className="font-medium">AI Conversation</span>
         </div>
         <div className="text-xs text-muted-foreground flex items-center gap-1">
-          <div className="h-2 w-2 rounded-full bg-green-500"></div>
+          <div className="h-2 w-2 rounded-full bg-secondary"></div>
           <span>Live</span>
         </div>
       </div>

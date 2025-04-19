@@ -68,10 +68,10 @@ export function ContactForm() {
   return (
     <div>
       {submitStatus === "success" && (
-        <Alert className="mb-6 bg-green-900/20 border-green-800">
-          <CheckCircle className="h-4 w-4 text-green-500" />
-          <AlertTitle className="text-green-400">Message Sent</AlertTitle>
-          <AlertDescription className="text-green-300">
+        <Alert className="mb-6 bg-secondary/20 border-secondary/80">
+          <CheckCircle className="h-4 w-4 text-secondary" />
+          <AlertTitle className="text-secondary">Message Sent</AlertTitle>
+          <AlertDescription className="text-secondary/90">
             Thank you for contacting us. We'll get back to you as soon as possible.
           </AlertDescription>
         </Alert>

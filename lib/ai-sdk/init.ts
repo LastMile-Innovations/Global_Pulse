@@ -1,5 +1,5 @@
 import { validateConfiguredProviders } from "./providers"
-import { logger } from "../lib/utils/logger"
+import { logger } from "../utils/logger"
 
 /**
  * Initializes the AI SDK module

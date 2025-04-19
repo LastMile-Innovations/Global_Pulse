@@ -61,7 +61,7 @@ export function DistressCheckinResponse({ userId, sessionId, onResponse }: Distr
               <Label htmlFor="pause-both" className="font-medium">
                 Pause All Contributions
               </Label>
-              <p className="text-sm text-gray-500">Temporarily pause all data contributions for this session</p>
+              <p className="text-sm text-muted-foreground">Temporarily pause all data contributions for this session</p>
             </div>
           </div>
           <div className="flex items-start space-x-2">
@@ -70,7 +70,7 @@ export function DistressCheckinResponse({ userId, sessionId, onResponse }: Distr
               <Label htmlFor="pause-insights" className="font-medium">
                 Pause Aggregate Insights Only
               </Label>
-              <p className="text-sm text-gray-500">Temporarily pause contributions to aggregate insights only</p>
+              <p className="text-sm text-muted-foreground">Temporarily pause contributions to aggregate insights only</p>
             </div>
           </div>
           <div className="flex items-start space-x-2">
@@ -79,7 +79,7 @@ export function DistressCheckinResponse({ userId, sessionId, onResponse }: Distr
               <Label htmlFor="pause-training" className="font-medium">
                 Pause AI Training Only
               </Label>
-              <p className="text-sm text-gray-500">Temporarily pause contributions to AI training only</p>
+              <p className="text-sm text-muted-foreground">Temporarily pause contributions to AI training only</p>
             </div>
           </div>
           <div className="flex items-start space-x-2">
@@ -88,7 +88,7 @@ export function DistressCheckinResponse({ userId, sessionId, onResponse }: Distr
               <Label htmlFor="continue-both" className="font-medium">
                 Continue All Contributions
               </Label>
-              <p className="text-sm text-gray-500">Continue with your current consent settings</p>
+              <p className="text-sm text-muted-foreground">Continue with your current consent settings</p>
             </div>
           </div>
         </RadioGroup>

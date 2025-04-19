@@ -87,8 +87,8 @@ export function ThemeToggle() {
           className="relative rounded-standard-full border border-border hover:bg-accent/60 transition-all shadow-glow-sm"
           aria-label="Toggle theme"
         >
-          <Sun className="h-[1.3rem] w-[1.3rem] rotate-0 scale-100 transition-all text-yellow-400 dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.3rem] w-[1.3rem] rotate-90 scale-0 transition-all text-blue-400 dark:rotate-0 dark:scale-100" />
+          <Sun className="h-[1.3rem] w-[1.3rem] rotate-0 scale-100 transition-all text-accent dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-[1.3rem] w-[1.3rem] rotate-90 scale-0 transition-all text-primary dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -97,14 +97,14 @@ export function ThemeToggle() {
           onClick={() => setTheme("light")}
           className="flex items-center gap-2"
         >
-          <Sun className="h-4 w-4 text-yellow-400" />
+          <Sun className="h-4 w-4 text-accent" />
           Light
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
           className="flex items-center gap-2"
         >
-          <Moon className="h-4 w-4 text-blue-400" />
+          <Moon className="h-4 w-4 text-primary" />
           Dark
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -161,7 +161,7 @@ export function UserAuth() {
           <Button
             size="sm"
             asChild
-            className="rounded-standard-full px-4 font-semibold bg-primary text-white shadow-glow hover:bg-primary/90 transition-all"
+            className="rounded-standard-full px-4 font-semibold bg-primary text-primary-foreground shadow-glow hover:bg-primary/90 transition-all"
           >
             <Link href="/signup">Sign Up</Link>
           </Button>
@@ -175,7 +175,7 @@ export function UserAuth() {
               aria-label="Open user menu"
             >
               <Avatar className="h-9 w-9 ring-2 ring-primary/60 ring-offset-2 ring-offset-background transition-all">
-                <AvatarFallback className="bg-primary text-white font-bold">
+                <AvatarFallback className="bg-primary text-primary-foreground font-bold">
                   {user.email ? user.email[0].toUpperCase() : "U"}
                 </AvatarFallback>
               </Avatar>

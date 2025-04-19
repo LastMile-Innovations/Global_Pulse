@@ -13,6 +13,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { submitSurveyResponse } from "@/actions/survey"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 /**
  * Props for the SliderInput component
@@ -119,9 +120,9 @@ export default function SliderInput({
   return (
     <div className="py-4">
       {error && (
-        <div className="mb-2 p-2 text-sm text-red-500 bg-red-50 rounded border border-red-200">
-          {error}
-        </div>
+        <Alert variant="destructive" className="mb-2">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
       <div className="relative h-10 mb-2">
         <div className="absolute inset-0 flex items-center">

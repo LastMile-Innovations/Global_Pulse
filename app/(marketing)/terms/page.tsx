@@ -1,6 +1,17 @@
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+
 export default function TermsPage() {
   return (
     <div className="container py-12 max-w-3xl mx-auto">
+      <Alert variant="default" className="mb-12 bg-primary/5 border-primary/20">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Prototype Status</AlertTitle>
+        <AlertDescription>
+          Global Pulse is currently an early-stage prototype born from a 10-day hackathon. These Terms apply to the current prototype website and outline the intended terms for future, fully functional services. Some functionalities described may not be active in the current prototype.
+        </AlertDescription>
+      </Alert>
+
       <h1 className="text-3xl font-bold mb-6">Terms of Service</h1>
 
       {/* Table of Contents */}
@@ -19,7 +30,7 @@ export default function TermsPage() {
 
       {/* Use base 'prose' for better readability, add section IDs and bottom borders */}
       <div className="prose max-w-none">
-        <p className="text-muted-foreground mb-6">Last updated: April 7, 2025</p>
+        <p className="text-muted-foreground mb-6">Effective Date: [Insert Current Date or Initial Launch Date]</p>
 
         <section id="introduction" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">1. Introduction</h2>
@@ -37,7 +48,7 @@ export default function TermsPage() {
           <h2 className="text-xl font-semibold mb-4">2. Using Our Services</h2>
           <h3 className="text-lg font-medium mb-2">2.1 Account Registration</h3>
           <p>
-            To access certain features of our Services, you may need to create an account. You agree to provide
+            To access certain features of our Services (such as the waitlist or future dashboard features), you may need to create an account. You agree to provide
             accurate, current, and complete information during the registration process and to update such information
             to keep it accurate, current, and complete.
           </p>
@@ -59,13 +70,14 @@ export default function TermsPage() {
         <section id="user-content" className="mb-8 pb-8 border-b">
           <h2 className="text-xl font-semibold mb-4">3. User Content</h2>
           <p>
-            Our Services allow you to share opinions, responses, and other content (&quot;User Content&quot;). You retain
-            ownership of your User Content, but you grant us a worldwide, non-exclusive, royalty-free license to use,
-            reproduce, modify, adapt, publish, translate, and distribute your User Content in connection with our
-            Services.
+            *When interactive features become available,* our Services *may* allow you to share opinions, responses, and other content (&quot;User Content&quot;). *Currently, the prototype primarily involves account creation and waitlist signup; content generation features are not active.*
           </p>
           <p>
-            You are solely responsible for your User Content and represent that you have all rights necessary to grant
+             You retain ownership of any User Content you *may eventually create*. By submitting User Content through *future* features of the Service, you grant us a worldwide, non-exclusive, royalty-free license *solely* to use,
+            reproduce, modify, adapt, and display your User Content *as necessary to provide the Service's intended reflection and insight features back to you, and potentially (with separate, explicit consent) for anonymized, aggregated analysis as detailed in our Privacy Policy.*
+          </p>
+          <p>
+            You are solely responsible for any User Content you *may eventually submit* and represent that you have all rights necessary to grant
             us the license described above. You also represent that your User Content does not violate the rights of any
             third party or any applicable laws.
           </p>

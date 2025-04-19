@@ -81,11 +81,11 @@ export function ModeToggle({ userId, sessionId, onModeChange }: ModeToggleProps)
   return (
     <div className="flex items-center space-x-4">
       <div className="flex items-center space-x-2">
-        <Headphones className={`h-5 w-5 ${!isInsightMode ? "text-purple-600" : "text-gray-400"}`} />
+        <Headphones className={`h-5 w-5 transition-colors ${!isInsightMode ? "text-primary" : "text-muted-foreground/70"}`} />
         <Label htmlFor="mode-toggle" className="cursor-pointer">
           {isInsightMode ? "Insight Mode" : "Listening Mode"}
         </Label>
-        <Brain className={`h-5 w-5 ${isInsightMode ? "text-purple-600" : "text-gray-400"}`} />
+        <Brain className={`h-5 w-5 transition-colors ${isInsightMode ? "text-primary" : "text-muted-foreground/70"}`} />
       </div>
       <Switch
         id="mode-toggle"

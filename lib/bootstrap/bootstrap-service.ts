@@ -3,7 +3,7 @@ import { KgService } from "../db/graph/kg-service"
 import { getNeo4jDriver } from "../db/graph/neo4j-driver"
 import { getTemplatedResponse } from "../responses/template-filler"
 import { getCoreNlpFeatures } from "../nlp/nlp-features"
-import { classifyConceptsZSC_LLM } from "../../ai-sdk/zsc-service"
+import { classifyConceptsZSC_LLM } from "../ai-sdk/zsc-service"
 import { logger } from "../utils/logger"
 import { getEngagementMode } from "../session/mode-manager"
 

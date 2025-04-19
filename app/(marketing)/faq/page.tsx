@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertCircle,
   BookOpen,
@@ -26,6 +27,14 @@ export const metadata: Metadata = {
 export default function FAQPage() {
   return (
     <div className="container max-w-3xl mx-auto px-4 py-10 md:py-16">
+      <Alert variant="default" className="mb-12 bg-primary/5 border-primary/20">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Prototype Status</AlertTitle>
+        <AlertDescription>
+          Global Pulse is currently an early-stage prototype born from a 10-day hackathon. Some features described represent our design goals and may not be fully interactive in the current demo. We are building transparently and prioritize safety and user control.
+        </AlertDescription>
+      </Alert>
+
       <header className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           Global Pulse: FAQ <span className="inline-block animate-bounce">?</span>

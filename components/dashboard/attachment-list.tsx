@@ -29,13 +29,13 @@ export function AttachmentList({ attachments, type }: AttachmentListProps) {
 
   // Function to determine badge color based on valence
   const getValenceBadgeColor = (valence: number) => {
-    if (valence > 7) return "bg-green-500"
-    if (valence > 3) return "bg-green-300"
-    if (valence > 0) return "bg-green-100"
-    if (valence === 0) return "bg-gray-200"
-    if (valence > -4) return "bg-red-100"
-    if (valence > -8) return "bg-red-300"
-    return "bg-red-500"
+    if (valence > 7) return "bg-primary text-primary-foreground"          // Strong positive
+    if (valence > 3) return "bg-primary/70 text-primary-foreground"   // Moderate positive
+    if (valence > 0) return "bg-primary/40 text-primary-foreground/90" // Slight positive
+    if (valence === 0) return "bg-muted text-muted-foreground"          // Neutral
+    if (valence > -4) return "bg-destructive/40 text-destructive-foreground/90" // Slight negative
+    if (valence > -8) return "bg-destructive/70 text-destructive-foreground"  // Moderate negative
+    return "bg-destructive text-destructive-foreground"            // Strong negative
   }
 
   return (
@@ -44,7 +44,7 @@ export function AttachmentList({ attachments, type }: AttachmentListProps) {
         <div key={index} className="border rounded-lg p-3">
           <div className="flex justify-between items-center mb-2">
             <h3 className="font-medium">{attachment.name}</h3>
-            <Badge className={`${getValenceBadgeColor(attachment.valence)}`}>
+            <Badge className={`text-xs ${getValenceBadgeColor(attachment.valence)}`}>
               {attachment.valence > 0 ? "+" : ""}
               {attachment.valence}
             </Badge>

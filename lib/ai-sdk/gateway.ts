@@ -1,7 +1,7 @@
 import { generateText, streamText, generateObject } from "ai"
 import type { Message } from "ai"
 import { getLanguageModelInstance, getModelConfig } from "./providers"
-import { logger } from "../lib/utils/logger"
+import { logger } from "../utils/logger"
 import type { z } from "zod"
 
 /**

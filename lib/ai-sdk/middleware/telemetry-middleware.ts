@@ -1,4 +1,4 @@
-import { logger } from "../../lib/utils/logger"
+import { logger } from "../../utils/logger"
 
 /**
  * Types for telemetry middleware context and hooks

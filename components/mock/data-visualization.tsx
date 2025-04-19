@@ -84,7 +84,7 @@ export default function DataVisualization() {
                     }}
                   ></div>
                   <div
-                    className="absolute inset-0 rounded-full border-[16px] border-blue-500/70 transition-all duration-700"
+                    className="absolute inset-0 rounded-full border-[16px] border-secondary/70 transition-all duration-700"
                     style={{
                       clipPath: `polygon(50% 50%, ${data.climate.support * 3.6}deg 0, ${
                         (data.climate.support + data.climate.neutral) * 3.6
@@ -93,7 +93,7 @@ export default function DataVisualization() {
                     }}
                   ></div>
                   <div
-                    className="absolute inset-0 rounded-full border-[16px] border-amber-500/70 transition-all duration-700"
+                    className="absolute inset-0 rounded-full border-[16px] border-accent-orange/70 transition-all duration-700"
                     style={{
                       clipPath: `polygon(50% 50%, ${(data.climate.support + data.climate.neutral) * 3.6}deg 0, 360deg 0)`,
                       transform: "rotate(0deg)",
@@ -119,27 +119,27 @@ export default function DataVisualization() {
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="font-medium">{data.climate.support}%</span>
-                    <ArrowUp className="h-3 w-3 text-green-500" />
+                    <ArrowUp className="h-3 w-3 text-secondary" />
                   </div>
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="flex items-center gap-1 mb-1">
-                    <div className="w-3 h-3 bg-blue-500/70 rounded-full"></div>
+                    <div className="w-3 h-3 bg-secondary/70 rounded-full"></div>
                     <span>Neutral</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="font-medium">{data.climate.neutral}%</span>
-                    <ArrowDown className="h-3 w-3 text-red-500" />
+                    <ArrowDown className="h-3 w-3 text-destructive" />
                   </div>
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="flex items-center gap-1 mb-1">
-                    <div className="w-3 h-3 bg-amber-500/70 rounded-full"></div>
+                    <div className="w-3 h-3 bg-accent-orange/70 rounded-full"></div>
                     <span>Oppose</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="font-medium">{data.climate.oppose}%</span>
-                    <ArrowUp className="h-3 w-3 text-green-500" />
+                    <ArrowUp className="h-3 w-3 text-secondary" />
                   </div>
                 </div>
               </div>
@@ -153,7 +153,7 @@ export default function DataVisualization() {
                   <div key={key} className="flex flex-col items-center gap-2 w-full">
                     <div
                       className={`w-full ${
-                        i === 0 ? "bg-green-500/70" : i === 1 ? "bg-blue-500/70" : "bg-red-500/70"
+                        i === 0 ? "bg-secondary/70" : i === 1 ? "bg-primary/70" : "bg-destructive/70"
                       } rounded-t-md transition-all duration-700`}
                       style={{ height: `${value * 1.6}px` }}
                     ></div>
@@ -180,11 +180,11 @@ export default function DataVisualization() {
             <div className="h-[250px] relative">
               <svg viewBox="0 0 300 180" className="w-full h-[180px]">
                 {/* Grid lines */}
-                <line x1="0" y1="0" x2="300" y2="0" stroke="#e5e7eb" strokeWidth="1" />
-                <line x1="0" y1="45" x2="300" y2="45" stroke="#e5e7eb" strokeWidth="1" />
-                <line x1="0" y1="90" x2="300" y2="90" stroke="#e5e7eb" strokeWidth="1" />
-                <line x1="0" y1="135" x2="300" y2="135" stroke="#e5e7eb" strokeWidth="1" />
-                <line x1="0" y1="180" x2="300" y2="180" stroke="#e5e7eb" strokeWidth="1" />
+                <line x1="0" y1="0" x2="300" y2="0" stroke="hsl(var(--border))" strokeWidth="1" />
+                <line x1="0" y1="45" x2="300" y2="45" stroke="hsl(var(--border))" strokeWidth="1" />
+                <line x1="0" y1="90" x2="300" y2="90" stroke="hsl(var(--border))" strokeWidth="1" />
+                <line x1="0" y1="135" x2="300" y2="135" stroke="hsl(var(--border))" strokeWidth="1" />
+                <line x1="0" y1="180" x2="300" y2="180" stroke="hsl(var(--border))" strokeWidth="1" />
                 {/* Optimistic line */}
                 <path
                   d={`M0,${180 - (data.tech.optimistic * 180) / 100} C50,${
@@ -195,7 +195,7 @@ export default function DataVisualization() {
                     180 - ((data.tech.optimistic + 5) * 180) / 100
                   }`}
                   fill="none"
-                  stroke="#3b82f6"
+                  stroke="hsl(var(--primary))"
                   strokeWidth="3"
                 />
                 {/* Concerned line */}
@@ -208,7 +208,7 @@ export default function DataVisualization() {
                     180 - (data.tech.concerned * 180) / 100
                   }`}
                   fill="none"
-                  stroke="#ef4444"
+                  stroke="hsl(var(--destructive))"
                   strokeWidth="3"
                 />
                 {/* Neutral line */}
@@ -219,39 +219,39 @@ export default function DataVisualization() {
                     180 - ((data.tech.neutral - 1) * 180) / 100
                   } S250,${180 - ((data.tech.neutral + 3) * 180) / 100} 300,${180 - (data.tech.neutral * 180) / 100}`}
                   fill="none"
-                  stroke="#a3a3a3"
+                  stroke="hsl(var(--muted-foreground))"
                   strokeWidth="3"
                 />
                 {/* Data points */}
-                <circle cx="0" cy={180 - (data.tech.optimistic * 180) / 100} r="4" fill="#3b82f6" />
-                <circle cx="150" cy={180 - ((data.tech.optimistic - 8) * 180) / 100} r="4" fill="#3b82f6" />
-                <circle cx="300" cy={180 - ((data.tech.optimistic + 5) * 180) / 100} r="4" fill="#3b82f6" />
-                <circle cx="0" cy={180 - (data.tech.concerned * 180) / 100} r="4" fill="#ef4444" />
-                <circle cx="150" cy={180 - ((data.tech.concerned + 2) * 180) / 100} r="4" fill="#ef4444" />
-                <circle cx="300" cy={180 - (data.tech.concerned * 180) / 100} r="4" fill="#ef4444" />
-                <circle cx="0" cy={180 - (data.tech.neutral * 180) / 100} r="4" fill="#a3a3a3" />
-                <circle cx="150" cy={180 - ((data.tech.neutral - 1) * 180) / 100} r="4" fill="#a3a3a3" />
-                <circle cx="300" cy={180 - ((data.tech.neutral + 3) * 180) / 100} r="4" fill="#a3a3a3" />
+                <circle cx="0" cy={180 - (data.tech.optimistic * 180) / 100} r="4" fill="hsl(var(--primary))" />
+                <circle cx="150" cy={180 - ((data.tech.optimistic - 8) * 180) / 100} r="4" fill="hsl(var(--primary))" />
+                <circle cx="300" cy={180 - ((data.tech.optimistic + 5) * 180) / 100} r="4" fill="hsl(var(--primary))" />
+                <circle cx="0" cy={180 - (data.tech.concerned * 180) / 100} r="4" fill="hsl(var(--destructive))" />
+                <circle cx="150" cy={180 - ((data.tech.concerned + 2) * 180) / 100} r="4" fill="hsl(var(--destructive))" />
+                <circle cx="300" cy={180 - (data.tech.concerned * 180) / 100} r="4" fill="hsl(var(--destructive))" />
+                <circle cx="0" cy={180 - (data.tech.neutral * 180) / 100} r="4" fill="hsl(var(--muted-foreground))" />
+                <circle cx="150" cy={180 - ((data.tech.neutral - 1) * 180) / 100} r="4" fill="hsl(var(--muted-foreground))" />
+                <circle cx="300" cy={180 - ((data.tech.neutral + 3) * 180) / 100} r="4" fill="hsl(var(--muted-foreground))" />
               </svg>
 
               <div className="absolute bottom-0 w-full grid grid-cols-3 gap-2 text-xs">
                 <div className="flex flex-col items-center">
                   <div className="flex items-center gap-1 mb-1">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-primary rounded-full"></div>
                     <span>Optimistic</span>
                   </div>
                   <span className="font-medium">{data.tech.optimistic}%</span>
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="flex items-center gap-1 mb-1">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="w-3 h-3 bg-destructive rounded-full"></div>
                     <span>Concerned</span>
                   </div>
                   <span className="font-medium">{data.tech.concerned}%</span>
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="flex items-center gap-1 mb-1">
-                    <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                    <div className="w-3 h-3 bg-muted-foreground rounded-full"></div>
                     <span>Neutral</span>
                   </div>
                   <span className="font-medium">{data.tech.neutral}%</span>

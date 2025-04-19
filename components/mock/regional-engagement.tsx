@@ -14,11 +14,11 @@ export default function RegionalEngagement() {
   const [isLoading, setIsLoading] = useState(false)
   const [regions, setRegions] = useState<RegionData[]>([
     { name: "North America", code: "NA", percentage: 42, color: "primary" },
-    { name: "Europe", code: "EU", percentage: 38, color: "blue-500" },
-    { name: "Asia", code: "AS", percentage: 51, color: "teal-500" },
-    { name: "Africa", code: "AF", percentage: 27, color: "amber-500" },
-    { name: "South America", code: "SA", percentage: 35, color: "purple-500" },
-    { name: "Oceania", code: "OC", percentage: 31, color: "red-500" },
+    { name: "Europe", code: "EU", percentage: 38, color: "secondary" },
+    { name: "Asia", code: "AS", percentage: 51, color: "accent" },
+    { name: "Africa", code: "AF", percentage: 27, color: "accent-orange" },
+    { name: "South America", code: "SA", percentage: 35, color: "primary" },
+    { name: "Oceania", code: "OC", percentage: 31, color: "destructive" },
   ])
 
   const refreshData = useCallback(() => {

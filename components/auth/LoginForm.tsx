@@ -40,7 +40,9 @@ export default function LoginForm() {
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl">Welcome Back</CardTitle>
-        <CardDescription>Enter your email below to login to your account</CardDescription>
+        <CardDescription>
+          Log in to access your Global Pulse prototype dashboard and settings.
+        </CardDescription>
       </CardHeader>
       <Form {...form}>
         <form action={formAction} className="space-y-4">

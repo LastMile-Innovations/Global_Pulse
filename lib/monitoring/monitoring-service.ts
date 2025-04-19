@@ -1,6 +1,6 @@
 import { logger } from "../utils/logger"
 import type { KgService } from "../db/graph/kg-service"
-import type { NerService } from "../../ai-sdk/ner-service"
+import type { NerService } from "../ai-sdk/ner-service"
 import type { RelevanceFilter } from "./relevance-filter"
 import type { NewsApiClient } from "./news-api-client"
 import type { NewsItem, ProcessedEntity, MonitoringResult } from "../types/monitoring-types"

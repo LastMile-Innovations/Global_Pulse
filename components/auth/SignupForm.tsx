@@ -47,7 +47,9 @@ export default function SignupForm() {
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl">Create an Account</CardTitle>
-        <CardDescription>Enter your email and password to sign up.</CardDescription>
+        <CardDescription>
+          Create an account to join the Global Pulse waitlist and exploration.
+        </CardDescription>
       </CardHeader>
       <Form {...form}>
         <form action={formAction} className="space-y-4">

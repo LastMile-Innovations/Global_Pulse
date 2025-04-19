@@ -11,11 +11,10 @@ export default function ContactPage() {
     <div className="container max-w-3xl mx-auto px-4 py-10 md:py-16">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          Contact Us
+          Get in Touch
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Have questions or feedback about Global Pulse? We'd love to hear from you.
-          Fill out the form below and we'll get back to you as soon as possible.
+          We welcome feedback, questions about our ethical approach, collaboration ideas for the open-source framework, or inquiries regarding the Global Pulse prototype and vision. Please note, as an early-stage project, we don't offer product support for live features yet.
         </p>
       </div>
 

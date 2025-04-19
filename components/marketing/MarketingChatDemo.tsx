@@ -599,9 +599,9 @@ export default function MarketingChatDemo() {
         <div className="flex items-center gap-3">
           <div className="relative">
             <Bot className="h-7 w-7 text-primary drop-shadow" />
-            <span className="absolute -top-1 -right-1 flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            <span className="absolute -top-1 -right-1 flex h-2 w-2"> {/* Use theme color for live indicator */}
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary/70 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
             </span>
           </div>
           <CardTitle className="text-lg font-bold tracking-tight text-primary">Pulse AI Demo</CardTitle>
@@ -690,7 +690,7 @@ export default function MarketingChatDemo() {
                 <Button
                   variant="link"
                   size="sm"
-                  className="text-xs h-auto p-0 mt-2 text-blue-600 hover:underline focus:outline-none"
+                  className="text-xs h-auto p-0 mt-2 text-primary hover:underline focus:outline-none"
                   onClick={() => toggleExplanation((message as TextMessage).explanation)}
                   aria-expanded={activeExplanation === (message as TextMessage).explanation}
                   aria-controls={`explanation-${message.id}`}
@@ -712,7 +712,8 @@ export default function MarketingChatDemo() {
         {/* Explanation Panel */}
         {activeExplanation && (
           <div className="w-full pl-14 pr-2 animate-fade-in">
-            <div className="explanation-panel p-3 mt-2 text-xs bg-blue-50 dark:bg-blue-950 text-blue-900 dark:text-blue-200 border-l-4 border-blue-500 rounded-r-lg shadow">
+            {/* Use theme colors for explanation panel */}
+            <div className="explanation-panel p-3 mt-2 text-xs bg-primary/10 dark:bg-primary/20 text-primary/90 dark:text-primary/80 border-l-4 border-primary rounded-r-lg shadow">
               {activeExplanation}
             </div>
           </div>

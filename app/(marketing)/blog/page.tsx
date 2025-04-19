@@ -1,16 +1,8 @@
-import { Metadata } from "next";
 import { getAllPosts } from "@/lib/blog/posts";
 import PostCard from "@/components/blog/PostCard";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import NewsletterSignup from "@/components/blog/NewsletterSignup";
-
-// Static metadata for the page
-export const metadata: Metadata = {
-  title: "Blog | Global Pulse",
-  description:
-    "Insights, updates, and articles from the Global Pulse team on emotional intelligence, AI ethics, and collective understanding.",
-};
 
 // Make the page async to support async data fetching
 export default async function BlogIndexPage() {
@@ -92,13 +84,13 @@ export default async function BlogIndexPage() {
             )}
 
             {/* Newsletter Sign Up */}
-            <section className="bg-muted/50 rounded-xl p-8 border border-border/60">
+            <section className="bg-muted/50 rounded-standard p-8 border border-border/60 shadow-md">
               <div className="max-w-xl mx-auto text-center">
-                <h2 className="text-2xl font-bold tracking-tight mb-2">
+                <h2 className="text-2xl font-bold tracking-tight mb-2 accent-orange">
                   Stay informed
                 </h2>
                 <p className="text-muted-foreground mb-6">
-                  Subscribe to our newsletter to receive the latest updates and insights directly in your inbox.
+                  Subscribe to our newsletter to receive the latest insights and updates directly in your inbox.
                 </p>
                 <NewsletterSignup />
               </div>

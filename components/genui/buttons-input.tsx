@@ -13,6 +13,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { submitSurveyResponse } from "@/actions/survey"
 
 /**
@@ -99,9 +100,9 @@ export default function ButtonsInput({ questionId, options }: ButtonsInputProps)
   return (
     <div className="flex flex-col gap-2">
       {error && (
-        <div className="p-2 text-sm text-red-500 bg-red-50 rounded border border-red-200">
-          {error}
-        </div>
+        <Alert variant="destructive" className="mb-2">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
       <div className="flex flex-wrap gap-2">
       {options.map((option) => (

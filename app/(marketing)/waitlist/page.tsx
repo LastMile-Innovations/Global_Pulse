@@ -3,6 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Suspense } from "react"
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import AnimatedCTAButton from "@/components/marketing/animated-cta-button"
@@ -45,9 +46,20 @@ export const metadata: Metadata = {
 export default function WaitlistPage() {
   return (
     <div className="bg-background text-foreground min-h-screen">
+      {/* Add Prototype Disclaimer */}
+      <div className="container px-4 md:px-6 pt-12"> 
+        <Alert variant="default" className="mb-8 bg-primary/5 border-primary/20">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Prototype Status</AlertTitle>
+          <AlertDescription>
+            Global Pulse is currently an early-stage prototype born from a 10-day hackathon. Some features described represent our design goals and may not be fully interactive in the current demo. We are building transparently and prioritize safety and user control.
+          </AlertDescription>
+        </Alert>
+      </div>
+
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative py-24 md:py-36 overflow-hidden bg-background">
+        <section className="relative py-16 md:py-24 overflow-hidden bg-background">
           <div className="container px-4 md:px-6 relative z-10">
             <div className="max-w-4xl mx-auto">
               <div className="space-y-6">

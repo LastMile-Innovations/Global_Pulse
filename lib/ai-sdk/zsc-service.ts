@@ -1,11 +1,11 @@
 import { generateLlmJson } from "./llm-interaction"
-import { logger } from "../lib/utils/logger"
+import { logger } from "../utils/logger"
 import type {
   AbstractConcept,
   ConceptType,
   ZeroShotClassificationResult,
   ZeroShotClassificationError,
-} from "../lib/types/nlp-types"
+} from "../types/nlp-types"
 
 // Default empty concepts array for fallbacks
 const DEFAULT_CONCEPTS: AbstractConcept[] = []

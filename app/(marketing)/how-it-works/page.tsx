@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Brain,
   Lightbulb,
@@ -14,6 +15,7 @@ import {
   Database,
   RefreshCw,
   Shield,
+  AlertCircle,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -56,8 +58,18 @@ export default function HowItWorks() {
           </div>
         </header>
 
-        <main className="flex-1">
-          <section className="py-20 md:py-28 relative particles-bg">
+        <main className="flex-1 pt-16">
+          <div className="container px-4 md:px-6 pb-8">
+            <Alert variant="default" className="mb-8 bg-primary/5 border-primary/20">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Prototype Status</AlertTitle>
+              <AlertDescription>
+                This page explains the designed EWEF/UIG process for Global Pulse, an early-stage prototype. The current implementation represents a foundational stage of this concept.
+              </AlertDescription>
+            </Alert>
+          </div>
+
+          <section className="py-12 md:py-16 relative particles-bg">
             <div className="container px-4 md:px-6">
               <div className="max-w-4xl mx-auto text-center">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none mb-6">
@@ -148,8 +160,9 @@ export default function HowItWorks() {
                         <div>
                           <h3 className="text-xl font-semibold mb-3 text-primary">Context is King:</h3>
                           <p className="text-muted-foreground mb-4">
-                            Before analyzing the words, the PCE's Context Analyzer instantly looks up your unique
-                            situation. It queries your private Unified Identity Graph (UIG) to see:
+                            Before analyzing the words, the PCE's Context Analyzer *is designed to* instantly look up your unique
+                            situation. It *queries* your private Unified Identity Graph (UIG) to see:
+                            <span className="text-xs italic block mt-1">(UIG structure defined, dynamic population is future work)</span>
                           </p>
 
                           <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
@@ -178,12 +191,12 @@ export default function HowItWorks() {
 
                       <div className="border border-border rounded-lg overflow-hidden">
                         <div className="bg-muted px-4 py-2 border-b border-border">
-                          <h4 className="font-medium">UIG Activation</h4>
+                          <h4 className="font-medium">Conceptual UIG Activation Flow</h4>
                         </div>
                         <div className="p-6 bg-card">
                           <Image
                             src="/uig-activation-flow.png"
-                            alt="UIG Activation Diagram"
+                            alt="Conceptual UIG Activation Diagram"
                             width={600}
                             height={300}
                             className="mx-auto"
@@ -224,7 +237,7 @@ export default function HowItWorks() {
                         <div>
                           <h3 className="text-xl font-semibold mb-3 text-primary">The Comparison (∆):</h3>
                           <p className="text-muted-foreground mb-4">
-                            The heart of our Enhanced Webb Emotional Framework (EWEF)! The engine compares the appraised
+                            The heart of our Enhanced Webb Emotional Framework (EWEF)! The engine *is intended to compare* the appraised
                             reality (P) against your relevant identity-based standard (EP).
                           </p>
 
@@ -248,12 +261,12 @@ export default function HowItWorks() {
 
                       <div className="border border-border rounded-lg overflow-hidden">
                         <div className="bg-muted px-4 py-2 border-b border-border">
-                          <h4 className="font-medium">EWEF Loop</h4>
+                          <h4 className="font-medium">Conceptual EWEF Loop</h4>
                         </div>
                         <div className="p-6 bg-card">
                           <Image
                             src="/EWEF-Loop-Diagram.png"
-                            alt="EWEF Loop Diagram"
+                            alt="Conceptual EWEF Loop Diagram"
                             width={600}
                             height={300}
                             className="mx-auto"
@@ -277,7 +290,7 @@ export default function HowItWorks() {
                           <h3 className="text-xl font-semibold mb-3 text-primary">More Than +/-:</h3>
                           <p className="text-muted-foreground mb-4">
                             A simple mismatch isn't enough. How did it mismatch? This is where the P Appraiser comes in,
-                            inferring MHH Variables:
+                            *aiming to infer* MHH Variables:
                           </p>
 
                           <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
@@ -302,7 +315,7 @@ export default function HowItWorks() {
 
                         <div>
                           <h3 className="text-xl font-semibold mb-3 text-primary">Quantified Impact:</h3>
-                          <p className="text-muted-foreground mb-4">The Appraiser also estimates:</p>
+                          <p className="text-muted-foreground mb-4">The Appraiser also *aims to estimate*:</p>
 
                           <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
                             <li>
@@ -332,12 +345,12 @@ export default function HowItWorks() {
 
                       <div className="border border-border rounded-lg overflow-hidden">
                         <div className="bg-muted px-4 py-2 border-b border-border">
-                          <h4 className="font-medium">MHH Variables</h4>
+                          <h4 className="font-medium">Conceptual MHH Variable Appraisal</h4>
                         </div>
                         <div className="p-6 bg-card">
                           <Image
                             src="/MHH_Variables_Diagram.png"
-                            alt="MHH Variables Diagram"
+                            alt="Conceptual MHH Variables Diagram"
                             width={600}
                             height={300}
                             className="mx-auto"
@@ -362,13 +375,14 @@ export default function HowItWorks() {
                           <p className="text-muted-foreground">
                             The quantified appraisal scores AND the MHH variables (weighted by their confidence!) feed
                             into the Core VAD Engine.
+                            <span className="text-xs italic block mt-1">(Core VAD logic is implemented)</span>
                           </p>
                         </div>
 
                         <div>
                           <h3 className="text-xl font-semibold mb-3 text-primary">The Output: VAD:</h3>
                           <p className="text-muted-foreground">
-                            This generates your predicted Valence (Pleasant ↔ Unpleasant), Arousal (Calm ↔ Activated), and
+                            This *is designed to generate* your predicted Valence (Pleasant ↔ Unpleasant), Arousal (Calm ↔ Activated), and
                             Dominance (Controlled ↔ In Control) scores. Think of it as the unique, three-dimensional
                             fingerprint of your core affective state in that moment.
                           </p>
@@ -393,12 +407,12 @@ export default function HowItWorks() {
 
                       <div className="border border-border rounded-lg overflow-hidden">
                         <div className="bg-muted px-4 py-2 border-b border-border">
-                          <h4 className="font-medium">VAD Calculation</h4>
+                          <h4 className="font-medium">Conceptual VAD Calculation Flow</h4>
                         </div>
                         <div className="p-6 bg-card">
                           <Image
                             src="/vad-calculation-diagram.png"
-                            alt="VAD Calculation Diagram"
+                            alt="Conceptual VAD Calculation Diagram"
                             width={600}
                             height={300}
                             className="mx-auto"
@@ -432,19 +446,19 @@ export default function HowItWorks() {
 
                           <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
                             <li>
-                              Uses the MHH variables to apply Webb's EWEF rules, identifying the most likely emotionGroup
+                              *Is designed to use* the MHH variables to apply Webb's EWEF rules, identifying the most likely emotionGroup
                               (e.g., "Anger Group", "Fear Group") and calculating a webbConfidence.
                             </li>
                             <li>
-                              Calculates the severityLabel within that group (e.g., "Annoyed" vs "Rage") based on the
+                              *Is designed to calculate* the severityLabel within that group (e.g., "Annoyed" vs "Rage") based on the
                               power levels (your PL vs the perception's pPowerLevel).
                             </li>
                             <li>
-                              Checks Consistency: Does the predicted VAD fingerprint match the typical VAD fingerprint for
+                              *Is designed to check* Consistency: Does the predicted VAD fingerprint match the typical VAD fingerprint for
                               that severityLabel? A mismatch means something is complex or uncertain.
                             </li>
                             <li>
-                              Generates Probabilities: Based on the Webb result, the VAD consistency, and overall
+                              *Is designed to generate* Probabilities: Based on the Webb result, the VAD consistency, and overall
                               confidence, it outputs a probability distribution across likely emotion labels.
                             </li>
                           </ul>
@@ -461,12 +475,12 @@ export default function HowItWorks() {
 
                       <div className="border border-border rounded-lg overflow-hidden">
                         <div className="bg-muted px-4 py-2 border-b border-border">
-                          <h4 className="font-medium">Emotion Categorization</h4>
+                          <h4 className="font-medium">Conceptual Emotion Categorization Flow</h4>
                         </div>
                         <div className="p-6 bg-card">
                           <Image
                             src="/emotion-categorization-flow.png"
-                            alt="Emotion Categorization Diagram"
+                            alt="Conceptual Emotion Categorization Diagram"
                             width={600}
                             height={300}
                             className="mx-auto"
@@ -493,7 +507,7 @@ export default function HowItWorks() {
                               <div>
                                 <h4 className="font-semibold">Persistence</h4>
                                 <p className="text-muted-foreground text-sm">
-                                  The key outputs (Appraisal details, VAD, Probabilities) are stored as linked instances
+                                  The key outputs (Appraisal details, VAD, Probabilities) *are designed to be stored* as linked instances
                                   in your secure UIG for historical context and insight generation.
                                 </p>
                               </div>
@@ -501,20 +515,20 @@ export default function HowItWorks() {
                             <li className="flex">
                               <Compass className="h-6 w-6 text-primary mr-3 flex-shrink-0 mt-1" />
                               <div>
-                                <h4 className="font-semibold">Pulse Guidance</h4>
+                                <h4 className="font-semibold">State Update</h4>
                                 <p className="text-muted-foreground text-sm">
-                                  The system generates Interaction Guidance based on the entire analysis. Is confidence
-                                  low? Pulse might ask clarifying questions.
+                                  The new VAD *is designed to update* your overall baseline State (S - mood, stress) in the UIG,
+                                  influencing future context analyses.
                                 </p>
                               </div>
                             </li>
                             <li className="flex">
                               <MessageSquare className="h-6 w-6 text-primary mr-3 flex-shrink-0 mt-1" />
                               <div>
-                                <h4 className="font-semibold">LLM Prompting</h4>
+                                <h4 className="font-semibold">Insight Generation</h4>
                                 <p className="text-muted-foreground text-sm">
-                                  This detailed context + guidance forms a rich prompt for the generative LLM that powers
-                                  Pulse's conversational response.
+                                  Over time, patterns in these stored instances *are intended to fuel* the insights shown on your private
+                                  Pulse dashboard (e.g., recurring triggers, dominant emotions).
                                 </p>
                               </div>
                             </li>
@@ -525,19 +539,21 @@ export default function HowItWorks() {
                             <li className="flex">
                               <Shield className="h-6 w-6 text-primary mr-3 flex-shrink-0 mt-1" />
                               <div>
-                                <h4 className="font-semibold">Ethical Check</h4>
+                                <h4 className="font-semibold">AI Companion Response</h4>
                                 <p className="text-muted-foreground text-sm">
-                                  The planned response is checked against guardrails before being sent to you.
+                                  Pulse (the chatbot) *is designed to receive* the categorized emotion (and its confidence) to
+                                  inform its next response—aiming for empathy and helpful reflection, guided by
+                                  ethical guardrails.
                                 </p>
                               </div>
                             </li>
                             <li className="flex">
                               <RefreshCw className="h-6 w-6 text-primary mr-3 flex-shrink-0 mt-1" />
                               <div>
-                                <h4 className="font-semibold">Learning</h4>
+                                <h4 className="font-semibold">Conceptual Feedback Loop</h4>
                                 <p className="text-muted-foreground text-sm">
-                                  Your explicit feedback and implicit reactions feed back into the system to refine your
-                                  UIG and the models over time.
+                                  The feedback loop *is designed to* capture your explicit feedback and implicit reactions to
+                                  refine your UIG and the models over time.
                                 </p>
                               </div>
                             </li>
@@ -561,91 +577,42 @@ export default function HowItWorks() {
             </div>
           </section>
 
-          <section className="py-16 bg-background">
+          <section className="py-20 md:py-28 bg-background border-t border-border">
             <div className="container px-4 md:px-6">
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-8 text-center">
-                  The Big Picture: Replacing Surveys, Enabling Insight
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
+                  High-Level System Architecture
                 </h2>
-
-                <p className="text-muted-foreground text-lg mb-8">
-                  By running this detailed analysis loop for every interaction, Global Pulse aims to build an
-                  understanding far deeper than any survey.
+                <p className="text-lg text-muted-foreground">
+                  Putting it all together - a simplified view.
                 </p>
+              </div>
+              <div className="max-w-5xl mx-auto border border-border rounded-lg overflow-hidden shadow-lg">
+                <Image
+                  src="/high-level-system-architecture.png"
+                  alt="High-Level System Architecture Diagram"
+                  width={1200}
+                  height={600}
+                />
+              </div>
+            </div>
+          </section>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                  <Card className="bg-card border-border">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center mb-4">
-                        <div className="bg-primary/20 p-2 rounded-full mr-3">
-                          <Target className="h-5 w-5 text-primary" />
-                        </div>
-                        <h3 className="font-bold">Politics?</h3>
-                      </div>
-                      <p className="text-muted-foreground">
-                        Don't just ask who people support; understand the core Values and Needs driving that support, and
-                        how different policies trigger different emotional Appraisals (Source, Acceptance).
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-card border-border">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center mb-4">
-                        <div className="bg-primary/20 p-2 rounded-full mr-3">
-                          <Zap className="h-5 w-5 text-primary" />
-                        </div>
-                        <h3 className="font-bold">Brands?</h3>
-                      </div>
-                      <p className="text-muted-foreground">
-                        See if your messaging truly resonates with consumer Values or if it triggers an unexpected
-                        negative Valence based on conflicting Beliefs.
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-card border-border">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center mb-4">
-                        <div className="bg-primary/20 p-2 rounded-full mr-3">
-                          <Lightbulb className="h-5 w-5 text-primary" />
-                        </div>
-                        <h3 className="font-bold">Products?</h3>
-                      </div>
-                      <p className="text-muted-foreground">
-                        Understand if user frustration stems from a perceived impact on their Need:Competence or a
-                        conflict with their Goal:Efficiency.
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-card border-border">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center mb-4">
-                        <div className="bg-primary/20 p-2 rounded-full mr-3">
-                          <Heart className="h-5 w-5 text-primary" />
-                        </div>
-                        <h3 className="font-bold">Your Life?</h3>
-                      </div>
-                      <p className="text-muted-foreground">
-                        See your own patterns clearly. Understand why certain situations trigger specific reactions, and
-                        gain insight into your core values and needs.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="bg-card/50 border border-border p-6 rounded-lg mb-8">
-                  <p className="text-muted-foreground text-lg">
-                    It's ambitious. It requires trust. That's why your control, data safety, and our ethical commitment
-                    are built-in from line one. And why we're open-sourcing the core engine – so you can see how it works.
-                  </p>
-                </div>
-
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold mb-6">Ready to ditch the guesswork?</h3>
+          <section className="py-20 md:py-28 bg-background">
+            <div className="container px-4 md:px-6">
+              <div className="max-w-3xl mx-auto text-center">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">
+                  Ready to See It (Conceptually) in Action?
+                </h2>
+                <p className="text-lg text-muted-foreground mb-8">
+                  While the full engine is under construction, you can explore related concepts and join our journey.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                    <Link href="/#waitlist">Experience Your Pulse | Join Early Access</Link>
+                    <Link href="/features">Explore Feature Concepts</Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline">
+                    <Link href="/waitlist">Join the Waitlist</Link>
                   </Button>
                 </div>
               </div>

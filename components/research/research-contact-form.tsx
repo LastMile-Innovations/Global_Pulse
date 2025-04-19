@@ -91,12 +91,12 @@ export function ResearchContactForm() {
   }
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg border border-gray-800 shadow-sm">
+    <div className="bg-card p-6 rounded-lg border shadow-sm">
       {submitStatus === "success" && (
-        <Alert className="mb-6 bg-green-900/20 border-green-800">
-          <CheckCircle className="h-4 w-4 text-green-500" />
-          <AlertTitle className="text-green-400">Request Submitted</AlertTitle>
-          <AlertDescription className="text-green-300">
+        <Alert className="mb-6 bg-secondary/10 border-secondary/30">
+          <CheckCircle className="h-4 w-4 text-secondary" />
+          <AlertTitle className="text-secondary">Request Submitted</AlertTitle>
+          <AlertDescription className="text-secondary/90">
             Thank you for your interest in collaborating with Global Pulse. Our research team will review your inquiry
             and contact you soon.
           </AlertDescription>
@@ -123,7 +123,7 @@ export function ResearchContactForm() {
                 <FormItem>
                   <FormLabel>Full Name *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your name" {...field} className="bg-gray-800 border-gray-700" />
+                    <Input placeholder="Your name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,7 +141,6 @@ export function ResearchContactForm() {
                       type="email"
                       placeholder="email@institution.edu"
                       {...field}
-                      className="bg-gray-800 border-gray-700"
                     />
                   </FormControl>
                   <FormMessage />
@@ -159,7 +158,6 @@ export function ResearchContactForm() {
                     <Input
                       placeholder="University or research institution"
                       {...field}
-                      className="bg-gray-800 border-gray-700"
                     />
                   </FormControl>
                   <FormMessage />
@@ -177,7 +175,6 @@ export function ResearchContactForm() {
                     <Input
                       placeholder="e.g., Affective Computing, Cognitive Psychology"
                       {...field}
-                      className="bg-gray-800 border-gray-700"
                     />
                   </FormControl>
                   <FormMessage />
@@ -194,11 +191,11 @@ export function ResearchContactForm() {
                 <FormLabel>Collaboration Interest *</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="bg-gray-800 border-gray-700">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select your primary area of interest" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectContent>
                     <SelectItem value="framework-validation">Framework Validation & Refinement</SelectItem>
                     <SelectItem value="algorithm-development">Algorithm & Model Development</SelectItem>
                     <SelectItem value="open-source">Open Source Contribution</SelectItem>
@@ -218,14 +215,14 @@ export function ResearchContactForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Research Interest/Proposal *</FormLabel>
-                <FormDescription className="text-gray-400">
+                <FormDescription>
                   Please briefly describe your research interests, potential collaboration ideas, or specific questions
                   about the Global Pulse framework.
                 </FormDescription>
                 <FormControl>
                   <Textarea
                     placeholder="Describe your research interests and how you'd like to collaborate with Global Pulse..."
-                    className="min-h-[150px] bg-gray-800 border-gray-700"
+                    className="min-h-[150px]"
                     {...field}
                   />
                 </FormControl>

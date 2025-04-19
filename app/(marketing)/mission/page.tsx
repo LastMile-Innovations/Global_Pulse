@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Suspense } from 'react'
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Zap,
   Globe,
@@ -19,6 +20,7 @@ import {
   Github,
   Lightbulb,
   HeartHandshake,
+  AlertCircle,
 } from "lucide-react"
 import AnimatedCTAButton from "@/components/marketing/animated-cta-button"
 
@@ -26,6 +28,17 @@ export default function MissionPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className="flex flex-col min-h-screen bg-background text-foreground">
+
+        {/* Add Prototype Disclaimer */}
+        <div className="container px-4 md:px-6 pt-12"> 
+          <Alert variant="default" className="mb-8 bg-primary/5 border-primary/20">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Prototype Status</AlertTitle>
+            <AlertDescription>
+              This page describes the driving vision and principles behind Global Pulse, an early-stage prototype. Features reflect our design goals, not necessarily current functionality.
+            </AlertDescription>
+          </Alert>
+        </div>
 
         {/* === Section 1: Hero (The Problem) === */}
         <section className="relative py-24 md:py-32 lg:py-40 overflow-hidden bg-background">
@@ -152,9 +165,9 @@ export default function MissionPage() {
                  <div className="inline-flex items-center rounded-full border border-primary/40 px-4 py-1.5 text-sm font-semibold mb-6 bg-primary/10 text-primary">
                    Our Vision
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">A World Connected by Deeper Understanding</h2>
+                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">A World <span className="text-primary">Potentially</span> Connected by Deeper Understanding</h2>
                  <p className="text-xl text-muted-foreground text-balance">
-                    We're building tools for insight – personal and collective – moving beyond surface-level data.
+                    We envision tools for insight – personal and collective – moving beyond surface-level data.
                 </p>
               </div>
 
@@ -163,15 +176,15 @@ export default function MissionPage() {
                 <div className="bg-card rounded-lg p-8 border border-border shadow-lg">
                     <div className="flex items-center mb-4">
                       <Brain className="h-8 w-8 text-primary mr-3 flex-shrink-0" />
-                      <h3 className="text-2xl font-bold">For Individuals: The Self-Awareness Engine</h3>
+                      <h3 className="text-2xl font-bold">For Individuals: The <span className="text-primary">Potential</span> Self-Awareness Engine</h3>
                     </div>
                     <p className="text-lg leading-relaxed text-muted-foreground mb-4">
-                      Imagine a dashboard for your <strong>internal operating system</strong>. See how your core <code>Values</code>, <code>Needs</code>, and hidden <code>Beliefs</code> interact with daily life. This isn't therapy; it's the user manual to your mind, fostering conscious responses over autopilot reactions.
+                      Imagine a dashboard for your <strong>internal operating system</strong>. It *could* help visualize how your core <code>Values</code>, <code>Needs</code>, and hidden <code>Beliefs</code> interact with daily life. This isn't therapy; it's *potentially* a user manual to your mind, fostering conscious responses over autopilot reactions.
                     </p>
                      <ul className="space-y-2 text-muted-foreground">
-                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>Understand personal triggers</span></li>
-                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>Align actions with core values</span></li>
-                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>Navigate emotions with clarity</span></li>
+                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>*Potential* to understand personal triggers</span></li>
+                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>*Potential* to align actions with core values</span></li>
+                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>*Potential* to navigate emotions with clarity</span></li>
                     </ul>
                 </div>
 
@@ -179,18 +192,19 @@ export default function MissionPage() {
                  <div className="bg-card rounded-lg p-8 border border-border shadow-lg">
                     <div className="flex items-center mb-4">
                        <Globe className="h-8 w-8 text-primary mr-3 flex-shrink-0" />
-                      <h3 className="text-2xl font-bold">For the World: The Collective Barometer</h3>
+                      <h3 className="text-2xl font-bold">For the World: A <span className="text-primary">Potential</span> Collective Barometer</h3>
                     </div>
                     <p className="text-lg leading-relaxed text-muted-foreground mb-4">
-                      Imagine leaders accessing real-time public concern, researchers understanding societal trends with rich context, and businesses aligning with genuine human needs. We provide the <strong>shared heartbeat</strong> – anonymously and ethically.
+                      Imagine leaders *potentially* accessing real-time public concern, researchers *potentially* understanding societal trends with rich context, and businesses *potentially* aligning with genuine human needs. The goal is to *potentially* provide the shared heartbeat – anonymously and ethically.
                     </p>
                     <ul className="space-y-2 text-muted-foreground">
-                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>Inform better public policy</span></li>
-                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>Foster empathy across divides</span></li>
-                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>Enable responsible innovation</span></li>
+                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>*Could* inform better public policy</span></li>
+                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>*Could* foster empathy across divides</span></li>
+                      <li className="flex items-center"><CheckCircle className="h-4 w-4 mr-2 text-primary flex-shrink-0" /><span>*Could* enable responsible innovation</span></li>
                     </ul>
                 </div>
               </div>
+              <p className="text-center italic text-muted-foreground mt-12 text-lg">That's the potential we are exploring with Global Pulse.</p>
             </div>
           </div>
         </section>

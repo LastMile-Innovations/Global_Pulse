@@ -1,4 +1,4 @@
-import { generateLlmJson } from "../../ai-sdk/llm-interaction"
+import { generateLlmJson } from "../ai-sdk/llm-interaction"
 import { logger } from "../utils/logger"
 import type { RuleVariables } from "../types/pce-types"
 import type { SentimentResult } from "../types/nlp-types"

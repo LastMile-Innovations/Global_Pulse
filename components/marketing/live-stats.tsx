@@ -15,8 +15,8 @@ const LiveStats = () => {
         </div>
 
         {/* Opinions Collected */}
-        <div className="flex items-center gap-4 p-4 bg-blue-500/10 rounded-lg">
-          <Globe className="h-12 w-12 text-blue-500" />
+        <div className="flex items-center gap-4 p-4 bg-accent/10 rounded-lg">
+          <Globe className="h-12 w-12 text-accent" />
           <div>
             <div className="text-3xl font-bold">10M+</div>
             <div className="text-sm text-muted-foreground">Opinions Collected</div>
@@ -24,8 +24,8 @@ const LiveStats = () => {
         </div>
 
         {/* Average Response Time */}
-        <div className="flex items-center gap-4 p-4 bg-teal-500/10 rounded-lg">
-          <Clock className="h-12 w-12 text-teal-500" />
+        <div className="flex items-center gap-4 p-4 bg-secondary/10 rounded-lg">
+          <Clock className="h-12 w-12 text-secondary" />
           <div>
             <div className="text-3xl font-bold">2.4s</div>
             <div className="text-sm text-muted-foreground">Average Response Time</div>
@@ -33,8 +33,8 @@ const LiveStats = () => {
         </div>
 
         {/* Growth Rate */}
-        <div className="flex items-center gap-4 p-4 bg-green-500/10 rounded-lg">
-          <TrendingUp className="h-12 w-12 text-green-500" />
+        <div className="flex items-center gap-4 p-4 bg-secondary/15 rounded-lg">
+          <TrendingUp className="h-12 w-12 text-secondary" />
           <div>
             <div className="text-3xl font-bold">+12%</div>
             <div className="text-sm text-muted-foreground">Growth Rate This Month</div>

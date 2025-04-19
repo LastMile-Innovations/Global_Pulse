@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import type { Metadata } from "next"
 import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -19,6 +20,7 @@ import {
   Lock,
   ExternalLink,
   ChevronRight,
+  AlertCircle,
 } from "lucide-react"
 import { Suspense } from 'react'
 
@@ -63,9 +65,20 @@ export default function ForResearchersPage() {
           </div>
         </header>
 
-        <main className="flex-1">
+        <main className="flex-1 pt-16">
+          {/* Add Prototype Disclaimer */}
+          <div className="container px-4 md:px-6 pb-8">
+            <Alert variant="default" className="mb-8 bg-primary/5 border-primary/20">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Prototype Status</AlertTitle>
+              <AlertDescription>
+                This page explains the designed EWEF/UIG process for Global Pulse, an early-stage prototype. The current implementation represents a foundational stage of this concept.
+              </AlertDescription>
+            </Alert>
+          </div>
+
           {/* Hero Section */}
-          <section className="relative py-24 md:py-36 overflow-hidden bg-background">
+          <section className="relative py-16 md:py-24 overflow-hidden bg-background">
             <div className="container px-4 md:px-6 relative z-10">
               <div className="max-w-4xl mx-auto text-center">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl mb-6">

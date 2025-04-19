@@ -1,6 +1,6 @@
 import { embed, embedMany } from "ai"
 import { openai } from "@ai-sdk/openai"
-import { logger } from "../lib/utils/logger"
+import { logger } from "../utils/logger"
 import type { EmbeddingVector } from "./types"
 type EmbeddingModel = string;
 

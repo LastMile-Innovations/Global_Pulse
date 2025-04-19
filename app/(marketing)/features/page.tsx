@@ -1,8 +1,9 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Cpu, Sparkles, Zap, Globe, MessageSquareText, Lock, ArrowRight } from "lucide-react"
+import { CheckCircle2, Cpu, Sparkles, Zap, Globe, MessageSquareText, Lock, ArrowRight, AlertCircle } from "lucide-react"
 import dynamic from "next/dynamic"
 import { Card } from "@/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 // Dynamic import for CTA button
 const AnimatedCTAButton = dynamic(() => import("@/components/marketing/animated-cta-button"), {
@@ -22,23 +23,15 @@ function HeroSection() {
       <div className="container px-4 md:px-6 relative z-10">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <div className="inline-flex items-center rounded-full border border-primary/40 px-4 py-1.5 text-sm font-semibold text-primary bg-primary/10">
-            <Sparkles className="mr-2 h-4 w-4 text-primary" /> Global Pulse: Insight, Safety, and Trust
+            <Sparkles className="mr-2 h-4 w-4 text-primary" />
+            Exploring the Global Pulse Concept
           </div>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-tight text-foreground font-heading">
-            Know Yourself. Understand the World.
-            <div className="mt-3">
-              <span className="text-primary bg-primary/5 px-4 py-2 rounded-md inline-block">Trust the Process.</span>
-            </div>
+            Exploring the Global Pulse Concept
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-normal">
-            The world's first platform for deep personal insight and collective understanding—powered by empathetic AI, grounded in science, and built on radical privacy and ethical transparency.
+            Discover the designed features and underlying ideas guiding the development of our ethical AI companion prototype.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-            <AnimatedCTAButton href="/signup" className="shadow-md">Join Free—Privacy First</AnimatedCTAButton>
-            <Button variant="outline" size="lg" className="h-14 border-border text-foreground hover:bg-primary/10 hover:text-primary rounded-full font-semibold" asChild>
-              <Link href="/explore">See Live, Anonymous Insights</Link>
-            </Button>
-          </div>
           <div className="flex flex-wrap justify-center gap-3 pt-4">
             <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-3 py-1 rounded-full font-semibold"><Lock className="h-4 w-4" /> Privacy by Design</span>
             <span className="inline-flex items-center gap-1 text-xs bg-secondary/10 text-secondary px-3 py-1 rounded-full font-semibold"><Cpu className="h-4 w-4" /> Ethical AI</span>
@@ -54,82 +47,82 @@ function HeroSection() {
 // --- FEATURES SECTION ---
 const features = [
   {
-    title: "Conversational AI, Built for You",
-    description: "Pulse is your private, empathetic AI companion. Explore your thoughts, feelings, and values in a safe, judgment-free space. Every conversation is powered by science and protected by design.",
-    icon: <MessageSquareText className="h-8 w-8 text-primary" />, 
+    title: "Reflective Conversations with Pulse (Conceptual)",
+    description: "Engage in conversations designed for self-exploration. Pulse, our AI companion concept, aims to listen attentively and ask thoughtful questions based on our EWEF framework, helping you connect with your own thoughts and feelings in a private, non-judgmental space.",
+    icon: <MessageSquareText className="h-8 w-8 text-primary" />,
     color: "primary",
     benefits: [
-      "Feel safe: Your responses are private and always anonymized.",
-      "Real understanding: Pulse helps you connect emotions to your core values.",
-      "Natural flow: No awkward forms—just a real conversation.",
-      "You're in control: Share as much or as little as you want."
+      "Focus on safety and privacy in dialogue.",
+      "Encourage reflection over simple answers.",
+      "Designed with user control (modes) in mind."
     ],
-    buttonText: "Chat with Pulse"
+    buttonText: "Learn About the Conversation Design",
+    buttonLink: "/how-it-works"
   },
   {
-    title: "Instant Surveys, Instant Impact",
-    description: "Answer quick, focused questions on topics you care about. See your input instantly reflected in live results. No waiting, no hidden agenda—just your honest opinion making a real difference.",
+    title: "Contextual Structured Check-ins (Future Feature - Design)",
+    description: "We are designing ways for Pulse to occasionally invite you (with your explicit opt-in and permission) to share specific insights via simple tools like sliders or choices, right within the chat. This aims to capture nuanced feelings contextually, always respecting your flow.",
     icon: <Zap className="h-8 w-8 text-secondary" />, 
     color: "secondary",
     benefits: [
-      "One-tap answers: Share your view in seconds, anytime.",
-      "See results live: Watch the world's opinions update as you participate.",
-      "Choose your topics: Only answer what matters to you.",
-      "No pressure: Skip or stop anytime—your data, your choice."
+      "Potential for deeper insight, if user chooses.",
+      "Maintain conversational feel, avoid form fatigue.",
+      "Strictly opt-in and permission-based."
     ],
-    buttonText: "Take a Quick Survey"
+    buttonText: "Explore Our User Interaction Principles",
+    buttonLink: "/ethics#user-interaction"
   },
   {
-    title: "Real-Time Global Insights, Always Anonymous",
-    description: "Explore a living dashboard of global opinions. Filter by topic, region, or time. Every insight is aggregated and anonymized, so you can discover trends without ever exposing individual voices.",
+    title: "Personal Insight Dashboard (V1 Implemented)",
+    description: "Your private dashboard offers initial reflections based only on your interactions. See evolving patterns in your mood/stress (Mood Chart) and key inferred Values/Goals ({Self} Map Widget). This is your data, visualized for your insight. (Note: Data shown in current demo is placeholder).",
     icon: <Globe className="h-8 w-8 text-accent" />, 
     color: "accent",
     benefits: [
-      "Live, evolving data: Watch global sentiment shift in real time.",
-      "Total anonymity: No individual responses are ever shown.",
-      "Powerful filters: Find insights that matter to you.",
-      "Clear visuals: Complex data made simple and accessible."
+      "Private space for personal reflection.",
+      "Visualize inferred self-map concepts (Values/Goals).",
+      "Reinforces data ownership and privacy."
     ],
-    buttonText: "Explore Insights"
+    buttonText: "See Your (Demo) Dashboard",
+    buttonLink: "/login"
   },
   {
-    title: "AI Insights You Can Trust",
-    description: "Let our AI turn raw data into clear, actionable insights. Get concise summaries and spot trends, all while knowing your privacy is protected at every step.",
+    title: "Transparent AI Reasoning (XAI Snippet - Needs Fix)",
+    description: "Understand why Pulse responds the way it does. A 'Why?' button (UI exists, backend needs fix) aims to reveal a simplified explanation based on the underlying EWEF analysis, fostering trust through transparency.",
     icon: <Sparkles className="h-8 w-8 text-primary" />, 
     color: "primary",
     benefits: [
-      "Human-readable summaries: Understand the big picture instantly.",
-      "Spot trends early: AI highlights what's changing, so you're always informed.",
-      "No compromise on privacy: Insights are always based on anonymized data.",
-      "Curated dashboards: See what matters most, with zero risk to your identity."
+      "Builds trust by showing the 'reasoning'.",
+      "Demystifies AI decision-making.",
+      "Empowers user understanding and feedback."
     ],
-    buttonText: "See AI Insights"
+    buttonText: "Understand Our Approach to XAI",
+    buttonLink: "/how-it-works#xai"
   },
   {
-    title: "Engineered for Trust—Fast, Secure, and Always in Your Control",
-    description: "Global Pulse is built for speed and security. Enjoy instant feedback and seamless navigation, knowing your data is protected by industry-leading technology and strict privacy standards.",
+    title: "Ethically Engineered Foundation",
+    description: "Built on a modern stack (Next.js, Supabase, Neo4j, Redis) with security and privacy integrated from the start. Includes active Ethical Guardrails (V1) and a robust, user-controlled Consent system.",
     icon: <Cpu className="h-8 w-8 text-secondary" />, 
     color: "secondary",
     benefits: [
-      "Lightning fast: No waiting, no lag—just instant results.",
-      "Secure by design: Your account and data are always protected.",
-      "Global scale: Trusted by users worldwide, built to handle millions safely.",
-      "You're in charge: Control your experience and your data, always."
+      "Demonstrates technical competence.",
+      "Highlights privacy-by-design approach.",
+      "Foundation built for trust and safety."
     ],
-    buttonText: "Discover Our Tech"
+    buttonText: "Learn About Our Technology & Ethics",
+    buttonLink: "/ethics"
   },
   {
-    title: "Your Privacy, Our Promise—Participate with Total Confidence",
-    description: "Your trust is our top priority. We use secure authentication, rigorous anonymization, and give you clear control over your data. No personal information is ever sold or shared. You decide how your voice is used—always.",
+    title: "Your Privacy, Our Foundational Promise",
+    description: "Your trust is paramount. You control your data via granular consent (defaulting private). We employ strong security and anonymization principles. Your personal data is never sold. You always decide how your perspective is used.",
     icon: <Lock className="h-8 w-8 text-primary" />, 
     color: "primary",
     benefits: [
-      "Industry-leading security: Your account and responses are protected at every step.",
-      "Anonymized insights: Only collective trends are shown, never individual data.",
-      "Privacy by default: No tracking, no selling, no surprises.",
-      "Full control: Change your privacy settings or opt out anytime."
+      "Clear commitment to data control.",
+      "Explicit statement against selling personal data.",
+      "Reinforces core ethical stance."
     ],
-    buttonText: "Read Our Privacy Commitment"
+    buttonText: "Read Our Privacy Policy",
+    buttonLink: "/privacy"
   },
 ]
 
@@ -162,6 +155,10 @@ function FeatureList() {
                         ? "text-2xl md:text-3xl font-bold tracking-tight text-secondary"
                         : "text-2xl md:text-3xl font-bold tracking-tight text-accent"
                   }>{feature.title}</h3>
+                  {feature.title.includes("(Conceptual)") && <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-medium">Conceptual</span>}
+                  {feature.title.includes("(Future Feature - Design)") && <span className="ml-2 text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-medium">Design</span>}
+                  {feature.title.includes("(V1 Implemented)") && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded font-medium">V1 Implemented</span>}
+                  {feature.title.includes("(Needs Fix)") && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-medium">Needs Fix</span>}
                   <p className="text-lg text-muted-foreground leading-relaxed">{feature.description}</p>
                   <ul className="space-y-3">
                     {feature.benefits.map((benefit, i) => (
@@ -188,7 +185,7 @@ function FeatureList() {
                     }
                     asChild
                   >
-                    <Link href="/signup" className="group">
+                    <Link href={feature.buttonLink || "/"} className="group">
                       {feature.buttonText} <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
@@ -333,6 +330,16 @@ function FinalCTASection() {
 export default function FeaturesPage() {
   return (
     <>
+      <div className="container px-4 md:px-6 pt-12"> 
+        <Alert variant="default" className="mb-8 bg-primary/5 border-primary/20">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Prototype Status</AlertTitle>
+          <AlertDescription>
+            Global Pulse is currently an early-stage prototype born from a 10-day hackathon. Some features described represent our design goals and may not be fully interactive in the current demo. We are building transparently and prioritize safety and user control.
+          </AlertDescription>
+        </Alert>
+      </div>
+
       <HeroSection />
       <FeatureList />
       <TrustSection />

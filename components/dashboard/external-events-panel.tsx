@@ -62,17 +62,17 @@ export function ExternalEventsPanel() {
   function getEntityTypeColor(type: string): string {
     switch (type.toLowerCase()) {
       case "person":
-        return "bg-blue-100 text-blue-800"
+        return "card-blue border-none text-xs py-0.5 px-1.5"
       case "organization":
-        return "bg-purple-100 text-purple-800"
+        return "card-pink border-none text-xs py-0.5 px-1.5"
       case "location":
-        return "bg-green-100 text-green-800"
+        return "card-green border-none text-xs py-0.5 px-1.5"
       case "event":
-        return "bg-yellow-100 text-yellow-800"
+        return "card-yellow border-none text-xs py-0.5 px-1.5"
       case "product":
-        return "bg-orange-100 text-orange-800"
+        return "card-orange border-none text-xs py-0.5 px-1.5"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-muted text-muted-foreground border-none text-xs py-0.5 px-1.5"
     }
   }
 
@@ -99,7 +99,7 @@ export function ExternalEventsPanel() {
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
             ) : error ? (
-              <div className="rounded-md bg-red-50 p-4 text-red-800">{error}</div>
+              <div className="rounded-md bg-destructive/10 p-4 text-destructive">{error}</div>
             ) : events.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">No external events found</div>
             ) : (
@@ -138,7 +138,7 @@ export function ExternalEventsPanel() {
                         href={event.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs flex items-center gap-1 text-blue-600 hover:underline"
+                        className="text-xs flex items-center gap-1 text-primary hover:underline"
                       >
                         <ExternalLink className="h-3 w-3" />
                         View source
@@ -191,7 +191,7 @@ export function ExternalEventsPanel() {
                           href={event.sourceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs flex items-center gap-1 text-blue-600 hover:underline"
+                          className="text-xs flex items-center gap-1 text-primary hover:underline"
                         >
                           <ExternalLink className="h-3 w-3" />
                           View source

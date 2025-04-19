@@ -56,16 +56,16 @@ async function UserStatsCardComponent({ userId }: UserStatsCardProps) {
 
   // Determine user level based on contributions
   let userLevel = "Newcomer"
-  let levelColor = "text-gray-500"
+  let levelColor = "text-muted-foreground"
   if (totalContributions > 100) {
     userLevel = "Pulse Expert"
-    levelColor = "text-purple-500"
+    levelColor = "text-accent"
   } else if (totalContributions > 50) {
     userLevel = "Insight Contributor"
-    levelColor = "text-indigo-500"
+    levelColor = "text-secondary"
   } else if (totalContributions > 10) {
     userLevel = "Regular Voice"
-    levelColor = "text-blue-500"
+    levelColor = "text-primary"
   }
 
   return (

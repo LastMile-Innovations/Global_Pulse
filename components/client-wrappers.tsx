@@ -10,7 +10,7 @@ export const GlobalMapClient = dynamic(() => import("@/components/mock/global-ma
       <Globe className="h-12 w-12 text-primary/40" />
       <div className="text-sm text-muted-foreground font-medium">Loading global data...</div>
       <div className="w-24 h-1 bg-muted rounded-full overflow-hidden mt-1">
-        <div className="h-full bg-primary/40 animate-progress-indeterminate"></div>
+        <div className="h-full bg-primary/40 animate-gradient-x"></div>
       </div>
     </div>
   ),

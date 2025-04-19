@@ -22,12 +22,12 @@ export function GetCrisisResources({ locale, onClose, className }: CrisisResourc
 
   return (
     <Card className={`w-full max-w-md shadow-lg ${className}`}>
-      <CardHeader className="bg-red-50 dark:bg-red-900/20">
-        <CardTitle className="flex items-center gap-2 text-red-700 dark:text-red-300">
+      <CardHeader className="bg-destructive/10">
+        <CardTitle className="flex items-center gap-2 text-destructive">
           <Info className="h-5 w-5" />
           Immediate Support Available
         </CardTitle>
-        <CardDescription className="text-red-600/90 dark:text-red-400/90">
+        <CardDescription className="text-destructive/90">
           You don't have to face this alone
         </CardDescription>
       </CardHeader>
@@ -40,7 +40,7 @@ export function GetCrisisResources({ locale, onClose, className }: CrisisResourc
 
           <div className="rounded-lg border p-3 bg-muted/50">
             <div className="flex items-start gap-3">
-              <Phone className="h-5 w-5 text-red-600 mt-0.5" />
+              <Phone className="h-5 w-5 text-destructive mt-0.5" />
               <div>
                 <h3 className="font-medium">Call: {resources.phone}</h3>
                 {resources.description && <p className="text-xs text-muted-foreground">{resources.description}</p>}
@@ -51,7 +51,7 @@ export function GetCrisisResources({ locale, onClose, className }: CrisisResourc
           {resources.textline && (
             <div className="rounded-lg border p-3 bg-muted/50">
               <div className="flex items-start gap-3">
-                <MessageSquare className="h-5 w-5 text-red-600 mt-0.5" />
+                <MessageSquare className="h-5 w-5 text-destructive mt-0.5" />
                 <div>
                   <h3 className="font-medium">Text: {resources.textline}</h3>
                   <p className="text-xs text-muted-foreground">Text-based crisis support</p>

@@ -66,13 +66,13 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
   const progressPercentage = Math.round((completedTasks / totalTasks) * 100)
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg p-5">
+    <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10 rounded-lg p-5">
       <h3 className="font-semibold text-lg mb-3">Getting Started with Global Pulse</h3>
       
       <div className="mb-3">
         <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
           <div 
-            className="h-full bg-blue-500 rounded-full" 
+            className="h-full bg-primary rounded-full" 
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
@@ -84,7 +84,7 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
       <ul className="space-y-3">
         <li className="flex items-start gap-3">
           {userFlags?.completed_first_chat ? (
-            <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+            <CheckCircle2 className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
           ) : (
             <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
           )}
@@ -93,7 +93,7 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
               Start your first chat with Pulse
             </p>
             {!userFlags?.completed_first_chat && (
-              <Button variant="link" className="p-0 h-auto text-xs text-blue-500" asChild>
+              <Button variant="link" className="p-0 h-auto text-xs text-primary" asChild>
                 <Link href="/chat/new">
                   <MessageSquare className="h-3 w-3 mr-1" />
                   Start now
@@ -105,7 +105,7 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
         
         <li className="flex items-start gap-3">
           {userFlags?.completed_first_survey ? (
-            <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+            <CheckCircle2 className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
           ) : (
             <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
           )}
@@ -114,7 +114,7 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
               Complete your first survey
             </p>
             {!userFlags?.completed_first_survey && (
-              <Button variant="link" className="p-0 h-auto text-xs text-blue-500" asChild>
+              <Button variant="link" className="p-0 h-auto text-xs text-primary" asChild>
                 <Link href="/survey">
                   <BarChart2 className="h-3 w-3 mr-1" />
                   Take a survey
@@ -126,7 +126,7 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
         
         <li className="flex items-start gap-3">
           {userFlags?.viewed_explore ? (
-            <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+            <CheckCircle2 className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
           ) : (
             <Circle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
           )}
@@ -135,7 +135,7 @@ async function GettingStartedChecklistComponent({ userId }: GettingStartedCheckl
               Explore global insights
             </p>
             {!userFlags?.viewed_explore && (
-              <Button variant="link" className="p-0 h-auto text-xs text-blue-500" asChild>
+              <Button variant="link" className="p-0 h-auto text-xs text-primary" asChild>
                 <Link href="/explore">
                   <Compass className="h-3 w-3 mr-1" />
                   Explore now

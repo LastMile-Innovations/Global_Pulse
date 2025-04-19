@@ -11,10 +11,12 @@ import {
   UserCheck,
   AlertTriangle,
   ExternalLink,
+  AlertCircle,
+  ChevronRight,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export const metadata = {
   title: "Privacy Policy | Global Pulse",
@@ -24,18 +26,29 @@ export const metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* Add Prototype Disclaimer */}
+      <div className="container px-4 md:px-6 pt-12"> 
+        <Alert variant="default" className="mb-8 bg-primary/5 border-primary/20">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Prototype Status</AlertTitle>
+          <AlertDescription>
+            Global Pulse is currently an early-stage prototype born from a 10-day hackathon. Features described represent our design goals and may not be fully interactive in the current demo. This policy reflects both current practices for the prototype and outlines our intentions for future functionality, which will always be subject to your explicit consent.
+          </AlertDescription>
+        </Alert>
+      </div>
+
       {/* Hero Section */}
       <section className="py-16 md:py-20 bg-gradient-to-b from-secondary/20 to-background">
         <div className="container px-4 md:px-6">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-6">Privacy Policy</h1>
-            <p className="text-xl text-muted-foreground mb-2">Last updated: April 7, 2025</p>
+            <p className="text-xl text-muted-foreground mb-2">Effective Date: [Insert Current Date or Initial Launch Date]</p>
             <div className="bg-card/50 border border-border p-6 rounded-lg my-8">
               <p className="text-muted-foreground mb-2">
-                This Privacy Policy describes how Global Pulse ("we," "us," or "our") collects, uses, and shares information about you when you use our website, mobile applications, and services (collectively, the "Services"). Please read this policy carefully. By using our Services, you consent to the collection, use, and disclosure of your information as described in this Privacy Policy.
+                This Privacy Policy describes how Global Pulse ("we," "us," or "our") *currently* collects, uses, and shares information about you when you use our website and prototype services (collectively, the "Services"), and outlines *our planned approach* for future features. Please read this policy carefully. By using our Services, you consent to the collection, use, and disclosure of your information *as currently practiced and described* in this Privacy Policy. *Future data collection and use will require additional explicit consent.* 
               </p>
               <p className="text-muted-foreground">
-                We may update this Privacy Policy from time to time. If we make material changes, we will notify you by email or by posting a notice on our website prior to the changes becoming effective. Your continued use of our Services after any such changes constitutes your acceptance of the new Privacy Policy.
+                We may update this Privacy Policy from time to time. If we make material changes, *especially regarding data use*, we will notify you prominently (e.g., by email or notice on our website) prior to the changes becoming effective. Your continued use of our Services after any such changes constitutes your acceptance of the new Privacy Policy.
               </p>
             </div>
           </div>
@@ -56,12 +69,15 @@ export default function PrivacyPolicyPage() {
                 <CardTitle>Personal Data</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground">When you register with Global Pulse, we may collect:</p>
+                <p className="text-muted-foreground">*Currently, during the prototype phase, we may collect:*</p>
                 <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                  <li>Name and email address</li>
-                  <li>Authentication information (if using third-party login)</li>
-                  <li>Profile information you choose to provide</li>
-                  <li>Information from connected data sources (with your explicit consent)</li>
+                  <li>Email address (if you join the waitlist or create an account)</li>
+                  <li>Authentication information (if using third-party login like Google/GitHub)</li>
+                </ul>
+                <p className="text-muted-foreground mt-4">*Future Features (Requires Explicit Consent):*</p>
+                <ul className="list-disc pl-6 text-muted-foreground space-y-2">
+                  <li>Profile information you choose to provide (e.g., demographics, interests - always optional)</li>
+                  <li>Information from connected data sources you explicitly authorize (e.g., calendar, health apps)</li>
                 </ul>
               </CardContent>
             </Card>
@@ -71,12 +87,16 @@ export default function PrivacyPolicyPage() {
                 <CardTitle>Usage Data</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground">We collect information about how you interact with our platform:</p>
+                <p className="text-muted-foreground">*Currently, during the prototype phase:*</p>
                 <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                  <li>Chat interactions and messages</li>
-                  <li>Feature usage patterns</li>
-                  <li>Time spent on various parts of the platform</li>
-                  <li>Technical information about your device and connection</li>
+                  <li>Basic website analytics (e.g., page views - anonymized where possible)</li>
+                  <li>Technical information about your device/connection for troubleshooting</li>
+                </ul>
+                <p className="text-muted-foreground mt-4">*Future Features (Requires Explicit Consent):*</p>
+                <ul className="list-disc pl-6 text-muted-foreground space-y-2">
+                  <li>Chat interactions and messages (specifically for analysis and providing insights back to *you*)</li>
+                  <li>Feature usage patterns (to understand which features are helpful)</li>
+                  <li>Time spent on various parts of the platform (for usability improvements)</li>
                 </ul>
               </CardContent>
             </Card>
@@ -86,10 +106,12 @@ export default function PrivacyPolicyPage() {
                 <CardTitle>Derived Data</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground">Our platform generates insights based on your interactions:</p>
+                <p className="text-muted-foreground">*Currently, no derived data is generated as core features are not active.*</p>
+                <p className="text-muted-foreground mt-4">*Future Features (Core to the platform, Requires Explicit Consent for any use beyond direct reflection to you):*</p>
+                <p className="text-muted-foreground">Our platform *is designed to* generate insights based on your interactions:</p>
                 <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                  <li>Emotional response patterns (VAD values)</li>
-                  <li>Inferred values and attachments (UIG data)</li>
+                  <li>Emotional response patterns (e.g., VAD values - reflecting potential feeling states)</li>
+                  <li>Inferred values, needs, goals, beliefs (elements of your potential UIG)</li>
                   <li>Interaction patterns and preferences</li>
                 </ul>
                 <Alert variant="default" className="mt-4 bg-muted/50 border-border">
@@ -120,11 +142,16 @@ export default function PrivacyPolicyPage() {
                   <CardTitle>Providing Our Services</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <p className="text-muted-foreground">*Current Use:*</p>
                   <ul className="space-y-2 text-muted-foreground">
-                    <li>Delivering personalized insights and responses</li>
-                    <li>Building and maintaining your Unified Identity Graph (UIG)</li>
-                    <li>Processing emotional responses through the EWEF framework</li>
                     <li>Authenticating your account and maintaining security</li>
+                    <li>Managing waitlist access</li>
+                  </ul>
+                  <p className="text-muted-foreground mt-4">*Future Use (Requires Explicit Consent):*</p>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>Delivering personalized insights and reflective responses based on your data</li>
+                    <li>Building and maintaining your private Unified Identity Graph (UIG)</li>
+                    <li>Processing emotional responses through the EWEF framework to provide reflections</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -134,11 +161,16 @@ export default function PrivacyPolicyPage() {
                   <CardTitle>Improving Our Platform</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  <p className="text-muted-foreground">*Current Use:*</p>
                   <ul className="space-y-2 text-muted-foreground">
-                    <li>Analyzing usage patterns to enhance features</li>
-                    <li>Debugging and fixing technical issues</li>
-                    <li>Training and improving our AI models (with consent)</li>
-                    <li>Conducting research to advance emotional intelligence technology</li>
+                    <li>Analyzing anonymized usage patterns to fix bugs and improve usability</li>
+                  </ul>
+                  <p className="text-muted-foreground mt-4">*Future Use (Requires Explicit Consent):*</p>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>Analyzing usage patterns to enhance specific features</li>
+                    <li>Debugging and fixing technical issues related to your interactions</li>
+                    <li>*Potentially* using anonymized, aggregated data for training and improving our AI models (Requires specific, opt-in consent)</li>
+                    <li>*Potentially* conducting research using anonymized, aggregated data (Requires specific, opt-in consent and ethical review)</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -149,23 +181,31 @@ export default function PrivacyPolicyPage() {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2 text-muted-foreground">
-                    <li>Sending important service updates and notifications</li>
+                    <li>Sending essential service updates (e.g., policy changes, security notices)</li>
                     <li>Responding to your inquiries and support requests</li>
-                    <li>Providing information about new features (if you opt-in)</li>
+                    <li>Providing information about prototype progress or new features (if you opt-in, e.g., via waitlist)</li>
                   </ul>
                 </CardContent>
               </Card>
 
               <Card className="bg-card border-border">
                 <CardHeader className="pb-3">
-                  <CardTitle>Aggregate Insights</CardTitle>
+                  <CardTitle>Aggregate Insights & Potential Future Uses</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">With your explicit consent only, we may use anonymized data to:</p>
+                  <p className="text-muted-foreground">*Leading with Ethics:* Our fundamental principle is user control and benefit. *No current data products exist.* Any future use of aggregated, anonymized data for broader insights (e.g., research, societal trends, potential data products) will adhere strictly to the following:</p>
                   <ul className="space-y-2 text-muted-foreground mt-2">
-                    <li>Generate aggregate trends and patterns</li>
-                    <li>Develop anonymized research insights</li>
-                    <li>Create statistical models of emotional responses</li>
+                    <li><strong>Explicit, Granular Consent:</strong> You must specifically opt-in to allow your anonymized data to contribute to any aggregate pool for uses beyond direct service provision to you.</li>
+                    <li><strong>Rigorous Anonymization:</strong> Techniques will be employed to ensure individual identities cannot be re-associated with the data.</li>
+                    <li><strong>Ethical Review:</strong> Any potential use case will undergo strict ethical review focused on potential harms and benefits.</li>
+                    <li><strong>Transparency:</strong> Clear explanations of how aggregated data *might* be used will be provided before seeking consent.</li>
+                    <li><strong>No Sale of Personal Data:</strong> We reiterate: Your identifiable personal data will never be sold.</li>
+                  </ul>
+                  <p className="text-muted-foreground mt-2">*Examples of potential future uses requiring this specific consent:*</p>
+                  <ul className="space-y-2 text-muted-foreground mt-2">
+                    <li>Generating aggregate reports on societal well-being trends (anonymized)</li>
+                    <li>Contributing to anonymized datasets for academic research</li>
+                    <li>Developing statistical models of general emotional responses (anonymized)</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -185,23 +225,20 @@ export default function PrivacyPolicyPage() {
 
             <Card className="bg-card border-border mb-8">
               <CardHeader>
-                <CardTitle>We May Share Information With:</CardTitle>
+                <CardTitle>We *May* Share Information With:</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
                   <h3 className="font-semibold text-foreground mb-2">Service Providers</h3>
                   <p className="text-muted-foreground">
-                    Third-party vendors who assist us in operating our platform, conducting business, or servicing you.
-                    These providers have access to your information only to perform these tasks on our behalf and are
-                    obligated not to disclose or use it for any other purpose.
+                    Third-party vendors who assist us in operating our platform (e.g., hosting providers like Vercel, database providers like Supabase). *Currently, this is limited to infrastructure essential for the prototype website and authentication.* These providers have access to minimal necessary information only to perform these tasks on our behalf and are obligated not to disclose or use it for any other purpose.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-foreground mb-2">Business Partners</h3>
+                  <h3 className="font-semibold text-foreground mb-2">Business Partners (Research & Development - Future Possibility)</h3>
                   <p className="text-muted-foreground">
-                    With your explicit consent only, we may share anonymized, aggregated data with trusted research or
-                    business partners to develop insights or improve services.
+                    *Strictly Hypothetical & Requires Explicit Consent:* In the future, *if* we pursue specific research or development partnerships, we *might* seek your explicit consent to share anonymized, aggregated data with trusted partners *under strict contractual obligations and ethical oversight*. *Currently, no such partnerships or data sharing exist.*
                   </p>
                 </div>
 
@@ -225,9 +262,9 @@ export default function PrivacyPolicyPage() {
 
             <Alert className="bg-primary/10 border border-primary/50">
               <Shield className="h-4 w-4 text-primary" />
+              <AlertTitle className="text-foreground">Our Commitment</AlertTitle>
               <AlertDescription className="text-primary-foreground">
-                <strong className="text-foreground">Our Commitment:</strong> We will never sell your personal data to third
-                parties. Any sharing of anonymized, aggregated data requires your explicit opt-in consent.
+                <strong className="text-foreground">We will never sell your identifiable personal data.</strong> Any potential future sharing of anonymized, aggregated data requires your explicit, informed, and granular opt-in consent, and will be subject to rigorous ethical review.
               </AlertDescription>
             </Alert>
           </div>
@@ -325,8 +362,7 @@ export default function PrivacyPolicyPage() {
             </h2>
 
             <p className="text-muted-foreground mb-8">
-              We respect your privacy rights and provide you with reasonable access and control over your data.
-              Depending on your location, you may have the following rights:
+              We respect your privacy rights and provide you with reasonable access and control over your *currently collected* data (e.g., account information, waitlist status). *As features evolve, these rights will extend to all data collected with your consent.* Depending on your location, you may have the following rights regarding your personal data:
             </p>
 
             <div className="grid gap-6 md:grid-cols-2">
@@ -396,7 +432,7 @@ export default function PrivacyPolicyPage() {
             </div>
 
             <div className="mt-8">
-              <p className="text-muted-foreground mb-4">To exercise any of these rights, please contact us at:</p>
+              <p className="text-muted-foreground mb-4">To exercise any of these rights *regarding your current account/waitlist information*, or to ask questions about future data rights, please contact us at:</p>
               <Button asChild variant="outline" className="border-border hover:bg-card">
                 <Link href="mailto:privacy@globalpulse.ai">privacy@globalpulse.ai</Link>
               </Button>
@@ -418,10 +454,7 @@ export default function PrivacyPolicyPage() {
               <div>
                 <h3 className="text-xl font-bold mb-4">Cookies and Tracking Technologies</h3>
                 <p className="text-muted-foreground">
-                  We use cookies and similar tracking technologies to track activity on our platform and hold certain
-                  information. Cookies are files with a small amount of data which may include an anonymous unique
-                  identifier. You can instruct your browser to refuse all cookies or to indicate when a cookie is being
-                  sent.
+                  *Currently,* we use essential cookies for basic website functionality (e.g., authentication). We may use standard analytics tools (like Vercel Analytics) that collect anonymized usage data. We *do not currently* use invasive tracking cookies for advertising or cross-site tracking. *Future use* of additional cookies (e.g., for personalization) will require your consent via a cookie banner.
                 </p>
               </div>
 
@@ -437,9 +470,8 @@ export default function PrivacyPolicyPage() {
               <div>
                 <h3 className="text-xl font-bold mb-4">Changes to This Privacy Policy</h3>
                 <p className="text-muted-foreground">
-                  We may update our Privacy Policy from time to time. We will notify you of any changes by posting the
-                  new Privacy Policy on this page and updating the "Effective Date" at the top. You are advised to
-                  review this Privacy Policy periodically for any changes.
+                  We may update our Privacy Policy from time to time. We will notify you of any significant changes by posting the
+                  new Privacy Policy on this page and updating the "Effective Date" at the top. *We strongly encourage you to review this policy periodically, especially before consenting to new features.* 
                 </p>
               </div>
 
@@ -517,11 +549,12 @@ export default function PrivacyPolicyPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">Understand how we handle aggregate data and insights.</p>
+                  <p className="text-muted-foreground mb-4">
+                    Details on how different types of data may be used, now and potentially in the future.
+                  </p>
                   <Button asChild variant="outline" size="sm" className="w-full border-border hover:bg-card">
-                    <Link href="/data-use-policy">
-                      View Data Use Policy
-                      <ExternalLink className="ml-2 h-4 w-4" />
+                    <Link href="#data-use"> 
+                      View Data Use Details <ChevronRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                 </CardContent>

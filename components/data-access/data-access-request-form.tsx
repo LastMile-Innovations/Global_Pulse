@@ -79,12 +79,12 @@ export function DataAccessRequestForm() {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg border shadow-sm">
+    <div className="bg-card p-6 rounded-lg border shadow-sm">
       {submitStatus === "success" && (
-        <Alert className="mb-6 bg-green-50 border-green-200">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <AlertTitle className="text-green-800">Request Submitted</AlertTitle>
-          <AlertDescription className="text-green-700">
+        <Alert className="mb-6 bg-secondary/10 border-secondary/30">
+          <CheckCircle className="h-4 w-4 text-secondary" />
+          <AlertTitle className="text-secondary">Request Submitted</AlertTitle>
+          <AlertDescription className="text-secondary/90">
             Thank you for your inquiry. We have received your request and will review it according to our ethical
             guidelines. You will be contacted at the email address provided if your request is approved.
           </AlertDescription>
@@ -176,7 +176,7 @@ export function DataAccessRequestForm() {
                     <li>Who would be the end-users within your organization or for your clients?</li>
                     <li>
                       How does this intended use align with Global Pulse's stated ethical principles (see our{" "}
-                      <Link href="/data-use-policy" className="text-purple-600 hover:underline" target="_blank">
+                      <Link href="/data-use-policy" className="text-primary hover:underline" target="_blank">
                         Data Use Policy
                       </Link>
                       )?
@@ -214,7 +214,7 @@ export function DataAccessRequestForm() {
                 <div className="space-y-1 leading-none">
                   <FormLabel>
                     I have read and acknowledge the principles outlined in the{" "}
-                    <Link href="/data-use-policy" className="text-purple-600 hover:underline" target="_blank">
+                    <Link href="/data-use-policy" className="text-primary hover:underline" target="_blank">
                       Global Pulse Data Use Policy
                     </Link>
                     .

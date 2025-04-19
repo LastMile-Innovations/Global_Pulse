@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Image from "next/image"
-import type { InfoCardComponent as InfoCardComponentType } from "@/ai-sdk/schemas/ui_components"
+import type { InfoCardComponent as InfoCardComponentType } from "@/lib/ai-sdk/schemas/ui_components"
 
 interface InfoCardComponentProps extends InfoCardComponentType {}
 
@@ -11,13 +11,13 @@ export function InfoCardComponent({ title, content, imageUrl, footer, variant = 
   const getCardClassName = () => {
     switch (variant) {
       case "info":
-        return "border-blue-200 bg-blue-50"
+        return "border-primary/30 bg-primary/10 text-primary"
       case "success":
-        return "border-green-200 bg-green-50"
+        return "border-secondary/30 bg-secondary/10 text-secondary"
       case "warning":
-        return "border-yellow-200 bg-yellow-50"
+        return "border-accent/30 bg-accent/10 text-accent"
       case "danger":
-        return "border-red-200 bg-red-50"
+        return "border-destructive/30 bg-destructive/10 text-destructive"
       default:
         return ""
     }
