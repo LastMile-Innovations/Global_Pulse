@@ -11,7 +11,6 @@ interface NavLink {
 }
 
 const marketingLinks: NavLink[] = [
-  { href: "/mission", label: "Our Mission", prefetch: true },
   { href: "/features", label: "Features", prefetch: true },
   { href: "/about", label: "About", prefetch: true },
   { href: "/faq", label: "FAQ", prefetch: true },

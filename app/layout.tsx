@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
 import { ScrollToTop } from "@/components/scroll-to-top";
@@ -8,7 +7,6 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { inter, poppins } from "./fonts";
 import { Suspense } from "react";
-
 
 export const metadata = {
   title: {
@@ -38,11 +36,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${inter.variable} ${poppins.variable}`}
-    >
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Preconnect for fonts and Supabase */}
         {process.env.NEXT_PUBLIC_SUPABASE_URL && (
@@ -59,22 +53,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           crossOrigin="anonymous"
         />
       </head>
-      <body className={cn("min-h-screen bg-background font-sans antialiased")}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <Suspense fallback={null}>
-              <ScrollToTop />
-            </Suspense>
-            <Toaster />
-          </div>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+          <Suspense fallback={null}>
+            <ScrollToTop />
+          </Suspense>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
