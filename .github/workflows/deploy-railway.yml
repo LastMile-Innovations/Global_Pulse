@@ -1,0 +1,90 @@
+name: "CI/CD: Build, Test & Deploy to Railway"
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build, Test & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Set up pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Test
+        run: pnpm test
+      - name: Set deployment context
+        id: context
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "env=pr" >> $GITHUB_OUTPUT
+            echo "service=your-nextjs-service-name" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "env=production" >> $GITHUB_OUTPUT
+            echo "service=your-nextjs-service-name" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "env=development" >> $GITHUB_OUTPUT
+            echo "service=your-nextjs-dev-service-name" >> $GITHUB_OUTPUT
+          else
+            echo "Unsupported branch/environment: ${{ github.ref }}"
+            exit 1
+          fi
+      - name: Build Next.js app
+        run: pnpm build
+        env:
+          DATABASE_URL: ${{ github.event_name == 'pull_request' && secrets.DEV_DATABASE_URL || (github.ref == 'refs/heads/main' && secrets.DATABASE_URL) || secrets.DEV_DATABASE_URL }}
+          NEO4J_URI: ${{ secrets.NEO4J_URI }}
+          NEO4J_USERNAME: ${{ secrets.NEO4J_USERNAME }}
+          NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          KV_REST_API_TOKEN: ${{ secrets.KV_REST_API_TOKEN }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      - name: Install Railway CLI
+        uses: railwayapp/cli@main
+      - name: Deploy to Railway
+        if: github.event_name != 'pull_request'
+        run: railway up --service "${{ steps.context.outputs.service }}" -d
+        env:
+          RAILWAY_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.RAILWAY_TOKEN_PRODUCTION || secrets.RAILWAY_TOKEN_DEV }}
+      - name: Comment PR with Railway Preview URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const repo = context.repo;
+            const previewUrl = `https://pr-${prNumber}-your-app.up.railway.app`;
+            github.rest.issues.createComment({
+              ...repo,
+              issue_number: prNumber,
+              body: `🚀 Railway PR Preview: [View App](${previewUrl})`
+            });
+# Replace 'your-nextjs-service-name', 'your-nextjs-dev-service-name', and preview URL with your actual Railway service names and subdomain.
+# Make sure all required secrets are set in GitHub for both production and development.
+# This workflow ensures best practices for modern Next.js CI/CD with Railway and GitHub. 
