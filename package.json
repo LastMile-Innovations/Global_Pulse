@@ -115,7 +115,7 @@
     "@types/stopword": "^2.0.3",
     "babel-plugin-react-compiler": "19.0.0-beta-e993439-20250405",
     "dotenv": "^16.5.0",
-    "drizzle-kit": "^0.30.6",
+    "drizzle-kit": "^0.31.0",
     "eslint": "^9.25.0",
     "eslint-config-next": "15.3.0",
     "postcss": "^8.5.3",

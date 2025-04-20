@@ -35,85 +35,48 @@ export async function getMinimalContext(
   entities: Entity[],
   abstractConcepts: AbstractConcept[],
 ): Promise<ContextualAnalysisOutput> {
-  // Defensive: validate input
   if (!userID || typeof userID !== "string") {
     logger.error("getMinimalContext: Invalid userID")
     throw new Error("Invalid userID")
   }
   try {
-    // Get Neo4j driver and create KG service
     const driver = getNeo4jDriver()
     const kgService = new KgService(driver)
-
-    // Fetch bootstrapped Values and Goals for the user
     const bootstrappedEPs = await fetchBootstrappedEPs(kgService, userID)
-
-    // If no EPs, return empty context
     if (!bootstrappedEPs.length) {
       logger.info(`No bootstrapped EPs found for user ${userID}`)
       return {
         activeEPs: [],
       }
     }
-
-    // Combine user input for semantic matching
-    const userInput = [
-      ...keywords,
-      ...entities.map((e) => e.text),
-      ...abstractConcepts.map((c) => c.text),
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .trim()
-
-    // Get semantic matches using embeddings (if input is not empty)
-    let semanticMatches: VectorSearchResult[] = []
-    if (userInput.length > 0) {
-      semanticMatches = await getSemanticMatches(kgService, userID, userInput)
-    }
-
-    // Determine which EPs are active based on keyword/entity matching and semantic matching
+    // Only direct/partial match activation
     const activeEPs = determineActiveEPs(
       bootstrappedEPs,
       keywords,
       entities,
       abstractConcepts,
-      semanticMatches,
     )
-
     logger.info(
       `[ContextAnalyzer] Found ${activeEPs.length} active bootstrapped EPs for user ${userID}`
     )
-
-    // Fetch user state, cultural context, personality, and developmental stage in parallel
-    const [userState, culturalContext, personality, developmentalStage] = await Promise.all([
-      getMostRecentUserState(kgService, userID),
-      kgService.getCulturalContextProfile
-        ? kgService.getCulturalContextProfile(userID)
-        : Promise.resolve(undefined),
-      kgService.getPersonalityProfile
-        ? kgService.getPersonalityProfile(userID)
-        : Promise.resolve(undefined),
-      kgService.getDevelopmentalStageProfile
-        ? kgService.getDevelopmentalStageProfile(userID)
-        : Promise.resolve(undefined),
-    ])
-
-    // Analyze social emotion cues
-    const socialContext = analyzeSocialEmotionCues(keywords, entities, abstractConcepts)
-
+    // Only fetch userState; profiles are undefined for V1
+    const userState = await getMostRecentUserState(kgService, userID)
     return {
       activeEPs,
       userState,
-      culturalContext,
-      personality,
-      developmentalStage,
-      socialContext,
+      culturalContext: undefined,
+      personality: undefined,
+      developmentalStage: undefined,
+      socialContext: undefined,
     }
   } catch (error) {
     logger.error(`Error retrieving minimal context: ${error instanceof Error ? error.stack || error.message : error}`)
     return {
       activeEPs: [],
+      culturalContext: undefined,
+      personality: undefined,
+      developmentalStage: undefined,
+      socialContext: undefined,
     }
   }
 }
@@ -167,51 +130,6 @@ async function fetchBootstrappedEPs(
 }
 
 /**
- * Get semantic matches using embeddings.
- * Returns an array of VectorSearchResult.
- */
-async function getSemanticMatches(
-  kgService: KgService,
-  userID: string,
-  userInput: string,
-): Promise<VectorSearchResult[]> {
-  try {
-    if (!userInput || typeof userInput !== "string" || !userInput.trim()) {
-      logger.warn("[ContextAnalyzer] getSemanticMatches called with empty userInput")
-      return []
-    }
-    // Generate embedding for user input
-    const embedding = await embeddingService.getEmbedding(userInput)
-    if (!embedding || !Array.isArray(embedding)) {
-      logger.warn("[ContextAnalyzer] No embedding returned for user input")
-      return []
-    }
-
-    // Perform vector similarity search
-    if (
-      typeof (kgService as any).vectorSimilaritySearch !== "function"
-    ) {
-      logger.error("[ContextAnalyzer] vectorSimilaritySearch not implemented on KgService")
-      return []
-    }
-    const semanticMatches = await (kgService as any).vectorSimilaritySearch(
-      embedding,
-      ["Value", "Goal"],
-      userID,
-      10
-    )
-    if (!semanticMatches || !Array.isArray(semanticMatches)) {
-      logger.warn("[ContextAnalyzer] No semantic matches returned")
-      return []
-    }
-    return semanticMatches
-  } catch (error) {
-    logger.error(`Error getting semantic matches: ${error instanceof Error ? error.stack || error.message : error}`)
-    return []
-  }
-}
-
-/**
  * Determines which bootstrapped EPs are active based on direct and semantic matches.
  * Returns only those with activationWeight > 0.
  */
@@ -220,50 +138,23 @@ function determineActiveEPs(
   keywords: string[],
   entities: Entity[],
   abstractConcepts: AbstractConcept[],
-  semanticMatches: VectorSearchResult[] = [],
 ): BootstrappedEP[] {
-  // Lowercase for case-insensitive matching
   const lowercaseKeywords = keywords.map((k) => k.toLowerCase())
   const lowercaseEntityTexts = entities.map((e) => e.text.toLowerCase())
   const lowercaseConceptTexts = abstractConcepts.map((c) => c.text.toLowerCase())
 
-  // Map of semantic match IDs to similarity scores
-  const semanticMatchMap = new Map<string, number>()
-  for (const match of semanticMatches) {
-    if (match && match.nodeId) {
-      semanticMatchMap.set(match.nodeId, match.similarityScore)
-    }
-  }
-
-  // Copy EPs to avoid mutation
-  const processedEPs = bootstrappedEPs.map((ep) => ({ ...ep }))
-
-  for (const ep of processedEPs) {
+  const processedEPs = bootstrappedEPs.map((ep) => {
     const epNameLower = (ep.name || "").toLowerCase()
-    const epNameWords = epNameLower.split(/\s+/)
-
-    // Direct matches
+    // Direct or partial match in any NLP feature
     const keywordMatch = lowercaseKeywords.some((k) => epNameLower.includes(k))
     const entityMatch = lowercaseEntityTexts.some((e) => epNameLower.includes(e))
     const conceptMatch = lowercaseConceptTexts.some((c) => epNameLower.includes(c))
-
-    // Word-level matches
-    const wordMatch = epNameWords.some(
-      (word) =>
-        lowercaseKeywords.includes(word) ||
-        lowercaseEntityTexts.some((e) => e.includes(word)) ||
-        lowercaseConceptTexts.some((c) => c.includes(word))
-    )
-
-    // Semantic match
-    const semanticScore = semanticMatchMap.get(ep.id) || 0
-
-    // Activation logic
-    const directMatch = keywordMatch || entityMatch || conceptMatch || wordMatch
-    ep.activationWeight = directMatch ? 1.0 : semanticScore > 0.7 ? semanticScore : 0.0
-  }
-
-  // Only return active EPs
+    const match = keywordMatch || entityMatch || conceptMatch
+    return {
+      ...ep,
+      activationWeight: match ? 1.0 : 0.0,
+    }
+  })
   return processedEPs.filter((ep) => ep.activationWeight > 0)
 }
 

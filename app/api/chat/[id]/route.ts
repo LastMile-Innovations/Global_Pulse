@@ -5,23 +5,54 @@ import type { NextRequest } from "next/server";
 import { rateLimit } from "@/lib/redis/rate-limit";
 import { safeQueryExecution } from "@/utils/supabase/error-handling";
 import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth/auth-utils";
+import { logger } from "@/lib/utils/logger";
+import { z } from "zod";
+import { eq, and } from "drizzle-orm";
+import { performEwefAnalysis } from '@/lib/pce/pce-service';
+import { MIN_CONFIDENCE_FOR_INSIGHTFUL_RESPONSE } from '@/lib/config/pce-config';
+import { isAnalysisPaused } from '@/lib/redis/client';
+import type { ResponseRationaleSource } from '@/lib/types/pce-types';
 
 /**
  * POST /api/chat/[id]
  * Handles a chat message from the user, saves it, streams an AI response, and saves the assistant's reply.
  * Rate limited to 20 requests per minute per user.
  */
-export async function POST(request: NextRequest) {
-  // Extract the chat ID from the URL
-  const chatId = request.nextUrl.pathname.split("/").pop();
 
-  // Apply rate limiting (20 requests per minute)
-  const rateLimitResult = await rateLimit(request, { limit: 20, window: 60 });
+// Define specific limits for this endpoint (User ID based)
+const endpointLimit = 60;
+const endpointWindow = 60; // 1 minute
 
-  // If rate limit exceeded, return the rate limit response
-  if (rateLimitResult instanceof NextResponse) {
-    return rateLimitResult;
+// Zod schema for route parameters
+const ParamsSchema = z.object({ id: z.string().uuid() });
+
+// Zod schema for request body (assuming message content)
+const BodySchema = z.object({
+  message: z.string().min(1),
+});
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  // --- Rate Limiting ---
+  // Note: Rate limiting by userId only. No IP fallback.
+  const rateLimitResponse = await rateLimit(request, {
+    limit: endpointLimit,
+    window: endpointWindow,
+    keyPrefix: "chat:message", // Use a slightly different prefix
+    ipFallback: { enabled: false }, // Requires User ID
+  });
+  if (rateLimitResponse instanceof NextResponse) {
+    return rateLimitResponse; // Returns 429 response if limited
   }
+  // --- End Rate Limiting ---
+
+  const userId = await auth(request);
+
+  // Extract the chat ID from the URL
+  const chatId = params.id;
 
   try {
     const supabase = await createClient();
@@ -95,6 +126,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    if (typeof userMessage.content !== 'string') {
+      return NextResponse.json(
+        { error: "User message content must be a string" },
+        { status: 400 }
+      );
+    }
 
     const {
       error: insertError,
@@ -123,6 +160,60 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // --- INTEGRITY LAYER: Epistemic Boundary, Fallback, Provenance ---
+    let responseRationaleSource: ResponseRationaleSource = 'Unknown';
+    let assistantResponse: string | null = null;
+    let analysisOutput: any = null;
+
+    // 1. Check if analysis is paused for this session
+    const analysisIsPaused = await isAnalysisPaused(chatId);
+    if (analysisIsPaused) {
+      // User has opted out of deep analysis for this session
+      assistantResponse = 'I hear you. (Listening mode is enabled for this session.)';
+      responseRationaleSource = 'User-Paused:ListeningAck';
+      logger.info('Analysis paused for session; returning listening ack.', { chatId, userId, responseRationaleSource });
+    } else {
+      // 2. Run PCE analysis
+      try {
+        analysisOutput = await performEwefAnalysis(userId!, chatId, userMessage.content);
+      } catch (err) {
+        assistantResponse = 'I hear you.';
+        responseRationaleSource = 'Error-Fallback:Generic';
+        logger.error('Error in PCE analysis, returning fallback.', { chatId, userId, error: err, responseRationaleSource });
+      }
+      // 3. Epistemic boundary check
+      if (analysisOutput) {
+        const isConfident = analysisOutput.analysisConfidence >= MIN_CONFIDENCE_FOR_INSIGHTFUL_RESPONSE;
+        if (!isConfident) {
+          assistantResponse = 'I hear you.';
+          responseRationaleSource = 'Confidence-Fallback:ListeningAck';
+          logger.info('Low confidence; returning listening ack.', { chatId, userId, analysisConfidence: analysisOutput.analysisConfidence, responseRationaleSource });
+        } else {
+          // 4. Proceed to LLM for insightful response
+          responseRationaleSource = 'PCE-Informed-LLM';
+        }
+      }
+    }
+
+    // If we have a fallback response, return it now (skip LLM)
+    if (assistantResponse) {
+      // Save the assistant message and rationale to the DB (pseudo, adjust as needed)
+      await safeQueryExecution(
+        async () =>
+          await supabase.from('chat_messages').insert({
+            chat_id: chatId,
+            role: 'assistant',
+            content: assistantResponse,
+            response_rationale_source: responseRationaleSource,
+          }),
+        { fallbackData: null }
+      );
+      return NextResponse.json({ response: assistantResponse, responseRationaleSource });
+    }
+
+    // --- If not a fallback, proceed to LLM as before ---
+    // (Insert the rationale into the DB in onFinish below)
 
     // Define the tools for Generative UI
     const tools: ToolSet = {
@@ -308,7 +399,7 @@ Use the available tools to ask structured questions when appropriate, but mainta
       maxTokens: 1000,
       temperature: 0.7,
       async onFinish({ text }) {
-        // Save the assistant's final response to the database
+        // Save the assistant's final response to the database, including rationale
         if (text) {
           const { error: assistantInsertError } = await safeQueryExecution(
             async () =>
@@ -316,12 +407,12 @@ Use the available tools to ask structured questions when appropriate, but mainta
                 chat_id: chatId,
                 role: "assistant",
                 content: text,
+                response_rationale_source: responseRationaleSource,
               }),
             { fallbackData: null }
           );
           if (assistantInsertError) {
             console.error("Error saving assistant message:", assistantInsertError);
-            // Optionally: handle this error (e.g., alert, retry, etc.)
           }
         }
       },
@@ -335,11 +426,11 @@ Use the available tools to ask structured questions when appropriate, but mainta
 
     // Add rate limit headers to the response if available
     if (
-      typeof rateLimitResult === "object" &&
-      rateLimitResult !== null &&
-      typeof (rateLimitResult as Headers).forEach === "function"
+      typeof rateLimitResponse === "object" &&
+      rateLimitResponse !== null &&
+      typeof (rateLimitResponse as Headers).forEach === "function"
     ) {
-      (rateLimitResult as Headers).forEach((value: string, key: string) => {
+      (rateLimitResponse as Headers).forEach((value: string, key: string) => {
         response.headers.set(key, value);
       });
     }

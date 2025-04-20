@@ -28,7 +28,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-import { joinWaitlist, type JoinWaitlistResult } from "@/actions/waitlist"
+import { joinWaitlist, type JoinWaitlistResult } from "@/app/actions/waitlist"
 
 // Zod Schema for Validation
 const waitlistFormSchema = z.object({

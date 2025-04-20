@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { fetchNextQuestion, submitSurveyResponse } from "../../actions/survey"
+import { fetchNextQuestion, submitSurveyResponse } from "../../app/actions/survey"
 import SurveyQuestionCard from "./survey-question-card"
 import SurveyFilters from "./survey-filters"
 import SurveyComplete from "./survey-complete"

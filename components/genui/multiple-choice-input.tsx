@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { submitSurveyResponse } from "@/actions/survey"
+import { submitSurveyResponse } from "@/app/actions/survey"
 
 interface MultipleChoiceInputProps {
   questionId: string

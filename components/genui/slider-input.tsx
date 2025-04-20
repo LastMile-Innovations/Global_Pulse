@@ -12,7 +12,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react"
-import { submitSurveyResponse } from "@/actions/survey"
+import { submitSurveyResponse } from "@/app/actions/survey"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 /**

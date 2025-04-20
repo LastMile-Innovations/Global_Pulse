@@ -16,25 +16,15 @@ import { calculateVADDistance, mapDistanceToConsistency } from "./vad-consistenc
  */
 export async function generateExplanation(ewefAnalysis: EWEFAnalysisOutput): Promise<string> {
   try {
-    // Extract relevant information from the EWEF analysis
     const { vad, pInstance, ruleVariables, activeEPs, emotionCategorization } = ewefAnalysis
-
-    // Format the active EPs for the explanation (show count and names)
     let activeEPsText = "None"
     if (activeEPs && activeEPs.length > 0) {
-      activeEPsText = activeEPs.map((ep: BootstrappedEP) =>
-        ep.name ? ep.name : ep.type
-      ).join(", ")
+      activeEPsText = activeEPs.map((ep: BootstrappedEP) => ep.name ? ep.name : ep.type).join(", ")
     }
-
-    // Generate VAD description
     const vadDescription = getVADDescription(vad)
-
-    // Get the primary emotion category and its probability
     let primaryCategory = "Unknown"
     let primaryCategoryProb = 0
     let emotionGroupText = ""
-
     if (emotionCategorization) {
       primaryCategory = emotionCategorization.primaryLabel
       primaryCategoryProb = emotionCategorization.categoryDistribution
@@ -44,8 +34,6 @@ export async function generateExplanation(ewefAnalysis: EWEFAnalysisOutput): Pro
         ? ` (${emotionCategorization.emotionGroup})`
         : ""
     }
-
-    // VAD Consistency with typical profile for the primary category
     let vadConsistencyText = ""
     if (primaryCategory !== "Unknown") {
       const typicalVAD = getTypicalVADProfile(primaryCategory)
@@ -63,22 +51,19 @@ export async function generateExplanation(ewefAnalysis: EWEFAnalysisOutput): Pro
       }
       vadConsistencyText = `\nVAD match: ${consistencyLabel} for ${primaryCategory} (consistency: ${(vadConsistency * 100).toFixed(0)}%).`
     }
-
-    // Identify key MHH variables that influenced the categorization
     const keyMHHVariables = getKeyMHHVariables(ruleVariables, emotionCategorization)
-
-    // Compose a readable explanation
-    let explanation = `Your core affect is ${vadDescription} [V:${vad.valence.toFixed(2)}, A:${vad.arousal.toFixed(2)}, D:${vad.dominance.toFixed(2)}].`
-    explanation += `\nLikely emotion: ${primaryCategory}${emotionGroupText} (${(primaryCategoryProb * 100).toFixed(1)}% confidence).`
+    // --- Compose user-facing explanation ---
+    let explanation = `Why did I reflect this?\n`;
+    explanation += `I considered several factors from my analysis, including your core affect (how you seemed to feel overall), key context clues, and any active attachments (important values or goals).\n`;
+    explanation += `\n• Core affect: ${vadDescription} [V:${vad.valence.toFixed(2)}, A:${vad.arousal.toFixed(2)}, D:${vad.dominance.toFixed(2)}]`;
+    explanation += `\n• Likely emotion: ${primaryCategory}${emotionGroupText} (${(primaryCategoryProb * 100).toFixed(1)}% confidence)`;
     if (vadConsistencyText) {
       explanation += vadConsistencyText
     }
     if (keyMHHVariables.length > 0) {
-      explanation += `\nKey factors: ${keyMHHVariables.join(", ")}.`
+      explanation += `\n• Key factors: ${keyMHHVariables.join(", ")}`
     }
-    explanation += `\nActive attachments: ${activeEPsText}.`
-
-    logger.info(`Generated explanation: ${explanation}`)
+    explanation += `\n• Active attachments: ${activeEPsText}`;
     return explanation
   } catch (error) {
     logger.error(`Error generating explanation: ${error}`)

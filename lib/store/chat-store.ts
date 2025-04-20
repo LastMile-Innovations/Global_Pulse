@@ -13,6 +13,11 @@ interface ChatActions {
   setLoading: (isLoading: boolean) => void
   setError: (error: string | null) => void
   clearMessages: () => void
+  addXaiExplanation: (id: string, explanation: string) => void
+}
+
+interface ExtendedChatState extends ChatState {
+  xaiExplanations: Record<string, string>
 }
 
 const getInitialAssistantMessage = (): Message => ({
@@ -23,10 +28,11 @@ const getInitialAssistantMessage = (): Message => ({
   timestamp: new Date().toISOString(),
 })
 
-const useChatStore = create<ChatState & ChatActions>((set, get) => ({
+const useChatStore = create<ExtendedChatState & ChatActions>((set, get) => ({
   messages: [getInitialAssistantMessage()],
   isLoading: false,
   error: null,
+  xaiExplanations: {},
 
   addMessage: (role, content, timestamp, id, metadata) =>
     set((state) => ({
@@ -49,7 +55,16 @@ const useChatStore = create<ChatState & ChatActions>((set, get) => ({
   clearMessages: () =>
     set({
       messages: [getInitialAssistantMessage()],
+      xaiExplanations: {},
     }),
+
+  addXaiExplanation: (id, explanation) =>
+    set((state) => ({
+      xaiExplanations: {
+        ...state.xaiExplanations,
+        [id]: explanation,
+      },
+    })),
 }))
 
 export default useChatStore

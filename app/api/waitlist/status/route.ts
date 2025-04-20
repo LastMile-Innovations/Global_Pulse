@@ -11,14 +11,23 @@ const EmailQuerySchema = z.object({
   email: z.string().email(),
 });
 
+// Define specific limits for this endpoint
+const endpointLimit = 5;
+const endpointWindow = 600; // 10 minutes
+const ipFallbackLimit = 3;
+
 export async function GET(req: NextRequest) {
-  // Rate limit check (window must be a number, not a string)
+  // --- Rate Limiting ---
   const rateLimitResponse = await rateLimit(req, {
-    keyPrefix: 'waitlist_status',
-    limit: 10,
-    window: 300, // 5 minutes in seconds
+    limit: endpointLimit,
+    window: endpointWindow,
+    keyPrefix: "waitlist:status",
+    ipFallback: { enabled: true, limit: ipFallbackLimit },
   });
-  if (rateLimitResponse) return rateLimitResponse;
+  if (rateLimitResponse instanceof NextResponse) {
+    return rateLimitResponse; // Returns 429 response if limited
+  }
+  // --- End Rate Limiting ---
 
   // Get email from query params
   const email = req.nextUrl.searchParams.get('email');

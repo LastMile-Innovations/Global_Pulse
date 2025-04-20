@@ -7,7 +7,7 @@ import { z } from "zod"
 
 import { createClient } from "@/utils/supabase/server"
 import { updatePasswordSchema } from "@/components/auth/update-password-schema"
-import { createUser } from "@/lib/auth/supabase-auth"
+import { createUser, getOrCreateProfile } from "@/lib/auth/auth-utils"
 
 // --- Shared State Type for Auth Actions ---
 export type AuthActionState = {
@@ -70,7 +70,7 @@ export async function login(
 
   // 2. Attempt login with Supabase
   const supabase = await createClient()
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
     console.error("Login error:", error.message) // Log detailed error server-side
@@ -78,7 +78,16 @@ export async function login(
     return { error: "Invalid email or password." } 
   }
 
-  // 3. On Success: Revalidate cache and redirect
+  // 3. On Success: Ensure profile exists
+  if (data.user) {
+    const profile = await getOrCreateProfile(data.user)
+    if (!profile) {
+      console.error(`Failed to get/create profile for user ${data.user.id} during login`)
+      // For MVP, log and continue redirect
+    }
+  }
+
+  // 4. Revalidate cache and redirect
   revalidatePath("/", "layout") // Ensure layout reflects logged-in state
   redirect("/dashboard") // Navigate to the user's dashboard
   // Note: Redirects throw an error, so no state is returned here
@@ -118,15 +127,30 @@ export async function signup(
 
   const { email, password } = validatedFields.data
 
-  // 2. Create new user using createUser service
-  const user = await createUser(email, password)
-  if (!user) {
-    return { error: "Could not create account. Please try again later." }
+  // 2. Attempt signup with Supabase
+  const supabase = await createClient()
+  const { data: authData, error } = await supabase.auth.signUp({ email, password })
+
+  if (error) {
+    return { error: error.message || "Could not create account. Please try again later." }
   }
 
-  // 3. On Success: Redirect user to login with a confirmation message
-  redirect("/login?message=Check email to complete sign up")
-  // Note: Redirects throw an error, so no state is returned here
+  // 3. Ensure profile exists
+  if (authData.user) {
+    const profile = await getOrCreateProfile(authData.user)
+    if (!profile) {
+      console.error(`Failed to create profile for user ${authData.user.id} during signup action`)
+      // IMPORTANT: Consider how to handle this. Delete Supabase user? Return error?
+      // For MVP, returning an error is safer than leaving inconsistent state.
+      return { error: "Account created, but profile setup failed. Please contact support." }
+    }
+    // Profile created/verified, proceed with redirect
+    redirect("/login?message=Check email to complete sign up")
+  } else {
+    // Handle case where user object is unexpectedly null after signup success
+    console.error("Supabase signup succeeded but returned no user object.")
+    return { error: "Account creation failed. Please try again." }
+  }
 }
 
 // --- Logout Action ---

@@ -3,6 +3,7 @@ import { type NextRequest } from 'next/server'
 
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import { getOrCreateProfile } from '@/lib/auth/auth-utils'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -18,6 +19,16 @@ export async function GET(request: NextRequest) {
       token_hash,
     })
     if (!error) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const profile = await getOrCreateProfile(user)
+        if (!profile) {
+          console.error(`Failed to get/create profile for user ${user.id} during email confirmation`)
+          // For MVP, log and continue redirect
+        }
+      } else {
+        console.error(`User not found after successful OTP verification`)
+      }
       // redirect user to specified redirect URL or root of app
       redirect(next)
     }

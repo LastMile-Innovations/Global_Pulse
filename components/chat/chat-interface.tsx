@@ -8,10 +8,28 @@ import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ChatMessage from "./chat-message"
 import ChatInput from "./chat-input"
+import useChatStore from "@/lib/store/chat-store"
+import { logger } from "@/lib/utils/logger"
+import { useState } from 'react';
 
 interface ChatInterfaceProps {
   chatId: string
   initialMessages?: Message[]
+}
+
+function DisclaimerBanner() {
+  const [disclaimer, setDisclaimer] = useState('');
+  useEffect(() => {
+    fetch('/api/config/disclaimer')
+      .then((res) => res.json())
+      .then((data) => setDisclaimer(data.disclaimer));
+  }, []);
+  if (!disclaimer) return null;
+  return (
+    <div id="v1-disclaimer-banner" style={{ position: 'fixed', bottom: 0, width: '100%', background: '#fffbe6', color: '#333', padding: '8px', borderTop: '1px solid #eee', zIndex: 1000, textAlign: 'center' }}>
+      {disclaimer}
+    </div>
+  );
 }
 
 export default function ChatInterface({ chatId, initialMessages = [] }: ChatInterfaceProps) {
@@ -25,7 +43,7 @@ export default function ChatInterface({ chatId, initialMessages = [] }: ChatInte
     (state: Message[], newMessage: Message) => [...state, newMessage]
   )
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error, setMessages } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error, setMessages, data } = useChat({
     api: `/api/chat/${chatId}`,
     id: chatId,
     initialMessages,
@@ -34,8 +52,34 @@ export default function ChatInterface({ chatId, initialMessages = [] }: ChatInte
       startTransition(() => {
         router.refresh()
       })
-    }
+    },
+    body: {
+      // Ensure sessionId is sent if needed by your backend logic
+      // Example: If your API route expects it in the body
+      // sessionId: chatId // Or however you manage session ID
+    },
   })
+
+  // Add useEffect to process stream data
+  useEffect(() => {
+    if (data && data.length > 0) {
+      // Process the latest data items
+      data.forEach((item: any) => {
+        if (item.type === 'xai-explanation' && item.interactionId && item.explanation) {
+          // Call the action from the Zustand store
+          useChatStore.getState().addXaiExplanation(item.interactionId, item.explanation)
+          logger.debug(`[ChatInterface] Added XAI explanation for ID: ${item.interactionId}`)
+        } else {
+          // Log other data types if necessary
+          // logger.debug(`[ChatInterface] Received other data type: ${item.type}`)
+        }
+      })
+      // Note: Consider how to handle potential duplicate processing if `data` accumulates
+      // across renders. The current approach processes all items in the array each time.
+      // If `data` represents the *entire* stream history, you might need deduplication.
+      // If `data` resets or only contains new items per render cycle, this is fine.
+    }
+  }, [data])
 
   // Optimized scroll to bottom when messages change
   useEffect(() => {
@@ -68,6 +112,7 @@ export default function ChatInterface({ chatId, initialMessages = [] }: ChatInte
   }
 
   return (
+    <>
     <div className="flex flex-col h-full">
       {/* Chat messages area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -130,5 +175,7 @@ export default function ChatInterface({ chatId, initialMessages = [] }: ChatInte
         />
       </div>
     </div>
+    <DisclaimerBanner />
+    </>
   )
 }

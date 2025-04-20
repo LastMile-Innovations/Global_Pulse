@@ -9,6 +9,9 @@ import { eq, and } from 'drizzle-orm';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { rateLimit } from '@/lib/redis/rate-limit';
+import { auth } from "@/lib/auth/auth-utils";
+import { createProfile } from "@/lib/services/profile-service";
+import { isEmail } from "@/lib/utils/email-validator";
 
 const AcceptSchema = z.object({
   invitationCode: z.string(),
@@ -16,16 +19,22 @@ const AcceptSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
+// Define specific limits for this endpoint
+const endpointLimit = 5;
+const endpointWindow = 600; // 10 minutes
+const ipFallbackLimit = 3;
+
 export async function POST(req: NextRequest) {
   // Apply rate limiting using the new options object signature
   const rateLimitResponse = await rateLimit(req, {
-    limit: 5,
-    window: 60,
-    keyPrefix: "waitlist-accept-invite",
-    ipFallback: { enabled: true, limit: 3, window: 60 },
-    includeHeaders: true,
+    limit: endpointLimit,
+    window: endpointWindow,
+    keyPrefix: "waitlist:accept",
+    ipFallback: { enabled: true, limit: ipFallbackLimit },
   });
-  if (rateLimitResponse) return rateLimitResponse;
+  if (rateLimitResponse instanceof NextResponse) {
+    return rateLimitResponse; // Returns 429 response if limited
+  }
 
   try {
     const body = await req.json();

@@ -113,10 +113,10 @@ type CacheOptions = {
  * @returns A promise resolving to the cached or fetched data.
  *
  * @example
- * const user = await cacheQuery<User>(
- *   createCacheKey('user', { id: userId }),
- *   () => db.query.users.findFirst({ where: eq(users.id, userId) }),
- *   { ttl: 300, tags: [`user:${userId}`, 'users'] }
+ * const profile = await cacheQuery<Profile>(
+ *   createCacheKey('profile', { id: userId }),
+ *   () => db.query.profiles.findFirst({ where: eq(profiles.id, userId) }),
+ *   { ttl: 300, tags: [`user:${userId}`, 'profiles'] }
  * );
  */
 export async function cacheQuery<T>(
@@ -352,5 +352,48 @@ export async function deleteCache(key: string): Promise<void> {
     await redisPrimary.del(key);
   } catch (err) {
     console.error(`Error deleting key ${key} from cache`, err);
+  }
+}
+
+/**
+ * Key generator for session-level analysis pause state.
+ * @param sessionId The session ID.
+ * @returns Redis key string.
+ */
+export const analysisPausedKey = (sessionId: string) => `session:${sessionId}:analysisPaused`;
+
+/**
+ * Checks if analysis is paused for a given session.
+ * @param sessionId The session ID.
+ * @returns Promise<boolean> True if paused, false otherwise.
+ */
+export async function isAnalysisPaused(sessionId: string): Promise<boolean> {
+  try {
+    const key = analysisPausedKey(sessionId);
+    const value = await redisReplica.get(key);
+    return value === '1' || value === 1 || value === true;
+  } catch (err) {
+    console.error(`Error checking analysis paused state for session ${sessionId}:`, err);
+    // Fail safe: treat as not paused if error
+    return false;
+  }
+}
+
+/**
+ * Sets the analysis paused state for a session.
+ * @param sessionId The session ID.
+ * @param paused True to pause, false to unpause.
+ * @param ttl Time-to-live in seconds (default: 24h = 86400).
+ */
+export async function setAnalysisPaused(sessionId: string, paused: boolean, ttl: number = 86400): Promise<void> {
+  try {
+    const key = analysisPausedKey(sessionId);
+    if (paused) {
+      await redisPrimary.setex(key, ttl, '1');
+    } else {
+      await redisPrimary.del(key);
+    }
+  } catch (err) {
+    console.error(`Error setting analysis paused state for session ${sessionId}:`, err);
   }
 }

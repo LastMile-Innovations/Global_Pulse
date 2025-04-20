@@ -1,145 +1,236 @@
-import type { NextRequest } from "next/server"
-import { createClient } from "@/utils/supabase/server"
-import { logger } from "../utils/logger"
-import { db } from "@/lib/db"
-import { eq } from "drizzle-orm"
-import type { User } from "@supabase/supabase-js"
-import { profiles } from "@/lib/db/schema/users"
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import type { User } from '@supabase/supabase-js';
+import { logger } from '@/lib/utils/logger';
+import { db } from '@/lib/db';
+import { profiles } from '@/lib/db/schema/users';
+import { eq } from 'drizzle-orm';
+import { getKgService } from '@/lib/db/graph/kg-service-factory';
+import type { NextRequest } from 'next/server';
+import { cookies as nextCookies } from 'next/headers';
+
+// Function to get Supabase client for server components/actions
+async function createSupabaseServerClient() {
+  const cookieStore = await cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+      },
+    }
+  );
+}
 
 /**
- * Authenticates a request and returns the user ID if valid
- * Uses Supabase authentication to validate the session
+ * Gets the currently authenticated Supabase user object server-side.
+ * Returns null if not authenticated or an error occurs.
  */
-export async function auth(request: NextRequest): Promise<string | null> {
+export async function getCurrentUser(): Promise<User | null> {
+  const supabase = await createSupabaseServerClient();
   try {
-    // Create Supabase client
-    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error) {
+      // Log error without exposing PII
+      logger.error(`getCurrentUser: Error fetching user from Supabase`, { code: error.code, message: error.message });
+      return null;
+    }
+    return user;
+  } catch (err) {
+    logger.error(`getCurrentUser: Unexpected error`, { error: err instanceof Error ? err.message : String(err) });
+    return null;
+  }
+}
 
-    // Get the session from Supabase
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
+// Type for Drizzle profile
+export type Profile = typeof profiles.$inferSelect;
 
-    // Return the user ID if session exists
-    if (session?.user) {
-      return session.user.id
+/**
+ * Finds an existing profile by Supabase User ID or creates a new one.
+ * Ensures corresponding Neo4j :User node exists (idempotently, no PII).
+ * Returns the Drizzle profile record or null on critical DB error.
+ */
+export async function getOrCreateProfile(user: User): Promise<Profile | null> {
+  if (!user || !user.id) {
+    logger.error('getOrCreateProfile called with invalid user object');
+    return null;
+  }
+  const userId = user.id;
+  let profile: Profile | null = null;
+  let kgErrorOccurred = false;
+
+  try {
+    // 1. Check if profile exists in DB
+    const existingProfile = await db.query.profiles.findFirst({
+      where: eq(profiles.id, userId),
+    });
+
+    if (existingProfile) {
+      logger.debug(`Profile found for user: ${userId}`);
+      profile = existingProfile;
+    } else {
+      // 2. Create profile in DB if not found
+      logger.info(`Profile not found for user ${userId}. Creating...`);
+      const firstName = user.user_metadata?.firstName || user.user_metadata?.first_name || null;
+      const lastName = user.user_metadata?.lastName || user.user_metadata?.last_name || null;
+
+      // --- CRITICAL: Only insert non-PII data ---
+      const insertResult = await db.insert(profiles).values({
+        id: userId, // Link using Supabase ID
+        firstName: firstName,
+        lastName: lastName,
+        // Add other non-PII defaults from schema if needed
+      }).returning();
+
+      if (!insertResult || insertResult.length === 0) {
+        throw new Error('Failed to create profile in database after insert.');
+      }
+      profile = insertResult[0];
+      logger.info(`Successfully created profile for user: ${userId}`);
+
+      // 3. (Side Effect) Create/Ensure Neo4j Node (Idempotent, No PII)
+      try {
+        const kgService = getKgService();
+        // --- CRITICAL: Derive a non-PII name for Neo4j ---
+        // Use metadata name only if explicitly deemed non-sensitive, else use fallback.
+        // Fallback using partial ID is safer regarding PII.
+        const derivedName = (firstName && lastName)
+          ? `${firstName} ${lastName}` // Example: Use if metadata names are okay
+          : `User_${userId.substring(0, 8)}`; // Safer fallback
+
+        await kgService.createUserNode({
+          userID: userId,
+          name: derivedName,
+          // ** Explicitly DO NOT pass email or other PII **
+        });
+        logger.info(`Ensured Neo4j :User node exists for user: ${userId}`);
+      } catch (kgError) {
+        kgErrorOccurred = true;
+        // Log clearly but DO NOT fail profile creation
+        logger.error(`getOrCreateProfile: Failed to create/merge Neo4j node for user ${userId}`, { error: kgError instanceof Error ? kgError.message : String(kgError) });
+      }
     }
 
-    return null
-  } catch (error) {
-    logger.error(`Auth error: ${error}`)
-    return null
+    // 4. Return the DB profile (even if KG step had non-critical error)
+    return profile;
+
+  } catch (dbError) {
+    // Log critical DB errors without PII
+    logger.error(`getOrCreateProfile: Critical database error for user ${userId}`, { error: dbError instanceof Error ? dbError.message : String(dbError) });
+    return null; // Return null on critical DB failure
   }
 }
 
 /**
- * Checks if the user has admin role
- * This is a helper function that can be used in API routes
+ * Checks if the user associated with the request has the 'admin' role
+ * based on Supabase JWT custom claims (app_metadata.roles).
  */
 export async function isAdmin(request: NextRequest): Promise<boolean> {
-  try {
-    const userId = await auth(request)
+  // Create a Supabase client specific to this request's cookies
+  const cookieStore = request.cookies; // Use request cookies
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll(); },
+      },
+    }
+  );
 
-    if (!userId) {
-      return false // Not authenticated
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+
+    if (error) {
+      logger.error(`isAdmin: Error fetching user`, { code: error.code, message: error.message });
+      return false;
+    }
+    if (!user) {
+      // Not authenticated
+      return false;
     }
 
-    // Query the users table for the authenticated user
-    const dbUser = await db.query.profiles.findFirst({
-      where: eq(profiles.id, userId),
-      // No columns specified, fetch all profile fields
-    })
+    // --- CRITICAL: Check JWT claims ---
+    const roles = user.app_metadata?.roles;
 
-    if (!dbUser) {
-      logger.warn(`isAdmin check failed: User with ID ${userId} found in auth but not in users table.`)
-      return false // User exists in auth system but not in our user table
-    }
-
-    // No role column exists, so always return false
-    return false
-  } catch (error) {
-    logger.error(`Admin check error: ${error}`)
-    return false // Default to false on any error
-  }
-}
-
-/**
- * Fetches the user ID from the current Supabase session.
- * @returns The user ID string or null if not authenticated.
- */
-export async function getUserId(): Promise<string | null> {
-  const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-
-  if (error || !user) {
-    logger.error(`Error fetching user ID: ${error?.message || 'Unknown error'}`)
-    return null
-  }
-  return user.id
-}
-
-/**
- * Retrieves the user profile from the local database based on Supabase user ID.
- * @param userId - The Supabase user ID.
- * @returns The user profile object or null if not found.
- */
-export const getUserProfile = async (userId: string): Promise<typeof profiles.$inferSelect | null> => {
-  if (!userId) return null
-  try {
-    const profile = await db.query.profiles.findFirst({
-      where: eq(profiles.id, userId),
-      // No columns specified, fetch all profile fields
-    })
-    return profile || null
-  } catch (error) {
-    logger.error(`Error fetching profile for user ${userId}: ${error instanceof Error ? error.message : String(error)}`)
-    return null
-  }
-}
-
-/**
- * Synchronizes the Supabase user data with the local profile database.
- * Creates a profile if one doesn't exist for the given Supabase user ID.
- * @param user - The Supabase user object.
- * @param name - Optional name to use for the profile (falls back to metadata or email).
- * @returns The Supabase user object if sync was successful (or user already existed).
- * @throws Will throw an error if the database operation fails.
- */
-export const syncUserProfileWithDB = async (user: User, name?: string) => {
-  if (!user || !user.id || !user.email) {
-    logger.error("syncUserProfileWithDB called with invalid user object.")
-    throw new Error("Invalid user object provided for profile sync.")
-  }
-
-  try {
-    // Check if profile exists using the profiles table
-    const existingProfile = await db.select({ id: profiles.id })
-      .from(profiles) 
-      .where(eq(profiles.id, user.id)) 
-      .limit(1)
-
-    if (existingProfile.length === 0) {
-      logger.info(`Profile for user ${user.id} (${user.email}) not found in DB. Creating new profile.`)
-      // Profile doesn't exist, insert it
-      const profileName = name || user.user_metadata?.full_name || user.email
-      await db.insert(profiles).values({ 
-        id: user.id,
-        firstName: profileName.split(' ')[0] || null, // Basic split for first name
-        lastName: profileName.split(' ').slice(1).join(' ') || null, // Basic split for last name
-        // Add other necessary default profile fields here
-        // Ensure createdAt/updatedAt are handled by DB defaults or added here if needed
-      })
-      logger.info(`Created profile for user ${user.id}`)
+    // Defensive checks: ensure roles exists and is an array
+    if (roles && Array.isArray(roles)) {
+      const isAdminUser = roles.includes('admin');
+      logger.debug(`isAdmin check for user ${user.id}: roles=${JSON.stringify(roles)}, isAdmin=${isAdminUser}`);
+      return isAdminUser;
     } else {
-      logger.info(`Profile for user ${user.id} (${user.email}) already exists in DB.`)
-      // Optionally, update profile data if needed (e.g., name changes)
-      // await db.update(profiles).set({ firstName: ..., lastName: ... }).where(eq(profiles.id, user.id));
+      logger.debug(`isAdmin check for user ${user.id}: app_metadata.roles missing or not an array.`);
+      return false;
     }
+  } catch (err) {
+    logger.error(`isAdmin: Unexpected error`, { error: err instanceof Error ? err.message : String(err) });
+    return false;
+  }
+}
 
-    return user // Return the original Supabase user
+// --- Helper for Server Components (if needed) ---
+// Note: Directly using isAdmin(request) in API routes is preferred.
+// This is only if you need the check inside a Server Component without passing the request.
+export async function isAdminFromCookies(): Promise<boolean> {
+   const cookieStore = await nextCookies();
+   const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll(); },
+      },
+    }
+  );
+   try {
+     const { data: { user }, error } = await supabase.auth.getUser();
+     if (error) {
+       logger.error(`isAdminFromCookies: Error fetching user`, { code: error.code, message: error.message });
+       return false;
+     }
+     if (!user) return false;
+     const roles = user.app_metadata?.roles;
+     if (roles && Array.isArray(roles)) {
+       const isAdminUser = roles.includes('admin');
+       logger.debug(`isAdminFromCookies check for user ${user.id}: roles=${JSON.stringify(roles)}, isAdmin=${isAdminUser}`);
+       return isAdminUser;
+     } else {
+       logger.debug(`isAdminFromCookies check for user ${user.id}: app_metadata.roles missing or not an array.`);
+       return false;
+     }
+   } catch (err) {
+     logger.error(`isAdminFromCookies: Unexpected error`, { error: err instanceof Error ? err.message : String(err) });
+     return false;
+   }
+}
 
-  } catch (error) {
-    logger.error(`Error syncing profile for user ${user.id}: ${error instanceof Error ? error.message : String(error)}`)
-    throw error // Rethrow the error to be handled by the caller
+/**
+ * Authenticates a request using session cookies and returns the user ID if valid.
+ */
+export async function auth(request: NextRequest): Promise<string | null> {
+  // Create Supabase client scoped to the request
+  const cookieStore = request.cookies;
+  const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll(); },
+        },
+      }
+  );
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) {
+      logger.error(`Auth session error`, { code: error.code, message: error.message });
+      return null;
+    }
+    return session?.user?.id ?? null;
+  } catch (err) {
+    logger.error(`Auth unexpected error`, { error: err instanceof Error ? err.message : String(err) });
+    return null;
   }
 }

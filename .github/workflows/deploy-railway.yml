@@ -44,13 +44,19 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "env=pr" >> $GITHUB_OUTPUT
-            echo "service=your-nextjs-service-name" >> $GITHUB_OUTPUT
+            echo "service=global-pulse-nextjs" >> $GITHUB_OUTPUT
+            echo "domain=pr-${{ github.event.pull_request.number }}-global-pulse.up.railway.app" >> $GITHUB_OUTPUT
+            echo "port=8080" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "env=production" >> $GITHUB_OUTPUT
-            echo "service=your-nextjs-service-name" >> $GITHUB_OUTPUT
+            echo "service=global-pulse-nextjs" >> $GITHUB_OUTPUT
+            echo "domain=globalpulse-production.up.railway.app" >> $GITHUB_OUTPUT
+            echo "port=8080" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
             echo "env=development" >> $GITHUB_OUTPUT
-            echo "service=your-nextjs-dev-service-name" >> $GITHUB_OUTPUT
+            echo "service=global-pulse-nextjs-dev" >> $GITHUB_OUTPUT
+            echo "domain=globalpulse-dev.up.railway.app" >> $GITHUB_OUTPUT
+            echo "port=8080" >> $GITHUB_OUTPUT
           else
             echo "Unsupported branch/environment: ${{ github.ref }}"
             exit 1
@@ -65,11 +71,13 @@ jobs:
           REDIS_URL: ${{ secrets.REDIS_URL }}
           KV_REST_API_TOKEN: ${{ secrets.KV_REST_API_TOKEN }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          PORT: 8080
       - name: Install Railway CLI
         uses: railwayapp/cli@main
       - name: Deploy to Railway
         if: github.event_name != 'pull_request'
-        run: railway up --service "${{ steps.context.outputs.service }}" -d
+        run: |
+          railway up --service "${{ steps.context.outputs.service }}" -d --env PORT=8080
         env:
           RAILWAY_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.RAILWAY_TOKEN_PRODUCTION || secrets.RAILWAY_TOKEN_DEV }}
       - name: Comment PR with Railway Preview URL
@@ -79,12 +87,22 @@ jobs:
           script: |
             const prNumber = context.payload.pull_request.number;
             const repo = context.repo;
-            const previewUrl = `https://pr-${prNumber}-your-app.up.railway.app`;
+            const previewUrl = `https://pr-${prNumber}-global-pulse.up.railway.app`;
             github.rest.issues.createComment({
               ...repo,
               issue_number: prNumber,
-              body: `🚀 Railway PR Preview: [View App](${previewUrl})`
+              body: `🚀 Railway PR Preview: [View App](${previewUrl})\n\n**Public Networking**\nAccess your application over HTTP with the following domain:\n\n\`${previewUrl}\`\nPort: 8080\n\n**Private Networking**\nCommunicate with this service from within the Railway network:\n\`global_pulse.railway.internal\`\n\nReady to talk privately · You can also simply call me \`global_pulse\`.`
             });
-# Replace 'your-nextjs-service-name', 'your-nextjs-dev-service-name', and preview URL with your actual Railway service names and subdomain.
+      - name: Output deployment info
+        run: |
+          echo "Public Networking:"
+          echo "  - Production: https://globalpulse-production.up.railway.app (Port 8080)"
+          echo "  - Development: https://globalpulse-dev.up.railway.app (Port 8080)"
+          echo "Private Networking:"
+          echo "  - Internal: global_pulse.railway.internal"
+          echo "  - Service Name: global_pulse"
+# Project: Global Pulse
+# Description: Optional description of this project
+# Project ID: 54b48260-e521-4933-b8fe-4ee9840b7af9
 # Make sure all required secrets are set in GitHub for both production and development.
 # This workflow ensures best practices for modern Next.js CI/CD with Railway and GitHub. 

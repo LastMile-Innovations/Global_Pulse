@@ -9,6 +9,8 @@ export interface Message {
     isCheckIn?: boolean
     reviewInteractionId?: string
     feedbackSent?: boolean
+    responseRationaleSource?: string
+    fitFeedbackSubmitted?: boolean
   }
   // Add the data property for streamed metadata
   data?: any[]

@@ -4,10 +4,28 @@ import { db } from '@/lib/db';
 import { schema } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { logger } from '@/lib/utils/logger';
+import { rateLimit } from "@/lib/redis/rate-limit";
 
 const EmailSchema = z.object({ email: z.string().email() });
 
+// Define specific limits for this endpoint
+const endpointLimit = 5;
+const endpointWindow = 600; // 10 minutes
+const ipFallbackLimit = 3;
+
 export async function POST(req: NextRequest) {
+  // --- Rate Limiting ---
+  const rateLimitResponse = await rateLimit(req, {
+    limit: endpointLimit,
+    window: endpointWindow,
+    keyPrefix: "waitlist:referral",
+    ipFallback: { enabled: true, limit: ipFallbackLimit },
+  });
+  if (rateLimitResponse instanceof NextResponse) {
+    return rateLimitResponse; // Returns 429 response if limited
+  }
+  // --- End Rate Limiting ---
+
   try {
     const body = await req.json();
     const parsed = EmailSchema.safeParse(body);

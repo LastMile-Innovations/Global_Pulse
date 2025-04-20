@@ -213,6 +213,7 @@ export interface EWEFAnalysisOutput {
   pInstance: PInstanceData
   ruleVariables: RuleVariables
   emotionCategorization?: EmotionCategorization
+  analysisConfidence: number
 }
 
 /**
@@ -306,3 +307,20 @@ export interface SocialContext {
   // Confidence metrics
   perspectiveConfidence: number
 }
+
+/**
+ * Represents the high-level source or reason for generating a specific assistant response.
+ * Used for logging, auditing, and potentially conditional UI rendering.
+ * @enum {string}
+ */
+export type ResponseRationaleSource =
+  | 'PCE-Informed-LLM' // Standard reflective response informed by PCE analysis.
+  | 'Confidence-Fallback:ListeningAck' // Fallback due to low PCE analysis confidence.
+  | 'User-Paused:ListeningAck' // Fallback because user paused analysis for the session.
+  | 'Error-Fallback:Generic' // Fallback due to an error during analysis or response generation.
+  | 'Special-Flow:BootstrapPrompt' // Initial system prompt or greeting.
+  | 'Special-Flow:DistressCheck' // Response related to distress detection flow.
+  | 'Special-Flow:SomaticPrompt' // Response related to somatic awareness prompt flow.
+  | 'Special-Flow:CoherenceCheck' // Response related to coherence check flow.
+  | 'User-Feedback:Response' // A response generated based on user feedback (e.g., confirming resonance).
+  | 'Unknown' // Default or unknown source.

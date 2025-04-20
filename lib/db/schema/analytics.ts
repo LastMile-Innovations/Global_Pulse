@@ -17,6 +17,9 @@ export const resonanceFlagAnalytics = pgTable(
     modeDistribution: jsonb("mode_distribution").notNull(),
     // Distribution by response type (JSON object with response type counts)
     responseTypeDistribution: jsonb("response_type_distribution").notNull(),
+    // V1 Integrity: Fit feedback counts
+    analysis_fit_yes_count: integer("analysis_fit_yes_count").default(0).notNull(),
+    analysis_fit_no_count: integer("analysis_fit_no_count").default(0).notNull(),
     // Timestamp when this record was created/updated
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },

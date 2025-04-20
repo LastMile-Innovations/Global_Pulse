@@ -66,3 +66,19 @@ export const coherenceFeedback = pgTable(
     processedAtIdx: index("coherence_feedback_processed_at_idx").on(table.processedAt),
   }),
 )
+
+export const analysis_feedback = pgTable(
+  "analysis_feedback",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    user_id: uuid("user_id").notNull(),
+    assistant_interaction_id: varchar("assistant_interaction_id", { length: 64 }).notNull(),
+    fits_experience: boolean("fits_experience").notNull(),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    userIdx: index("analysis_feedback_user_id_idx").on(table.user_id),
+    assistantInteractionIdx: index("analysis_feedback_assistant_interaction_id_idx").on(table.assistant_interaction_id),
+    createdAtIdx: index("analysis_feedback_created_at_idx").on(table.created_at),
+  })
+)

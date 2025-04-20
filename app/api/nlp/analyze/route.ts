@@ -3,6 +3,7 @@ import { getCoreNlpFeatures } from "@/lib/nlp/nlp-features"
 import { logger } from "@/lib/utils/logger"
 import { NlpAnalyzePayloadSchema } from "@/lib/schemas/api"
 import { rateLimit } from "@/lib/redis/rate-limit"
+import { auth } from "@/lib/auth/auth-utils"
 
 // --- Production MVP: robust error handling, validation, logging, metrics, and security ---
 
@@ -23,26 +24,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   // --- Rate limiting (per user or IP) ---
   const rateLimitResponse = await rateLimit(request, {
-    limit: 10, // 10 requests
+    limit: 30, // 30 requests
     window: 60, // per 60 seconds
-    keyPrefix: "nlp_analyze",
-    includeHeaders: true,
-    ipFallback: { enabled: true, limit: 5, window: 60 },
-    useLocalCache: true,
-    localCacheTtl: 1000,
+    keyPrefix: "nlp:analyze",
+    ipFallback: { enabled: true, limit: 15 },
   })
-  if (rateLimitResponse) {
-    // Attach requestId to error response if possible
-    try {
-      const json = await rateLimitResponse.json()
-      return NextResponse.json(
-        { ...json, requestId },
-        { status: 429, headers: rateLimitResponse.headers }
-      )
-    } catch {
+  if (rateLimitResponse instanceof NextResponse) {
       return rateLimitResponse
-    }
   }
+
+  // Optional: Get user ID if needed by the service, but rate limit uses IP fallback if unavailable
+  // const userId = await auth(request)
 
   try {
     // --- Parse and validate the request body ---

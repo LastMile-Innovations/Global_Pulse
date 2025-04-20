@@ -20,16 +20,23 @@ const JoinSchema = z.object({
   }),
 });
 
+// Define specific limits for this endpoint
+const endpointLimit = 5;
+const endpointWindow = 600; // 10 minutes
+const ipFallbackLimit = 3;
+
 export async function POST(req: NextRequest) {
-  // Rate limit check (window must be a number, not a string)
+  // --- Rate Limiting ---
   const rateLimitResponse = await rateLimit(req, {
-    keyPrefix: 'waitlist_join',
-    limit: 5,
-    window: 600, // 10 minutes in seconds
+    limit: endpointLimit,
+    window: endpointWindow,
+    keyPrefix: "waitlist:join",
+    ipFallback: { enabled: true, limit: ipFallbackLimit },
   });
-  if (rateLimitResponse) {
-    return rateLimitResponse;
+  if (rateLimitResponse instanceof NextResponse) {
+    return rateLimitResponse; // Returns 429 response if limited
   }
+  // --- End Rate Limiting ---
 
   try {
     const body = await req.json();

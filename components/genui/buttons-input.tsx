@@ -14,7 +14,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { submitSurveyResponse } from "@/actions/survey"
+import { submitSurveyResponse } from "@/app/actions/survey"
 
 /**
  * Props for the ButtonsInput component

@@ -7,6 +7,7 @@ import { getEngagementMode } from "@/lib/session/mode-manager";
 import { getKgService } from "@/lib/db/graph/kg-service-factory";
 import { ResonanceFlagPayloadSchema } from "@/lib/schemas/api";
 import { rateLimit } from "@/lib/redis/rate-limit";
+import { z } from "zod";
 
 /**
  * POST /api/feedback/resonance-flag
@@ -15,10 +16,30 @@ import { rateLimit } from "@/lib/redis/rate-limit";
  * - Requires authentication
  * - Validates input using centralized schema
  */
+
+const ResonanceFlagSchema = z.object({
+  contentId: z.string().uuid(),
+  flagType: z.enum(["inaccurate", "offensive", "irrelevant", "other"]), // Example types
+  comment: z.string().optional(),
+  sessionId: z.string().optional(),
+});
+
+// Define specific limits for this endpoint (User ID based)
+const endpointLimit = 20;
+const endpointWindow = 600; // 10 minutes
+
 export async function POST(request: NextRequest) {
-  // Apply rate limiting: 30 requests per minute per user
-  const rateLimitResult = await rateLimit(request, { limit: 30, window: 60 });
-  if (rateLimitResult instanceof NextResponse) return rateLimitResult;
+  // --- Rate Limiting ---
+  const rateLimitResponse = await rateLimit(request, {
+    limit: endpointLimit,
+    window: endpointWindow,
+    keyPrefix: "feedback:resonance",
+    ipFallback: { enabled: false }, // Requires User ID
+  });
+  if (rateLimitResponse instanceof NextResponse) {
+    return rateLimitResponse; // Returns 429 response if limited
+  }
+  // --- End Rate Limiting ---
 
   try {
     // Authenticate the request

@@ -19,7 +19,10 @@ import {
   isAwaitingSomaticResponse,
   generateSomaticAcknowledgment,
 } from "@/lib/somatic/somatic-service";
-import { RateLimitAlgorithm } from "@/lib/redis/rate-limit";
+
+import { performEwefAnalysis } from "@/lib/pce/pce-service";
+import { conditionallyLogDetailedAnalysis } from "@/lib/pce/conditional-logging";
+import { generateExplanation } from "@/lib/pce/metacognition";
 
 // Fallback StreamData and StreamingTextResponse for MVP
 class StreamData {
@@ -52,6 +55,10 @@ class StreamingTextResponse extends Response {
 
 const REDIS_KEY_LAST_ASSISTANT_ID_PREFIX = "last_assistant_interaction_id:";
 const SESSION_TTL = 86400; // 24 hours
+
+// Define specific limits for this endpoint (User ID based)
+const endpointLimit = 60;
+const endpointWindow = 60; // 1 minute
 
 async function shouldTriggerCoherenceCheckin(
   userId: string,
@@ -127,34 +134,20 @@ function createTextStream(text: string): ReadableStream<Uint8Array> {
   });
 }
 
+export const runtime = "edge";
+
 export async function POST(request: NextRequest) {
-  // Rate limiting
-  let rateLimitResult: any;
-  try {
-    rateLimitResult = await rateLimit(request, {
-      limit: Number(process.env.PULSE_CHAT_RATE_LIMIT_MAX || 60),
-      window: Number(process.env.PULSE_CHAT_RATE_WINDOW_S || 60),
-      ipFallback: {
-        limit: Number(process.env.PULSE_CHAT_IP_RATE_LIMIT_MAX || 30),
-        window: Number(process.env.PULSE_CHAT_IP_RATE_WINDOW_S || 60),
-      },
-      algorithm: RateLimitAlgorithm.TOKEN_BUCKET,
-      tokenBucket: {
-        bucketSize: Number(process.env.PULSE_CHAT_BUCKET_SIZE || 10),
-        refillRate: Number(process.env.PULSE_CHAT_REFILL_RATE || 1),
-      },
-    });
-  } catch (err) {
-    logger.error(`Rate limit error: ${err}`);
-    return NextResponse.json(
-      { error: "Rate limit configuration error" },
-      { status: 500 }
-    );
+  // --- Rate Limiting ---
+  const rateLimitResponse = await rateLimit(request, {
+    limit: endpointLimit,
+    window: endpointWindow,
+    keyPrefix: "chat:post",
+    ipFallback: { enabled: false }, // Requires User ID
+  });
+  if (rateLimitResponse instanceof NextResponse) {
+    return rateLimitResponse; // Returns 429 response if limited
   }
-  if (rateLimitResult instanceof NextResponse) {
-    logger.warn("Rate limit exceeded or error, returning early");
-    return rateLimitResult;
-  }
+  // --- End Rate Limiting ---
 
   try {
     // Auth
@@ -198,6 +191,17 @@ export async function POST(request: NextRequest) {
     const redisRead = getRedisClient();
     const redisWrite = getRedisClient();
 
+    // --- Request Start: State Fetch ---
+    // Turn count
+    let currentTurn = 1;
+    try {
+      const turnCountStr = await redisRead.get(`session:turn_count:${sessionId}`);
+      currentTurn = turnCountStr ? Number.parseInt(turnCountStr as string, 10) : 1;
+    } catch (err) {
+      logger.warn(
+        `Could not retrieve turn count for session ${sessionId}, defaulting to 1`
+      );
+    }
     // Last assistant interaction ID
     const redisKey = `${REDIS_KEY_LAST_ASSISTANT_ID_PREFIX}${sessionId}`;
     let reviewInteractionId: string | null = null;
@@ -217,17 +221,7 @@ export async function POST(request: NextRequest) {
         `Failed to retrieve last assistant ID from Redis for session ${sessionId}: ${error}`
       );
     }
-
-    // Turn count
-    let currentTurn = 1;
-    try {
-      const turnCountStr = await redisRead.get(`session:turn_count:${sessionId}`);
-      currentTurn = turnCountStr ? Number.parseInt(turnCountStr as string, 10) : 1;
-    } catch (err) {
-      logger.warn(
-        `Could not retrieve turn count for session ${sessionId}, defaulting to 1`
-      );
-    }
+    // --- End State Fetch ---
 
     // KG and Guardrails
     const kgService = getKgService();
@@ -241,6 +235,7 @@ export async function POST(request: NextRequest) {
         userInput: message,
         agentResponse: "",
         interactionType: "chat",
+        responseRationaleSource: undefined, // TODO: Pass actual responseRationaleSource when available
       });
     } catch (err) {
       logger.error(
@@ -423,21 +418,24 @@ export async function POST(request: NextRequest) {
       const dataPayload = { isCheckIn: true, reviewInteractionId };
       data.append(dataPayload);
       data.close();
-
       const textStream = createTextStream(coherenceCheckInPrompt);
-
+      // --- Atomic Redis update for check-in state ---
       try {
-        await redisWrite.set(
+        const pipeline = redisWrite.pipeline();
+        pipeline.set(
           `session:last_checkin_turn:${sessionId}`,
-          currentTurn.toString(),
-          { ex: SESSION_TTL }
+          currentTurn.toString()
         );
+        pipeline.expire(
+          `session:last_checkin_turn:${sessionId}`,
+          SESSION_TTL
+        );
+        await pipeline.exec();
       } catch (err) {
         logger.error(
-          `Failed to update last check-in turn in Redis: ${err}`
+          `Failed to update last_checkin_turn in Redis (pipeline): ${err}`
         );
       }
-
       return new StreamingTextResponse(textStream, {}, data);
     }
 
@@ -452,25 +450,50 @@ export async function POST(request: NextRequest) {
     }
 
     // PCE processing
-    let pceResult: any;
+    let pceResult: any = null;
     try {
-      pceResult = await processPceMvpRequest(
-        {
-          userID: userId,
-          sessionID: sessionId,
-          utteranceText: message,
-        },
-        {
-          useLlmAssistance: true,
-        }
-      );
+      pceResult = await performEwefAnalysis(userId, sessionId, message);
     } catch (err) {
       logger.error(
-        `Error in processPceMvpRequest for user ${userId}, session ${sessionId}: ${err}`
+        `Error in performEwefAnalysis for user ${userId}, session ${sessionId}: ${err}`
       );
       return NextResponse.json(
-        { error: "Failed to process request" },
+        { error: "PCE analysis failed" },
         { status: 500 }
+      );
+    }
+
+    // --- Conditional Logging of EWEF Analysis ---
+    try {
+      await conditionallyLogDetailedAnalysis({
+        userId: userId,
+        sessionId: sessionId,
+        interactionId: interactionId,
+        currentMode: currentMode || 'insight',
+        kgService,
+        stateData: {
+          moodEstimate: pceResult?.state?.moodEstimate ?? 0,
+          stressEstimate: pceResult?.state?.stressEstimate ?? 0,
+        },
+        perceptionData: {
+          mhhSource: pceResult?.pInstance?.mhhSource ?? "external",
+          mhhPerspective: pceResult?.pInstance?.mhhPerspective ?? "self",
+          mhhTimeframe: pceResult?.pInstance?.mhhTimeframe ?? "present",
+          mhhAcceptanceState: pceResult?.pInstance?.mhhAcceptanceState ?? "uncertain",
+          pValuationShiftEstimate: pceResult?.pInstance?.pValuationShiftEstimate ?? 0,
+          pPowerLevel: pceResult?.pInstance?.pPowerLevel ?? 0.5,
+          pAppraisalConfidence: pceResult?.pInstance?.pAppraisalConfidence ?? 0.5,
+        },
+        reactionData: {
+          valence: pceResult?.vad?.valence ?? 0,
+          arousal: pceResult?.vad?.arousal ?? 0,
+          dominance: pceResult?.vad?.dominance ?? 0,
+          confidence: pceResult?.vad?.confidence ?? 0.5,
+        },
+      });
+    } catch (err) {
+      logger.error(
+        `Failed to conditionally log detailed EWEF analysis for user ${userId}, session ${sessionId}: ${err}`
       );
     }
 
@@ -533,31 +556,43 @@ export async function POST(request: NextRequest) {
       logger.error(`No candidate response from PCE for user ${userId}, session ${sessionId}`);
     }
 
-    // Store response in KG
+    // --- Standard Response: Final State Update (KG + Redis) ---
+    // (after generating finalResponse)
+    // Store response in KG and update Redis state atomically
     try {
       await kgService.setInteractionResponseType(interactionId, "Response");
       await kgService.setInteractionAgentResponse(interactionId, finalResponse);
+      // Redis pipeline for turn count and last assistant ID
+      const pipeline = redisWrite.pipeline();
+      pipeline.incr(`session:turn_count:${sessionId}`);
+      pipeline.expire(`session:turn_count:${sessionId}`, SESSION_TTL);
+      pipeline.set(redisKey, interactionId);
+      pipeline.expire(redisKey, SESSION_TTL);
+      await pipeline.exec();
     } catch (err) {
       logger.error(
-        `Failed to store response in KG for user ${userId}, session ${sessionId}: ${err}`
+        `Failed to update KG or Redis state atomically for user ${userId}, session ${sessionId}: ${err}`
       );
     }
 
-    // Store last assistant interaction ID
+    // --- XAI Explanation Streaming ---
+    let xaiText = "";
     try {
-      await redisWrite.set(redisKey, interactionId, { ex: SESSION_TTL });
-      logger.debug(
-        `Stored last assistant interaction ID ${interactionId} for session ${sessionId}`
-      );
-    } catch (error) {
-      logger.error(
-        `Failed to store last assistant ID in Redis for session ${sessionId}: ${error}`
-      );
+      xaiText = await generateExplanation(pceResult);
+    } catch (err) {
+      logger.error(`Failed to generate XAI explanation: ${err}`);
     }
+    const data = new StreamData();
+    data.append({
+      type: 'xai-explanation',
+      interactionId: interactionId,
+      explanation: xaiText
+    });
+    data.close();
 
     // Stream response
     const textStream = createTextStream(finalResponse);
-    return new StreamingTextResponse(textStream);
+    return new StreamingTextResponse(textStream, {}, data);
   } catch (error) {
     logger.error(`Error in chat API: ${error}`);
     return NextResponse.json(

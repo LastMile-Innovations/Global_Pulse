@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers"
 import { db } from "@/lib/db"
-import { contactMessages } from "@/lib/db/schema/contactMessages"
+import { contactMessages, contactCategoryEnum } from "@/lib/db/schema/contactMessages"
 import { contactFormSchema, type ContactFormValues } from "@/lib/validations/contact"
 import { revalidatePath } from "next/cache"
 import { logger } from "@/lib/utils/logger"
@@ -65,30 +65,37 @@ export async function submitContactForm(
     }
     
     // Get user session (if logged in)
-    const userId = await getUserId()
+    // Note: userId is fetched once near the top for rate limiting, re-use it.
+    // const userId = await getUserId() // Already fetched above
     
     // Get client IP address for security/spam prevention
-    const headersList = await headers()
-    const ipAddress = headersList.get("x-forwarded-for") || "unknown"
-    const userAgent = headersList.get("user-agent") || "unknown"
+    // Note: ipAddress is fetched once near the top for rate limiting, re-use it.
+    // const headersList = await headers()
+    // const ipAddress = headersList.get("x-forwarded-for") || "unknown"
+    const userAgent = headersList.get("user-agent") || "unknown" // Fetch userAgent here if needed for logging
+
+    // Construct the data object for insertion, matching the Drizzle schema
+    const insertData = {
+      userId: userId,
+      name: validatedData.data.name,
+      email: validatedData.data.email,
+      subject: validatedData.data.subject,
+      category: validatedData.data.category as typeof contactCategoryEnum.enumValues[number],
+      message: validatedData.data.message,
+      ipAddress: ipAddress,
+    };
     
     // Insert the contact message using Drizzle
     const [newMessage] = await db.insert(contactMessages)
-      .values({
-        userId: userId, // This will be null if user is not authenticated
-        name: validatedData.data.name,
-        email: validatedData.data.email,
-        subject: validatedData.data.subject,
-        category: validatedData.data.category,
-        message: validatedData.data.message,
-        ipAddress,
-      } as any) // Use type assertion to bypass TypeScript checking
+      .values(insertData) 
       .returning({ id: contactMessages.id })
     
     // Log successful submission (but not full message content for privacy)
     logger.info("Contact form submitted", {
       messageId: newMessage.id,
-      category: validatedData.data.category,
+      category: insertData.category, // Use value from insertData
+      userId: insertData.userId, // Log userId if available
+      ipAddress: insertData.ipAddress, // Log IP address
       userAgent
     })
     

@@ -32,6 +32,9 @@ import { generateExplanation } from "./metacognition";
 import { generateInteractionGuidance } from "./interaction-guidance";
 import { calculateLinearVad } from "./ewef-core-engine/linear-model";
 import type { NlpFeatures, SentimentLabel } from "../types/nlp-types";
+import { getMinimalContext } from "./context-analyzer";
+import { appraisePerception } from "./perception-appraisal";
+import { calculateAnalysisConfidenceV1 } from './confidence-scorer'
 
 // Redis key for tracking turn count
 const REDIS_KEY_TURN_COUNT = "session:turn_count:";
@@ -115,6 +118,7 @@ export async function processPceMvpRequest(
       activeEPs: activeBootstrappedEPs,
       pInstance,
       ruleVariables,
+      analysisConfidence: 0.3, // Added default low confidence for MVP
     }
   } catch (error) {
     // Use console.error for errors in MVP
@@ -148,6 +152,7 @@ export async function processPceMvpRequest(
         timeframe: { value: "present", confidence: 0.5 },
         acceptanceState: { value: "uncertain", confidence: 0.5 },
       },
+      analysisConfidence: 0.1, // Added default low confidence for MVP error case
     }
   }
 }
@@ -210,19 +215,21 @@ async function performSimplifiedEwefAnalysis(text: string): Promise<EWEFAnalysis
         timeframe: { value: "present", confidence: 0.5 },
         acceptanceState: { value: "uncertain", confidence: 0.5 },
       },
+      analysisConfidence: 0.3, // Added default low confidence for simplified path
     };
   } catch (error) {
     logger.error(`Error in performSimplifiedEwefAnalysis: ${error instanceof Error ? error.message : error}`);
-    return createDefaultEwefOutput();
+    return createDefaultEwefOutput(); // This already includes default confidence
   }
 }
 
 /**
- * Create a default EWEF output
+ * Create a default EWEF output with default confidence
  * @returns Default EWEF output
  */
 function createDefaultEwefOutput(): EWEFAnalysisOutput {
-  return {
+  // Note: Even default output should have a confidence score, likely low.
+  const defaultOutputBase = {
     vad: {
       valence: 0.0,
       arousal: 0.1,
@@ -236,42 +243,142 @@ function createDefaultEwefOutput(): EWEFAnalysisOutput {
     },
     activeEPs: [],
     pInstance: {
-      mhhSource: "external",
-      mhhPerspective: "self",
-      mhhTimeframe: "present",
-      mhhAcceptanceState: "uncertain",
+      mhhSource: "external" as const,
+      mhhPerspective: "self" as const,
+      mhhTimeframe: "present" as const,
+      mhhAcceptanceState: "uncertain" as const,
       pValuationShiftEstimate: 0.0,
       pPowerLevel: 0.5,
       pAppraisalConfidence: 0.5,
     },
     ruleVariables: {
-      source: { value: "external", confidence: 0.5 },
-      perspective: { value: "self", confidence: 0.5 },
-      timeframe: { value: "present", confidence: 0.5 },
-      acceptanceState: { value: "uncertain", confidence: 0.5 },
+      source: { value: "external" as const, confidence: 0.5 },
+      perspective: { value: "self" as const, confidence: 0.5 },
+      timeframe: { value: "present" as const, confidence: 0.5 },
+      acceptanceState: { value: "uncertain" as const, confidence: 0.5 },
     },
+    emotionCategorization: undefined,
+    analysisConfidence: 0.1, // Explicitly set low confidence for default
   };
+  // We need to ensure the type matches EWEFAnalysisOutput, including analysisConfidence
+  // In this case, we are setting a low default, no need to calculate on defaults.
+  return defaultOutputBase;
 }
 
 /**
- * Perform EWEF analysis using available NLP features and bootstrapped EPs.
+ * Perform EWEF analysis using the full V1 pipeline.
+ * @param userID The user's ID.
+ * @param sessionID The session ID.
  * @param utteranceText The user's utterance.
- * @param nlpFeatures NLP features for the utterance.
- * @param activeBootstrappedEPs User's bootstrapped EPs.
  * @returns EWEFAnalysisOutput
  */
-async function performEwefAnalysis(
-  utteranceText: string,
-  nlpFeatures: any,
-  activeBootstrappedEPs: BootstrappedEP[],
+export async function performEwefAnalysis(
+  userID: string,
+  sessionID: string,
+  utteranceText: string
 ): Promise<EWEFAnalysisOutput> {
-  // MVP: If bootstrapped EPs are available, try to use them to enrich the analysis
-  // For now, fallback to simplified analysis, but attach bootstrapped EPs if present
-  const base = await performSimplifiedEwefAnalysis(utteranceText);
-  if (Array.isArray(activeBootstrappedEPs) && activeBootstrappedEPs.length > 0) {
-    base.activeEPs = activeBootstrappedEPs;
+  try {
+    // Step 1: NLP features
+    const nlpFeatures = await getCoreNlpFeatures(utteranceText);
+    // Step 2: Minimal context (EPs, userState, profiles undefined)
+    const context = await getMinimalContext(
+      userID,
+      nlpFeatures.keywords,
+      nlpFeatures.entities,
+      nlpFeatures.abstractConcepts
+    );
+    // Step 3: Appraise perception (heuristic for V1)
+    const pInstance = await appraisePerception(
+      utteranceText,
+      nlpFeatures,
+      context.activeEPs,
+      context,
+      false, // useLlmAssistance = false for MVP
+      context.userState,
+      context.culturalContext,
+      context.personality
+    );
+    if (!pInstance) {
+      logger.error("Appraisal failed in PCE pipeline");
+      throw new Error("Appraisal failed");
+    }
+    // Step 4: Extract ruleVariables from pInstance
+    const ruleVariables = {
+      source: { value: pInstance.mhhSource, confidence: 0.7 },
+      perspective: { value: pInstance.mhhPerspective, confidence: 0.7 },
+      timeframe: { value: pInstance.mhhTimeframe, confidence: 0.7 },
+      acceptanceState: { value: pInstance.mhhAcceptanceState, confidence: 0.7 },
+    };
+    // Step 5: Calculate VAD
+    const vad = calculateLinearVad(
+      pInstance,
+      ruleVariables,
+      context.activeEPs,
+      nlpFeatures.sentiment.score,
+      context.userState,
+      context.culturalContext,
+      context.personality
+    );
+    // Step 6: Update state (minimal for V1)
+    const state = {
+      timestamp: Date.now(),
+      moodEstimate: vad.valence,
+      stressEstimate: vad.arousal,
+    };
+    // Step 7: Emotion categorization
+    const emotionCategorizationRaw = await categorizeEmotion(
+      context,
+      ruleVariables,
+      pInstance,
+      vad
+    );
+    const emotionCategorization = emotionCategorizationRaw
+      ? {
+          ...emotionCategorizationRaw,
+          categoryDistribution: Object.fromEntries(
+            emotionCategorizationRaw.categoryDistribution.map(cat => [
+              cat.label,
+              cat.probability,
+            ])
+          ),
+        }
+      : undefined;
+
+    // Step 8: Construct partial analysis output before confidence calculation
+    const analysisOutputBase: Omit<EWEFAnalysisOutput, 'analysisConfidence'> = {
+      vad,
+      state,
+      activeEPs: context.activeEPs,
+      pInstance,
+      ruleVariables,
+      emotionCategorization,
+    };
+
+    // Step 9: Calculate V1 Analysis Confidence (Integrity Layer V1)
+    const analysisConfidence = calculateAnalysisConfidenceV1({
+      ...analysisOutputBase,
+      analysisConfidence: 0, // Provide a dummy value, it will be overwritten
+    });
+
+    // Step 10: Return full EWEFAnalysisOutput including confidence
+    const finalAnalysisOutput: EWEFAnalysisOutput = {
+      ...analysisOutputBase,
+      analysisConfidence,
+    };
+
+    // Optional: Conditionally log detailed analysis
+    // FIXME: This function needs more context (userId, sessionId, interactionId, etc.)
+    //        which is not readily available here. Consider moving this call to the API route.
+    // await conditionallyLogDetailedAnalysis(finalAnalysisOutput);
+
+    return finalAnalysisOutput;
+  } catch (error) {
+    logger.error(
+      `Error in performEwefAnalysis: ${error instanceof Error ? error.stack || error.message : error}`
+    );
+    // Return default values on error, including default low confidence
+    return createDefaultEwefOutput(); // Uses the updated default creator
   }
-  return base;
 }
 
 /**

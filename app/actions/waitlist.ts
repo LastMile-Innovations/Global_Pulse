@@ -6,6 +6,10 @@ import { z } from 'zod';
 import { eq, sql } from 'drizzle-orm';
 import type { NewWaitlistUser } from '@/lib/db/schema';
 import { waitlist_users, waitlist_referrals, waitlist_activity_logs } from '@/lib/db/schema/waitlist';
+import { logger } from "@/lib/utils/logger";
+import { rateLimit, getClientIp } from "@/lib/redis/rate-limit";
+import { headers } from "next/headers";
+import { getCurrentUser } from "@/lib/auth/auth-utils";
 
 const JoinSchema = z.object({
   email: z.string().email(),
@@ -22,7 +26,37 @@ export type JoinWaitlistResult =
   | { success: true; user: { email: string; name?: string | null; referralCode: string }; referralLink: string }
   | { success: false; error: string };
 
+// Define specific limits for this action
+const actionLimit = 5;
+const actionWindow = 600; // 10 minutes
+const ipFallbackLimit = 3;
+
 export async function joinWaitlist(input: unknown): Promise<JoinWaitlistResult> {
+  const headersList = await headers();
+  const ip = getClientIp(headersList);
+  const user = await getCurrentUser(); // Get user (might be null)
+
+  // --- Rate Limiting ---
+  const limitResult = await rateLimit(
+    {
+      userId: user?.id,
+      ip: ip,
+      path: "action:joinWaitlist", // Define a unique path for the action
+    },
+    {
+      limit: actionLimit,
+      window: actionWindow,
+      keyPrefix: "action:waitlist:join", // Specific prefix for action
+      ipFallback: { enabled: true, limit: ipFallbackLimit },
+    },
+  );
+
+  if (limitResult?.limited) {
+    logger.warn(`Server Action rate limited: [joinWaitlist]`); // Already logged in rateLimit func, extra log optional
+    return { success: false, error: "Rate limit exceeded. Please try again later." };
+  }
+  // --- End Rate Limiting ---
+
   // Validate input
   const parsed = JoinSchema.safeParse(input);
   if (!parsed.success) {

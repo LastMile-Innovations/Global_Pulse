@@ -1,9 +1,12 @@
 import type { NextRequest } from "next/server"
+import { NextResponse } from "next/server"
 import { streamObject } from "ai"
 import { getLanguageModelInstance } from "@/lib/ai-sdk/providers"
 import { UIComponentSchema } from "@/lib/ai-sdk/schemas/ui_components"
 import { logger } from "@/lib/utils/logger"
 import { z } from "zod"
+import { auth } from "@/lib/auth/auth-utils"
+import { rateLimit } from "@/lib/redis/rate-limit"
 
 // --- Production MVP: Robust request schema, error handling, audit logging, metrics, and security ---
 
@@ -22,6 +25,15 @@ const RequestSchema = z.object({
   // model: z.string().optional(),
 })
 
+const GenerateUiSchema = z.object({
+  prompt: z.string().min(5, "Prompt must be at least 5 characters"),
+  context: z.record(z.unknown()).optional(),
+})
+
+// Define specific limits for this endpoint (User ID based)
+const endpointLimit = 20;
+const endpointWindow = 60; // 1 minute
+
 /**
  * POST /api/llm/generate-ui-json
  * Generates a UI component JSON object using an LLM, streaming the result.
@@ -31,7 +43,28 @@ const RequestSchema = z.object({
  * - Adds metrics and audit logging
  * - Handles edge cases and streaming errors robustly
  */
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
+  // --- Authentication Check ---
+  const userId = await auth(request);
+  if (!userId) {
+    logger.warn(`[SEC-002] Unauthorized attempt to access ${request.nextUrl.pathname}`);
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  logger.info(`[SEC-002] User ${userId} accessing ${request.nextUrl.pathname}`);
+  // --- End Authentication Check ---
+
+  // --- Rate Limiting ---
+  const rateLimitResponse = await rateLimit(request, {
+    limit: endpointLimit,
+    window: endpointWindow,
+    keyPrefix: "llm:gen_ui",
+    ipFallback: { enabled: false }, // Requires User ID
+  });
+  if (rateLimitResponse instanceof NextResponse) {
+    return rateLimitResponse; // Returns 429 response if limited
+  }
+  // --- End Rate Limiting ---
+
   const requestId = generateRequestId()
   const startTime = Date.now()
 
@@ -39,7 +72,7 @@ export async function POST(req: NextRequest) {
     // --- Parse and validate the request body ---
     let body: unknown
     try {
-      body = await req.json()
+      body = await request.json()
     } catch (err) {
       logger.warn(`[${requestId}] Invalid JSON in request body`)
       return new Response(

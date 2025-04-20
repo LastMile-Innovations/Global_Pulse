@@ -4,6 +4,7 @@ import { waitlist_activity_logs } from '@/lib/db/schema/waitlist';
 import { isAdmin } from '@/lib/auth/auth-utils';
 import { count, desc, eq, and } from 'drizzle-orm';
 import { z } from 'zod';
+import { logger } from '@/lib/utils/logger';
 
 // --- waitlist.ts a ---
 // This endpoint returns waitlist activity logs for admins, with optional filtering by userId and action.
@@ -17,8 +18,10 @@ const QuerySchema = z.object({
 });
 
 export async function GET(req: NextRequest) {
-  if (!(await isAdmin(req))) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const isUserAdmin = await isAdmin(req);
+  if (!isUserAdmin) {
+    logger.warn(`Unauthorized API access attempt to ${req.nextUrl.pathname}`);
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {

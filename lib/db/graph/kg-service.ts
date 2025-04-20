@@ -23,18 +23,15 @@ export class KgService {
   }
 
   /**
-   * Create a user node
+   * Create a user node (idempotent, no PII)
    */
-  async createUserNode(params: { userID: string; email: string; name: string }): Promise<void> {
+  async createUserNode(params: { userID: string; name: string }): Promise<void> {
     const cypher = `
-    CREATE (u:User {
-      userID: $userID,
-      email: $email,
-      name: $name,
-      createdAt: timestamp(),
-      bootstrappingComplete: false
-    })
-  `
+    MERGE (u:User {userID: $userID})
+    ON CREATE SET u.name = $name, u.createdAt = timestamp(), u.bootstrappingComplete = false
+    ON MATCH SET u.name = $name
+    RETURN u.userID
+    `
     await this.kgLayer.executeCypher(cypher, params)
   }
 
@@ -47,6 +44,7 @@ export class KgService {
     userInput: string
     agentResponse: string
     interactionType: string
+    responseRationaleSource?: string
   }): Promise<string> {
     // Generate a unique ID for the interaction if not provided
     const interactionID = `int-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
@@ -60,6 +58,7 @@ export class KgService {
       agentResponse: params.agentResponse,
       interactionType: params.interactionType,
       timestamp: Date.now(),
+      ...(params.responseRationaleSource ? { responseRationaleSource: params.responseRationaleSource } : {})
     }
 
     const result = await this.kgLayer.mergeNodeWithProperties("Interaction", { interactionID }, interactionProps)

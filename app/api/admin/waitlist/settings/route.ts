@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { waitlist_settings, waitlist_activity_logs } from '@/lib/db/schema/waitlist';
-import { isAdmin, getCurrentUser } from '@/lib/auth/service';
+import { isAdmin, getCurrentUser } from '@/lib/auth/auth-utils';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { rateLimit } from '@/lib/redis/rate-limit'; // Assuming rate limiter utility
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!(await isAdmin())) {
+  if (!(await isAdmin(req))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

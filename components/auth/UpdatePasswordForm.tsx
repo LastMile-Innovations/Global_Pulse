@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { updatePasswordSchema, type UpdatePasswordSchemaType } from "./update-password-schema"
 import { Loader2 } from "lucide-react"
-import { updatePassword } from "@/actions/auth"
+import { updatePassword } from "@/app/actions/auth"
 
 export default function UpdatePasswordForm() {
   const router = useRouter()

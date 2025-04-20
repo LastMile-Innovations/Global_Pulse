@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, User as UserIcon, Moon, Sun } from "lucide-react"
 import { createClient } from "@/utils/supabase/client"
-import { logout } from "@/actions/auth"
+import { logout } from "@/app/actions/auth"
 import { Header } from "./header"
 import Image from "next/image"
 

@@ -1,6 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { ExternalSourceService } from "@/lib/data-hub/external-source-service"
 import { logger } from "@/lib/utils/logger"
+import { verifySignature } from "@upstash/qstash/dist/nextjs";
 
 // Change handler signature to use NextApiRequest and NextApiResponse
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -78,7 +79,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 // export const POST = verifySignature(handler)
 
 // Directly export the handler as POST
-export { handler as POST }
+// export { handler as POST }
 
 // Remove edge runtime configuration if using NextApiRequest/Response
 // export const runtime = "edge"
+
+// --- Enable QStash verification ---
+export default verifySignature(handler);
+
+// --- IMPORTANT: Add Edge Config for verifySignature ---
+export const config = {
+  api: {
+    bodyParser: false, // Required for verifySignature wrapper to work correctly
+  },
+};
