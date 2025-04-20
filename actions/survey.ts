@@ -136,6 +136,24 @@ export async function submitSurveyResponse({
 
   const userId = user.id;
 
+  // --- Rate Limiting ---
+  const { rateLimit } = await import("@/lib/redis/rate-limit");
+  const logger = (await import("@/lib/utils/logger")).logger;
+  const limitResult = await rateLimit(
+    { userId, path: "action:submitSurveyResponse" },
+    {
+      limit: 50,
+      window: 600,
+      keyPrefix: "action:survey:submit",
+      ipFallback: { enabled: false },
+    }
+  );
+  if (limitResult?.limited) {
+    logger.warn(`[RateLimit Exceeded] [submitSurveyResponse] identifierType=userId identifierValue=${userId} limit=50/600s`);
+    return { success: false, error: "Rate limit exceeded. Please try again later." };
+  }
+  // --- End Rate Limiting ---
+
   try {
     // Input validation
     if (!questionId || questionId <= 0) {

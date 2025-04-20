@@ -32,6 +32,27 @@ async function getUserId(): Promise<string | null> {
 export async function submitContactForm(
   formData: ContactFormValues
 ): Promise<{ success: boolean; error?: string }> {
+  // --- Rate Limiting ---
+  const headersList = await headers();
+  const ipAddress = headersList.get("x-forwarded-for") || "unknown";
+  const userId = await getUserId();
+  const { rateLimit } = await import("@/lib/redis/rate-limit");
+  const logger = (await import("@/lib/utils/logger")).logger;
+  const limitResult = await rateLimit(
+    { userId, ip: ipAddress, path: "action:submitContactForm" },
+    {
+      limit: 3,
+      window: 3600,
+      keyPrefix: "action:contact:submit",
+      ipFallback: { enabled: true, limit: 2 },
+    }
+  );
+  if (limitResult?.limited) {
+    logger.warn(`[RateLimit Exceeded] [submitContactForm] identifierType=${userId ? "userId" : "hashedIp"} identifierValue=${userId || ipAddress} limit=3/3600s`);
+    return { success: false, error: "Rate limit exceeded. Please try again later." };
+  }
+  // --- End Rate Limiting ---
+
   try {
     // Validate form data with our Zod schema
     const validatedData = contactFormSchema.safeParse(formData)
